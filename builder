@@ -1,0 +1,3611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commander Codex + Mana Calculator - Free MTG Deck Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --white-mana: #F0E68C;
+            --blue-mana: #0E4C92;
+            --black-mana: #150B00;
+            --red-mana: #D3202A;
+            --green-mana: #00733E;
+            --colorless-mana: #CAC5C0;
+            
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a24;
+            --bg-tertiary: #252535;
+            --bg-card: #2a2a3e;
+            --border-color: #3a3a4e;
+            --text-primary: #e8e8f0;
+            --text-secondary: #a8a8c0;
+            --text-muted: #6a6a80;
+            --accent: #8b7355;
+            --accent-bright: #c4a77d;
+            --gold: #d4af37;
+            
+            --gradient-mystical: linear-gradient(135deg, #1a1a24 0%, #2a1a3a 50%, #1a2a3a 100%);
+            --gradient-card: linear-gradient(160deg, #2a2a3e 0%, #1f1f2e 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(14, 76, 146, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(211, 32, 42, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 115, 62, 0.06) 0%, transparent 60%);
+        }
+
+        .app-header {
+            background: var(--gradient-mystical);
+            border-bottom: 2px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--accent-bright) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+        }
+
+        .logo-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 0.2rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 2rem 2rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--accent-bright) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        @keyframes subtle-glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+            }
+        }
+
+        .featured-calculator-box {
+            animation: subtle-glow 3s ease-in-out infinite;
+        }
+
+        .deck-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .deck-card {
+            background: var(--gradient-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .deck-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .mana-pip {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+        }
+
+        .pip-W { background: var(--white-mana); }
+        .pip-U { background: var(--blue-mana); }
+        .pip-B { background: var(--black-mana); }
+        .pip-R { background: var(--red-mana); }
+        .pip-G { background: var(--green-mana); }
+        .pip-C { background: var(--colorless-mana); }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal {
+            background: var(--gradient-card);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            max-width: 1400px;
+            width: 100%;
+            max-height: 95vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .modal-content-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .stats-panel {
+            width: 400px;
+            background: var(--bg-secondary);
+            border-left: 2px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .color-option {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 3px solid var(--bg-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .color-option.selected {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .color-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 0 0 3px black;
+        }
+
+        .color-option.pip-C.selected::after {
+            content: '✓';
+        }
+
+        /* Commander Card Preview */
+        .commander-preview {
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .commander-card-image {
+            max-width: 250px;
+            border-radius: 12px;
+            border: 2px solid var(--accent);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Mana Base Calculator */
+        .mana-calculator {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .calculator-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .pip-counter {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .pip-input-group {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .pip-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .pip-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .small-input {
+            width: 80px;
+            padding: 0.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .dual-land-input {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .mana-results {
+            background: var(--bg-secondary);
+            border: 2px solid var(--green-mana);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .result-value {
+            color: var(--accent-bright);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .category-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .subcategories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .number-input {
+            width: 55px;
+            padding: 0.4rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .notable-card-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .card-preview {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.8rem;
+            position: relative;
+        }
+
+        .card-preview-image {
+            width: 100%;
+            border-radius: 6px;
+        }
+
+        .card-remove {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--red-mana);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1200px) {
+            .modal-content-wrapper {
+                flex-direction: column;
+            }
+            .stats-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 2px solid var(--border-color);
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pip-counter {
+                grid-template-columns: 1fr;
+            }
+            .pip-input-group {
+                min-width: auto;
+            }
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .hero {
+                padding: 2rem 1rem;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .header-content > div {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // Enhanced category structure with exile wipes
+        const DECK_CATEGORIES = {
+            lands: {
+                name: '🏞 Lands',
+                icon: '🏞',
+                categories: [
+                    {
+                        id: 'basics',
+                        name: 'Basic Lands',
+                        subcategories: [
+                            { id: 'plains', name: 'Plains', defaultValue: 0, description: 'Basic land that taps for white mana' },
+                            { id: 'islands', name: 'Islands', defaultValue: 0, description: 'Basic land that taps for blue mana' },
+                            { id: 'swamps', name: 'Swamps', defaultValue: 0, description: 'Basic land that taps for black mana' },
+                            { id: 'mountains', name: 'Mountains', defaultValue: 0, description: 'Basic land that taps for red mana' },
+                            { id: 'forests', name: 'Forests', defaultValue: 0, description: 'Basic land that taps for green mana' },
+                            { id: 'wastes', name: 'Wastes', defaultValue: 0, description: 'Basic land that taps for colorless mana' }
+                        ]
+                    },
+                    {
+                        id: 'nonbasics',
+                        name: 'Non-Basic Lands',
+                        subcategories: [
+                            { id: 'duals', name: 'Dual Lands', defaultValue: 0, description: 'Lands that produce two colors (Check lands, Pain lands, Tango lands, etc.)' },
+                            { id: 'trilands', name: 'Tri-Lands', defaultValue: 0, description: 'Lands that produce three colors (Triomes, Arcane Sanctum, etc.)' },
+                            { id: 'fetches', name: 'Fetch Lands', defaultValue: 0, description: 'Search for other lands (Evolving Wilds, Terramorphic Expanse, Prismatic Vista)' },
+                            { id: 'shocks', name: 'Shock Lands', defaultValue: 0, description: 'Dual lands that can enter untapped for 2 life (Temple Garden, Watery Grave, etc.)' },
+                            { id: 'utility', name: 'Utility Lands', defaultValue: 0, description: 'Lands with special abilities (Reliquary Tower, Rogue\'s Passage, Yavimaya Cradle)' },
+                            { id: 'creature-lands', name: 'Creature Lands', defaultValue: 0, description: 'Lands that become creatures (Mutavault, Celestial Colonnade, manlands)' },
+                            { id: 'mdfc-lands', name: 'MDFC Lands', defaultValue: 0, description: 'Modal double-faced cards with land on back (Pathway lands, Zendikar MDFCs)' }
+                        ]
+                    }
+                ]
+            },
+            creatures: {
+                name: '🧟 Creatures',
+                icon: '🧟',
+                categories: [
+                    {
+                        id: 'mana-creatures',
+                        name: 'Ramp Creatures',
+                        subcategories: [
+                            { id: 'dorks', name: 'Mana Dorks', defaultValue: 0, description: 'Creatures that tap for mana (Birds of Paradise, Llanowar Elves, Faeburrow Elder)' },
+                            { id: 'land-creatures', name: 'Land Fetch Creatures', defaultValue: 0, description: 'Creatures that search for lands (Wood Elves, Farhaven Elf, Solemn Simulacrum)' },
+                            { id: 'treasure-creatures', name: 'Treasure Makers', defaultValue: 0, description: 'Creatures that create treasure tokens (Dockside Extortionist, Pitiless Plunderer)' }
+                        ]
+                    },
+                    {
+                        id: 'draw-creatures',
+                        name: 'Card Draw Creatures',
+                        subcategories: [
+                            { id: 'draw-etb', name: 'Draw on ETB', defaultValue: 0, description: 'Draw cards when creature enters (Mulldrifter, Wall of Omens, Elvish Visionary)' },
+                            { id: 'draw-death', name: 'Draw on Death', defaultValue: 0, description: 'Draw when creature or others die (Grim Haruspex, Midnight Reaper, Skullclamp targets)' },
+                            { id: 'draw-attack', name: 'Draw on Attack/Damage', defaultValue: 0, description: 'Draw when attacking or dealing damage (Tymna, Edric, Bident of Thassa creatures)' },
+                            { id: 'tutor-creatures', name: 'Tutor Creatures', defaultValue: 0, description: 'Search your library for specific cards (Recruiter of the Guard, Imperial Recruiter)' },
+                            { id: 'looting-creatures', name: 'Looting Creatures', defaultValue: 0, description: 'Draw then discard (Merfolk Looter, Looter il-Kor, rummaging effects)' }
+                        ]
+                    },
+                    {
+                        id: 'removal-creatures',
+                        name: 'Removal Creatures',
+                        subcategories: [
+                            { id: 'etb-removal', name: 'ETB Removal', defaultValue: 0, description: 'Remove permanents when entering (Ravenous Chupacabra, Reclamation Sage)' },
+                            { id: 'fight-creatures', name: 'Fight Creatures', defaultValue: 0, description: 'Creatures that fight or use power-based removal (Kogla, Apex Devastator triggers)' },
+                            { id: 'exile-creatures', name: 'Exile Effects', defaultValue: 0, description: 'Exile instead of destroy (Containment Priest, Angel of Serenity)' },
+                            { id: 'bounce-creatures', name: 'Bounce Creatures', defaultValue: 0, description: 'Return permanents to hand (Man-o\'-War, Venser Shaper Savant)' }
+                        ]
+                    },
+                    {
+                        id: 'sac-creatures',
+                        name: 'Sacrifice Outlets',
+                        subcategories: [
+                            { id: 'free-sac', name: 'Free Sac Outlets', defaultValue: 0, description: 'Sacrifice without mana cost (Viscera Seer, Carrion Feeder, Goblin Bombardment)' },
+                            { id: 'paid-sac', name: 'Paid Sac Outlets', defaultValue: 0, description: 'Sacrifice requiring mana (Yawgmoth, Birthing Pod, High Market)' },
+                            { id: 'aristocrats', name: 'Aristocrats (Death Triggers)', defaultValue: 0, description: 'Gain value when creatures die (Blood Artist, Zulaport Cutthroat, Judith)' }
+                        ]
+                    },
+                    {
+                        id: 'utility-creatures',
+                        name: 'Utility Creatures',
+                        subcategories: [
+                            { id: 'hatebears', name: 'Hatebears', defaultValue: 0, description: 'Disrupt opponents strategies (Thalia, Drannith Magistrate, Opposition Agent)' },
+                            { id: 'protection-creatures', name: 'Protection Creatures', defaultValue: 0, description: 'Protect your board (Selfless Spirit, Dauntless Bodyguard, Spellskite)' },
+                            { id: 'recursion-creatures', name: 'Recursion Creatures', defaultValue: 0, description: 'Return cards from graveyard (Eternal Witness, Sun Titan, Karmic Guide)' },
+                            { id: 'token-makers', name: 'Token Makers', defaultValue: 0, description: 'Create creature tokens (Avenger of Zendikar, Deep Forest Hermit, Hornet Queen)' },
+                            { id: 'blink-targets', name: 'Blink/Flicker Targets', defaultValue: 0, description: 'High-value ETB creatures for blinking (Mulldrifter, Archaeomancer, any ETB value)' }
+                        ]
+                    },
+                    {
+                        id: 'tribal-creatures',
+                        name: 'Tribal Creatures',
+                        subcategories: [
+                            { id: 'tribal-payoffs', name: 'Tribal Payoffs', defaultValue: 0, description: 'Reward for playing tribe (Door of Destinies, Coat of Arms, tribal anthem effects)' },
+                            { id: 'tribal-lords', name: 'Tribal Lords', defaultValue: 0, description: 'Buff creatures of your tribe (Lord of Atlantis, Elvish Champion, any type lord)' },
+                            { id: 'tribal-support', name: 'Tribal Support', defaultValue: 0, description: 'Help tribal strategy without being the tribe (Kindred Discovery, Vanquisher\'s Banner)' },
+                            { id: 'changeling', name: 'Changelings', defaultValue: 0, description: 'All creature types (Changeling Outcast, Unsettled Mariner, tribal wildcards)' }
+                        ]
+                    },
+                    {
+                        id: 'combat-creatures',
+                        name: 'Combat Creatures',
+                        subcategories: [
+                            { id: 'evasion', name: 'Evasive Creatures', defaultValue: 0, description: 'Flying, unblockable, menace, etc. (Flyers, Invisible Stalker, Etali)' },
+                            { id: 'finishers', name: 'Finishers', defaultValue: 0, description: 'Win the game with combat (Craterhoof Behemoth, Triumph of the Hordes carriers)' },
+                            { id: 'combat-tricks', name: 'Combat Trick Creatures', defaultValue: 0, description: 'Surprise combat abilities (Mother of Runes, flash creatures, combat effects)' },
+                            { id: 'defenders', name: 'Defenders/Blockers', defaultValue: 0, description: 'High toughness or defensive abilities (Wall of Roots, Stuffy Doll, Fog Bank)' }
+                        ]
+                    },
+                    {
+                        id: 'creatures-other',
+                        name: 'Other Creatures',
+                        subcategories: [
+                            { id: 'creatures-uncategorized', name: 'Other/Uncategorized', defaultValue: 0, description: 'Unique or miscellaneous creatures that don\'t fit other categories' }
+                        ]
+                    }
+                ]
+            },
+            noncreature: {
+                name: '⚡ Non-Creature Spells',
+                icon: '⚡',
+                categories: [
+                    {
+                        id: 'ramp',
+                        name: 'Ramp & Mana',
+                        subcategories: [
+                            { id: 'fast-mana', name: 'Fast Mana (0-1 CMC)', defaultValue: 0, description: 'Zero or one mana acceleration (Sol Ring, Mana Crypt, Mox Diamond, Jeweled Lotus)' },
+                            { id: 'efficient-ramp', name: 'Efficient Ramp (2 CMC)', defaultValue: 0, description: 'Two mana rocks and ramp (Signets, Talismans, Farseek, Nature\'s Lore)' },
+                            { id: 'expensive-ramp', name: 'Expensive Ramp (3+ CMC)', defaultValue: 0, description: 'Three or more mana ramp (Commander\'s Sphere, Cultivate, Kodama\'s Reach)' },
+                            { id: 'land-ramp', name: 'Land Ramp Spells', defaultValue: 0, description: 'Spells that put lands onto battlefield (Rampant Growth, Explosive Vegetation)' },
+                            { id: 'rituals', name: 'Rituals', defaultValue: 0, description: 'Temporary mana burst (Dark Ritual, Jeska\'s Will, Mana Geyser)' }
+                        ]
+                    },
+                    {
+                        id: 'draw',
+                        name: 'Card Draw',
+                        subcategories: [
+                            { id: 'cantrips', name: 'Cantrips (0-1 CMC)', defaultValue: 0, description: 'Cheap cycle or draw one (Ponder, Preordain, Brainstorm, Opt)' },
+                            { id: 'raw-draw', name: 'Raw Draw Spells', defaultValue: 0, description: 'Draw multiple cards immediately (Blue Sun\'s Zenith, Painful Truths, Harmonize)' },
+                            { id: 'draw-engines', name: 'Draw Engines', defaultValue: 0, description: 'Repeatable card draw (Rhystic Study, Phyrexian Arena, Mystic Remora)' },
+                            { id: 'wheeling', name: 'Wheel Effects', defaultValue: 0, description: 'Everyone discards and draws (Wheel of Fortune, Windfall, Reforge the Soul)' },
+                            { id: 'tutors', name: 'Tutors', defaultValue: 0, description: 'Search library for specific cards (Demonic Tutor, Vampiric Tutor, Enlightened Tutor)' },
+                            { id: 'impulse-draw', name: 'Impulse Draw', defaultValue: 0, description: 'Exile and play (Outpost Siege, Light Up the Stage, red exile draw)' }
+                        ]
+                    },
+                    {
+                        id: 'removal-spells',
+                        name: 'Spot Removal',
+                        subcategories: [
+                            { id: 'creature-removal', name: 'Creature Removal', defaultValue: 0, description: 'Kill or exile creatures (Path to Exile, Swords to Plowshares, Murder)' },
+                            { id: 'artifact-enchantment-removal', name: 'Artifact/Enchantment Removal', defaultValue: 0, description: 'Destroy artifacts and/or enchantments (Naturalize, Return to Dust, Nature\'s Claim)' },
+                            { id: 'artifact-removal', name: 'Artifact Removal Only', defaultValue: 0, description: 'Only hits artifacts (Vandalblast, By Force, Smelt)' },
+                            { id: 'enchantment-removal', name: 'Enchantment Removal Only', defaultValue: 0, description: 'Only hits enchantments (Back to Nature, Tranquility, Demystify)' },
+                            { id: 'planeswalker-removal', name: 'Planeswalker Removal', defaultValue: 0, description: 'Directly remove planeswalkers (Hero\'s Downfall, Dreadbore, Bedevil)' },
+                            { id: 'land-removal', name: 'Land Removal', defaultValue: 0, description: 'Destroy or exile lands (Ghost Quarter, Strip Mine, Wasteland)' },
+                            { id: 'flexible-removal', name: 'Flexible Removal', defaultValue: 0, description: 'Hit multiple permanent types (Anguished Unmaking, Generous Gift, Beast Within)' }
+                        ]
+                    },
+                    {
+                        id: 'wipes',
+                        name: 'Board Wipes',
+                        subcategories: [
+                            { id: 'destroy-wipes', name: 'Destroy Wipes', defaultValue: 0, description: 'Destroy all creatures (Wrath of God, Damnation, Day of Judgment)' },
+                            { id: 'exile-wipes', name: 'Exile Wipes', defaultValue: 0, description: 'Exile all creatures (Merciless Eviction, Farewell, Final Judgment)' },
+                            { id: 'asymmetric', name: 'Asymmetric Wipes', defaultValue: 0, description: 'One-sided wipes (Toxic Deluge at low life, Blasphemous Act with indestructible)' },
+                            { id: 'creature-wipes', name: 'Creature-Only Wipes', defaultValue: 0, description: 'Only destroy creatures, spare other permanents' },
+                            { id: 'permanent-wipes', name: 'All Permanent Wipes', defaultValue: 0, description: 'Destroy all permanents (Cyclonic Rift, Nevinyrral\'s Disk)' }
+                        ]
+                    },
+                    {
+                        id: 'protection',
+                        name: 'Protection & Interaction',
+                        subcategories: [
+                            { id: 'counterspells', name: 'Counterspells', defaultValue: 0, description: 'Counter target spell (Counterspell, Swan Song, Arcane Denial, Negate)' },
+                            { id: 'protection-spells', name: 'Protection Spells', defaultValue: 0, description: 'Protect your permanents (Heroic Intervention, Teferi\'s Protection, Flawless Maneuver)' },
+                            { id: 'redirection', name: 'Redirection', defaultValue: 0, description: 'Change targets of spells/abilities (Deflecting Swat, Bolt Bend, Redirect)' },
+                            { id: 'phasing', name: 'Phasing Effects', defaultValue: 0, description: 'Phase out to protect (Teferi\'s Protection, Ghostway, Eerie Interlude)' }
+                        ]
+                    },
+                    {
+                        id: 'reanimation',
+                        name: 'Reanimation & Recursion',
+                        subcategories: [
+                            { id: 'reanimation', name: 'Reanimation', defaultValue: 0, description: 'Return creatures from graveyard to battlefield (Animate Dead, Reanimate, Living Death)' },
+                            { id: 'graveyard-recursion', name: 'Graveyard Recursion', defaultValue: 0, description: 'Return any cards from graveyard (Regrowth, Eternal Witness effects as spells)' },
+                            { id: 'self-mill', name: 'Self-Mill', defaultValue: 0, description: 'Put cards from library to graveyard (Entomb, Buried Alive, Traumatize self)' },
+                            { id: 'graveyard-hate', name: 'Graveyard Hate', defaultValue: 0, description: 'Exile opponent graveyards (Rest in Peace, Bojuka Bog, Tormod\'s Crypt)' }
+                        ]
+                    },
+                    {
+                        id: 'tokens-anthems',
+                        name: 'Tokens & Anthems',
+                        subcategories: [
+                            { id: 'token-spells', name: 'Token Generation', defaultValue: 0, description: 'Create creature tokens (Secure the Wastes, White Sun\'s Zenith, Army of the Damned)' },
+                            { id: 'anthems', name: 'Anthems/Buffs', defaultValue: 0, description: 'Permanent buffs to your creatures (Glorious Anthem, Shared Animosity, Beastmaster Ascension)' },
+                            { id: 'pump-spells', name: 'Pump Spells', defaultValue: 0, description: 'Temporary power boost (Giant Growth, Berserk, Become Immense)' }
+                        ]
+                    },
+                    {
+                        id: 'extra-turns',
+                        name: 'Extra Turns & Combat',
+                        subcategories: [
+                            { id: 'extra-turns', name: 'Extra Turns', defaultValue: 0, description: 'Take additional turns (Time Warp, Temporal Manipulation, Nexus of Fate)' },
+                            { id: 'extra-combats', name: 'Extra Combats', defaultValue: 0, description: 'Additional combat phases (Relentless Assault, Seize the Day, Combat Celebrant)' },
+                            { id: 'combat-tricks', name: 'Combat Tricks', defaultValue: 0, description: 'Instant-speed combat advantages (Boros Charm, Heroic Intervention, pump spells)' }
+                        ]
+                    },
+                    {
+                        id: 'planeswalkers',
+                        name: 'Planeswalkers',
+                        subcategories: [
+                            { id: 'planeswalker-removal', name: 'Removal Walkers', defaultValue: 0, description: 'Planeswalkers with removal abilities (Liliana, Elspeth removal modes)' },
+                            { id: 'planeswalker-draw', name: 'Draw Walkers', defaultValue: 0, description: 'Planeswalkers that draw cards (Teferi, Jace, card advantage walkers)' },
+                            { id: 'planeswalker-ramp', name: 'Ramp Walkers', defaultValue: 0, description: 'Planeswalkers that make mana (Nissa, Garruk, ramp walkers)' },
+                            { id: 'planeswalker-other', name: 'Other Walkers', defaultValue: 0, description: 'Utility or unique planeswalkers (Karn, Ugin, miscellaneous)' }
+                        ]
+                    },
+                    {
+                        id: 'combo-pieces',
+                        name: 'Combo Pieces',
+                        subcategories: [
+                            { id: 'combo-enablers', name: 'Combo Enablers', defaultValue: 0, description: 'Cards that set up combos (Intruder Alarm, Ashnod\'s Altar, untappers)' },
+                            { id: 'combo-payoffs', name: 'Combo Payoffs', defaultValue: 0, description: 'Win conditions for combos (Thassa\'s Oracle, Lab Man, drain effects)' },
+                            { id: 'infinite-pieces', name: 'Infinite Combo Pieces', defaultValue: 0, description: 'Create infinite loops (Dramatic Reversal + Isochron Scepter pieces)' }
+                        ]
+                    },
+                    {
+                        id: 'stax-tax',
+                        name: 'Stax & Tax Effects',
+                        subcategories: [
+                            { id: 'stax-pieces', name: 'Stax Pieces', defaultValue: 0, description: 'Lock down opponents (Winter Orb, Static Orb, Trinisphere, rule of law effects)' },
+                            { id: 'tax-effects', name: 'Tax Effects', defaultValue: 0, description: 'Make things cost more (Thalia, Sphere of Resistance, Smothering Tithe)' },
+                            { id: 'resource-denial', name: 'Resource Denial', defaultValue: 0, description: 'Prevent resources (Armageddon, Contamination, land destruction)' }
+                        ]
+                    },
+                    {
+                        id: 'spells-other',
+                        name: 'Other Spells',
+                        subcategories: [
+                            { id: 'equipment', name: 'Equipment', defaultValue: 0, description: 'Equip to creatures for bonuses (Sword of X and Y, Skullclamp, Lightning Greaves)' },
+                            { id: 'auras', name: 'Auras', defaultValue: 0, description: 'Enchant creatures or permanents (Rancor, All That Glitters, Animate Dead)' },
+                            { id: 'spells-uncategorized', name: 'Other/Uncategorized', defaultValue: 0, description: 'Unique or miscellaneous spells that don\'t fit other categories' }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // CMC Explanation constant
+        const CMC_EXPLANATION = {
+            title: "What is CMC?",
+            text: "CMC = Converted Mana Cost (also called Mana Value). It's the total cost to cast a spell. For example: Sol Ring (1 CMC), Signets (2 CMC), Cultivate (3 CMC). Lower CMC cards are generally faster!"
+        };
+
+        const FUNNY_MANA_QUOTES = [
+            "Remember: basics are for basics. You're not basic. 🎩",
+            "Mana screw? Not today, friend! 🎲",
+            "Your mana base is so smooth, it could host a podcast. 🎙️",
+            "Perfectly balanced, as all mana bases should be. ⚗️",
+            "Now go forth and cast spells like you own the place! 🔮",
+            "Your lands are looking sharp! Unlike your opponent's life total. 😎",
+            "This mana base slaps harder than a Craterhoof trigger. 🦌",
+            "More consistent than your friend who always plays blue. 💙",
+            "Smoother than a greased-up Vorinclex. 🤢",
+            "Chef's kiss! *mwah* 👨‍🍳",
+            "Your mana base just entered the chat. 💬",
+            "Built different. No, seriously, it's optimal now. ✨",
+            "Mana flooding? We don't know her. 🌊",
+            "This is the way. 🛡️",
+            "Your opponents are going to hate this (in a respectful way). 😈",
+            "Who needs green ramp when your mana base is this good? 🌲",
+            "Finally, a land base that respects your commander. 🎖️",
+            "No pain lands needed when you're this prepared! 💪",
+            "Your deck is about to pop off! 🎆",
+            "Time to shuffle up and dominate! 🃏",
+            "More reliable than a Sol Ring in your opening hand. 💍",
+            "Smoother than tapping Ancient Tomb with no consequences. 🏛️",
+            "Your mana curve is more beautiful than a foil Black Lotus. 🌸",
+            "This mana base doesn't need a Mana Crypt to be fast. ⚡",
+            "More balanced than getting a Rhystic Study to resolve. 📚",
+            "Your opponents just got Cyclonic Rift'd... but for their hopes. 🌀",
+            "Lands this good should be banned in casual pods. 🚫",
+            "You're about to Demonic Tutor for victory. 😈",
+            "This mana base is more legendary than Urza himself. 🧙",
+            "Smoother than casting a turn 1 Birds of Paradise. 🐦",
+            "Your lands are more optimized than a cEDH deck. 🏆",
+            "More consistent than that guy who always plays Atraxa. 👾",
+            "Time to channel your inner Spike. This is competitive-ready! 🔥",
+            "Your mana base passed the Bolt test... and the Thoughtseize test. ⚡",
+            "Lands this good could make even a Colossal Dreadmaw viable. 🦖",
+            "More powerful than exiling three cards to Force of Will. 💨",
+            "Your mana base doesn't need to ask 'Did you pay the 1?' 🤑",
+            "This is more satisfying than resolving a kicked Rite of Replication. 🪞",
+            "Smoother than turn 2 Smothering Tithe in a 4-player pod. 💰",
+            "Your lands are more reliable than your opponent's Sensei's Divining Top. 🔝",
+            "This mana base makes Omnath jealous. 🌈",
+            "More polished than a freshly opened Secret Lair. ✨",
+            "You're about to make your opponents scoop faster than a Worldfire. 🔥",
+            "This mana base is stickier than Teferi's Protection. 🛡️",
+            "Lands so good, even Gitrog Monster is taking notes. 🐸",
+            "More explosive than a Dockside Extortionist at a treasure convention. 💎",
+            "Your mana base just said 'No' to variance. ⛔",
+            "Smoother than drawing your entire deck with Thassa's Oracle. 🐟",
+            "This is more threatening than an unanswered Doubling Season. 🌱",
+            "Your lands are more consistent than your friend's excuse for playing Stax. ⚙️",
+            "This mana base could support a 5-color super friends deck. No, really. 🎭",
+            "More optimized than a Food Chain combo. 🍖",
+            "Your opponents are about to get Armageddon'd... metaphorically. 💥",
+            "Lands this good make Azusa weep tears of joy. 😭",
+            "This is cleaner than a board state before Wrath of God. ⚔️",
+            "More reliable than 'Draw, Sol Ring, go.' 💍",
+            "Your mana base doesn't miss, unlike your opponent's Chaos Warp. 🎲",
+            "This is spicier than a Tibalt, Cosmic Imposter steal. 😈",
+            "Smoother than a turn 3 Winota flip into Craterhoof. 🦌",
+            "Your lands are more synchronized than a Grand Arbiter lock. ⚖️",
+            "This mana base hits harder than an Eldrazi Conscription. 👾",
+            "More satisfying than Narset wheeling away your opponent's hand. 🎡",
+            "Your mana is more bountiful than a Zendikar Rising full-art forest. 🌲",
+            "This could support casting Expropriate. Twice. 👑",
+            "Lands so good, your opponents can't even get salty. 🧂",
+            "More elegant than a Swords to Plowshares on a Blightsteel. ⚔️",
+            "Your mana base just won the commander game before turn 1. 🏅"
+        ];
+
+
+        const DEMO_DECKS = [
+            {
+                id: 1,
+                name: "Atraxa Superfriends",
+                commander: "Atraxa, Praetors' Voice",
+                colors: ['W', 'U', 'B', 'G'],
+                strategy: "Planeswalkers",
+                lands: 37,
+                creatures: 18,
+                noncreature: 44,
+                isExample: true
+            },
+            {
+                id: 2,
+                name: "Krenko Goblin Tribal",
+                commander: "Krenko, Mob Boss",
+                colors: ['R'],
+                strategy: "Tribal Aggro",
+                lands: 35,
+                creatures: 42,
+                noncreature: 22,
+                isExample: true
+            },
+            {
+                id: 3,
+                name: "Muldrotha Value Engine",
+                commander: "Muldrotha, the Gravetide",
+                colors: ['U', 'B', 'G'],
+                strategy: "Graveyard Value",
+                lands: 38,
+                creatures: 32,
+                noncreature: 29,
+                isExample: true
+            },
+            {
+                id: 4,
+                name: "Narset Extra Turns",
+                commander: "Narset, Enlightened Master",
+                colors: ['W', 'U', 'R'],
+                strategy: "Extra Turns",
+                lands: 37,
+                creatures: 15,
+                noncreature: 47,
+                isExample: true
+            },
+            {
+                id: 5,
+                name: "Godo Combo",
+                commander: "Godo, Bandit Warlord",
+                colors: ['R'],
+                strategy: "Combo",
+                lands: 36,
+                creatures: 12,
+                noncreature: 51,
+                isExample: true
+            },
+            {
+                id: 6,
+                name: "Tatyova Landfall",
+                commander: "Tatyova, Benthic Druid",
+                colors: ['U', 'G'],
+                strategy: "Landfall",
+                lands: 45,
+                creatures: 28,
+                noncreature: 26,
+                isExample: true
+            },
+            {
+                id: 7,
+                name: "Urza Artifacts",
+                commander: "Urza, Lord High Artificer",
+                colors: ['U'],
+                strategy: "Artifact Combo",
+                lands: 34,
+                creatures: 22,
+                noncreature: 43,
+                isExample: true
+            },
+            {
+                id: 8,
+                name: "Edgar Markov Vampires",
+                commander: "Edgar Markov",
+                colors: ['W', 'B', 'R'],
+                strategy: "Tribal Aggro",
+                lands: 36,
+                creatures: 38,
+                noncreature: 25,
+                isExample: true
+            },
+            {
+                id: 9,
+                name: "Kozilek Eldrazi",
+                commander: "Kozilek, Butcher of Truth",
+                colors: ['C'],
+                strategy: "Colorless Ramp",
+                lands: 36,
+                creatures: 28,
+                noncreature: 35,
+                isExample: true
+            },
+            {
+                id: 10,
+                name: "The Gitrog Monster",
+                commander: "The Gitrog Monster",
+                colors: ['B', 'G'],
+                strategy: "Lands Matter",
+                lands: 42,
+                creatures: 24,
+                noncreature: 33,
+                isExample: true
+            }
+        ];
+
+        const fetchCardFromScryfall = async (cardName) => {
+            try {
+                const response = await fetch(
+                    `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`
+                );
+                if (!response.ok) throw new Error('Card not found');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching card:', error);
+                return null;
+            }
+        };
+
+        function App() {
+            const [view, setView] = useState('home');
+            const [decks, setDecks] = useState(() => {
+                const saved = localStorage.getItem('commanderCodexDecks');
+                return saved ? JSON.parse(saved) : DEMO_DECKS;
+            });
+            const [showCreateModal, setShowCreateModal] = useState(false);
+            const [searchQuery, setSearchQuery] = useState('');
+            const [selectedDeck, setSelectedDeck] = useState(null);
+
+            // Save decks to localStorage whenever they change
+            useEffect(() => {
+                localStorage.setItem('commanderCodexDecks', JSON.stringify(decks));
+            }, [decks]);
+
+            return (
+                <>
+                    <header className="app-header">
+                        <div className="header-content">
+                            <div className="logo" onClick={() => setView('home')}>
+                                Commander Codex + Mana Calculator
+                                <div className="logo-subtitle">Free MTG Deck Builder & Optimizer</div>
+                            </div>
+                            <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => setShowCreateModal(true)}
+                                    style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+                                >
+                                    <span>⚔️</span>
+                                    <span>Create Deck</span>
+                                </button>
+                                <button 
+                                    className="btn btn-primary"
+                                    style={{display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0.5rem 1.2rem', lineHeight: 1.3}}
+                                >
+                                    <span style={{fontWeight: 600, fontSize: '0.95rem'}}>Create Account</span>
+                                    <span style={{fontSize: '0.7rem', opacity: 0.9}}>Save your decklists free!</span>
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    {view === 'home' && (
+                        <div className="container">
+                            <div className="hero">
+                                <h1>Commander Codex + Mana Calculator</h1>
+                                <p style={{fontSize: '1.3rem', color: 'var(--text-secondary)', marginBottom: '0.5rem', lineHeight: '1.5'}}>
+                                    Track your deck ratios by <strong style={{color: 'var(--accent-bright)'}}>categories</strong> (Creatures, Spells, Lands) and <strong style={{color: 'var(--accent-bright)'}}>subtypes</strong> (Removal, Ramp, Draw, etc.)
+                                </p>
+                                <p style={{fontSize: '1.05rem', color: 'var(--text-muted)', marginBottom: '2rem'}}>
+                                    No tedious card-by-card entry—just track the <em>counts</em> of each card type. Build optimal mana bases too!
+                                </p>
+                                
+                                <div style={{
+                                    display: 'flex', 
+                                    gap: '1.5rem', 
+                                    justifyContent: 'center', 
+                                    marginBottom: '1rem',
+                                    flexWrap: 'wrap'
+                                }}>
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={() => setShowCreateModal(true)}
+                                        style={{
+                                            padding: '1.2rem 2.5rem', 
+                                            fontSize: '1.2rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.8rem'
+                                        }}
+                                    >
+                                        <span style={{fontSize: '1.5rem'}}>⚔️</span>
+                                        <span>Create a New Deck</span>
+                                    </button>
+                                    <button 
+                                        className="btn btn-secondary" 
+                                        onClick={() => {
+                                            const element = document.getElementById('featured-decks');
+                                            const offset = 100;
+                                            const elementPosition = element.getBoundingClientRect().top;
+                                            const offsetPosition = elementPosition + window.pageYOffset - offset;
+                                            window.scrollTo({top: offsetPosition, behavior: 'smooth'});
+                                        }}
+                                        style={{
+                                            padding: '1.2rem 2.5rem', 
+                                            fontSize: '1.2rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.8rem'
+                                        }}
+                                    >
+                                        <span style={{fontSize: '1.5rem'}}>📚</span>
+                                        <span>Browse Public Decks</span>
+                                    </button>
+                                    <button 
+                                        className="btn btn-secondary" 
+                                        onClick={() => {
+                                            const calc = document.querySelector('.featured-calculator-box');
+                                            if (calc) {
+                                                const offset = 100;
+                                                const elementPosition = calc.getBoundingClientRect().top;
+                                                const offsetPosition = elementPosition + window.pageYOffset - offset;
+                                                window.scrollTo({top: offsetPosition, behavior: 'smooth'});
+                                            }
+                                        }}
+                                        style={{
+                                            padding: '1.2rem 2.5rem', 
+                                            fontSize: '1.2rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.8rem'
+                                        }}
+                                    >
+                                        <span style={{fontSize: '1.5rem'}}>⚗️</span>
+                                        <span>Mana Calculator</span>
+                                    </button>
+                                </div>
+                                
+                                <p style={{fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '0.5rem'}}>
+                                    No account needed to use! Create an account to save your decks.
+                                </p>
+                            </div>
+
+
+                            <div id="public-decks" style={{marginTop: '5rem', marginBottom: '3rem'}}>
+                                {/* Introduction to the Tool - MOVED UP */}
+                                <div style={{
+                                    maxWidth: '900px',
+                                    margin: '0 auto 4rem auto',
+                                    background: 'var(--bg-card)',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '12px',
+                                    padding: '2.5rem',
+                                    textAlign: 'left'
+                                }}>
+                                    <h2 style={{
+                                        fontFamily: 'Cinzel',
+                                        fontSize: '2.2rem',
+                                        color: 'var(--gold)',
+                                        marginBottom: '1.5rem',
+                                        textAlign: 'center'
+                                    }}>
+                                        Track Your Commander Deck Ratios
+                                    </h2>
+                                    
+                                    <p style={{
+                                        fontSize: '1.1rem',
+                                        lineHeight: '1.8',
+                                        color: 'var(--text-primary)',
+                                        marginBottom: '1.5rem'
+                                    }}>
+                                        Building a Commander deck can be overwhelming. Which ratios work best? How many creatures versus removal? 
+                                        Our deck ratio tracker lets you <strong style={{color: 'var(--accent-bright)'}}>focus on the big picture</strong> without 
+                                        getting lost in individual card names.
+                                    </p>
+
+                                    <div style={{
+                                        background: 'var(--bg-tertiary)',
+                                        border: '1px solid var(--accent)',
+                                        borderRadius: '8px',
+                                        padding: '1.5rem',
+                                        marginBottom: '1.5rem'
+                                    }}>
+                                        <div style={{fontWeight: 600, color: 'var(--gold)', marginBottom: '1rem', fontSize: '1.1rem'}}>
+                                            📊 Example: Building a Vampire Tribal Deck
+                                        </div>
+                                        <div style={{color: 'var(--text-secondary)', lineHeight: '1.7'}}>
+                                            <strong>Instead of listing every card:</strong><br/>
+                                            ❌ "Sol Ring, Arcane Signet, Talisman of Hierarchy, Phyrexian Arena, Necropotence..."<br/>
+                                            <br/>
+                                            <strong>Track your ratios:</strong><br/>
+                                            ✅ 36 Lands • 38 Creatures • 25 Spells<br/>
+                                            ✅ 12 Ramp Sources • 10 Removal Spells • 8 Card Draw<br/>
+                                            ✅ 30 Vampires • 8 Support Creatures
+                                        </div>
+                                    </div>
+
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                                        gap: '1.5rem',
+                                        marginBottom: '1.5rem'
+                                    }}>
+                                        <div style={{
+                                            background: 'var(--bg-secondary)',
+                                            padding: '1.2rem',
+                                            borderRadius: '8px',
+                                            border: '1px solid var(--border-color)'
+                                        }}>
+                                            <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>⚡</div>
+                                            <div style={{fontWeight: 600, marginBottom: '0.5rem', color: 'var(--accent-bright)'}}>Quick Overview</div>
+                                            <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
+                                                See your deck's structure at a glance. Perfect for identifying imbalances before building.
+                                            </div>
+                                        </div>
+
+                                        <div style={{
+                                            background: 'var(--bg-secondary)',
+                                            padding: '1.2rem',
+                                            borderRadius: '8px',
+                                            border: '1px solid var(--border-color)'
+                                        }}>
+                                            <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>💾</div>
+                                            <div style={{fontWeight: 600, marginBottom: '0.5rem', color: 'var(--accent-bright)'}}>Easy Reference</div>
+                                            <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
+                                                Store your current deck ratios for easy tweaking and future reference when brewing new decks.
+                                            </div>
+                                        </div>
+
+                                        <div style={{
+                                            background: 'var(--bg-secondary)',
+                                            padding: '1.2rem',
+                                            borderRadius: '8px',
+                                            border: '1px solid var(--border-color)'
+                                        }}>
+                                            <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>🎯</div>
+                                            <div style={{fontWeight: 600, marginBottom: '0.5rem', color: 'var(--accent-bright)'}}>📈 No Card Names Needed</div>
+                                            <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
+                                                Skip the tedious card-by-card entry. Focus on strategy and structure, not inventory.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p style={{
+                                        fontSize: '1rem',
+                                        color: 'var(--text-secondary)',
+                                        textAlign: 'center',
+                                        marginTop: '2rem'
+                                    }}>
+                                        Whether you're fine-tuning an existing deck or planning a new brew, 
+                                        our ratio tracker helps you <strong style={{color: 'var(--accent-bright)'}}>build better, faster</strong>.
+                                    </p>
+                                </div>
+
+                                {/* Example Deck Showcase - NOW SECOND */}
+                                <div style={{
+                                    maxWidth: '1100px',
+                                    margin: '0 auto 5rem auto',
+                                    background: 'var(--bg-card)',
+                                    border: '2px solid var(--accent)',
+                                    borderRadius: '16px',
+                                    padding: '2.5rem',
+                                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                                }}>
+                                    <div style={{textAlign: 'center', marginBottom: '2rem'}}>
+                                        <h2 style={{
+                                            fontFamily: 'Cinzel',
+                                            fontSize: '2.2rem',
+                                            color: 'var(--gold)',
+                                            marginBottom: '0.5rem'
+                                        }}>
+                                            📋 See It In Action
+                                        </h2>
+                                        <p style={{fontSize: '1.05rem', color: 'var(--text-secondary)'}}>
+                                            Here's what a tracked Commander deck looks like
+                                        </p>
+                                    </div>
+
+                                    {/* Example Deck Card */}
+                                    <div style={{
+                                        background: 'var(--bg-tertiary)',
+                                        border: '2px solid var(--border-color)',
+                                        borderRadius: '12px',
+                                        padding: '2rem',
+                                        marginBottom: '2rem'
+                                    }}>
+                                        {/* Deck Header */}
+                                        <div style={{marginBottom: '1.5rem'}}>
+                                            <h3 style={{
+                                                fontFamily: 'Cinzel',
+                                                fontSize: '1.8rem',
+                                                color: 'var(--accent-bright)',
+                                                marginBottom: '0.5rem'
+                                            }}>
+                                                Atraxa Superfriends
+                                            </h3>
+                                            <div style={{color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>
+                                                Commander: Atraxa, Praetors' Voice
+                                            </div>
+                                            <div style={{display: 'flex', gap: '0.3rem', marginBottom: '1rem'}}>
+                                                <div className="mana-pip pip-W"></div>
+                                                <div className="mana-pip pip-U"></div>
+                                                <div className="mana-pip pip-B"></div>
+                                                <div className="mana-pip pip-G"></div>
+                                            </div>
+                                        </div>
+
+                                        {/* Main Categories */}
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                                            gap: '1rem',
+                                            marginBottom: '2rem'
+                                        }}>
+                                            <div style={{
+                                                background: 'var(--bg-secondary)',
+                                                padding: '1rem',
+                                                borderRadius: '8px',
+                                                border: '1px solid rgba(212, 175, 55, 0.3)',
+                                                textAlign: 'center'
+                                            }}>
+                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)', marginBottom: '0.3rem'}}>37</div>
+                                                <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Lands</div>
+                                            </div>
+                                            <div style={{
+                                                background: 'var(--bg-secondary)',
+                                                padding: '1rem',
+                                                borderRadius: '8px',
+                                                border: '1px solid rgba(212, 175, 55, 0.3)',
+                                                textAlign: 'center'
+                                            }}>
+                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)', marginBottom: '0.3rem'}}>18</div>
+                                                <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Creatures</div>
+                                            </div>
+                                            <div style={{
+                                                background: 'var(--bg-secondary)',
+                                                padding: '1rem',
+                                                borderRadius: '8px',
+                                                border: '1px solid rgba(212, 175, 55, 0.3)',
+                                                textAlign: 'center'
+                                            }}>
+                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)', marginBottom: '0.3rem'}}>44</div>
+                                                <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Spells</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Subtype Breakdown */}
+                                        <div style={{
+                                            background: 'rgba(212, 175, 55, 0.1)',
+                                            border: '1px solid rgba(212, 175, 55, 0.3)',
+                                            borderRadius: '8px',
+                                            padding: '1.5rem'
+                                        }}>
+                                            <h4 style={{
+                                                color: 'var(--accent-bright)',
+                                                marginBottom: '1rem',
+                                                fontSize: '1.1rem',
+                                                fontWeight: 600
+                                            }}>
+                                                📊 Subtype Breakdown
+                                            </h4>
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                                gap: '0.8rem',
+                                                fontSize: '0.95rem'
+                                            }}>
+                                                <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px'}}>
+                                                    <span style={{color: 'var(--text-secondary)'}}>Planeswalkers:</span>
+                                                    <strong style={{color: 'var(--accent-bright)'}}>26</strong>
+                                                </div>
+                                                <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px'}}>
+                                                    <span style={{color: 'var(--text-secondary)'}}>Ramp:</span>
+                                                    <strong style={{color: 'var(--accent-bright)'}}>12</strong>
+                                                </div>
+                                                <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px'}}>
+                                                    <span style={{color: 'var(--text-secondary)'}}>Card Draw:</span>
+                                                    <strong style={{color: 'var(--accent-bright)'}}>8</strong>
+                                                </div>
+                                                <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px'}}>
+                                                    <span style={{color: 'var(--text-secondary)'}}>Removal:</span>
+                                                    <strong style={{color: 'var(--accent-bright)'}}>10</strong>
+                                                </div>
+                                                <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px'}}>
+                                                    <span style={{color: 'var(--text-secondary)'}}>Board Wipes:</span>
+                                                    <strong style={{color: 'var(--accent-bright)'}}>4</strong>
+                                                </div>
+                                                <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px'}}>
+                                                    <span style={{color: 'var(--text-secondary)'}}>Protection:</span>
+                                                    <strong style={{color: 'var(--accent-bright)'}}>6</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Key Point */}
+                                    <div style={{
+                                        textAlign: 'center',
+                                        padding: '1.5rem',
+                                        background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.1) 0%, rgba(136, 106, 234, 0.1) 100%)',
+                                        border: '1px solid rgba(66, 135, 245, 0.3)',
+                                        borderRadius: '8px'
+                                    }}>
+                                        <div style={{fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '0.5rem'}}>
+                                            <strong>💪 That's the power of ratio tracking!</strong>
+                                        </div>
+                                        <div style={{fontSize: '0.95rem', color: 'var(--text-secondary)'}}>
+                                            No card names entered—just counts. See your deck structure instantly, tweak ratios easily, and build better decks faster.
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                {/* Mana Base Calculator */}
+                                <div className="featured-calculator-box" style={{
+                                    background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(196, 167, 125, 0.05) 100%)',
+                                    border: '2px solid var(--gold)',
+                                    borderRadius: '16px',
+                                    padding: '2rem',
+                                    marginBottom: '3rem',
+                                    position: 'relative',
+                                    overflow: 'hidden',
+                                    maxWidth: '1200px',
+                                    margin: '0 auto 3rem auto'
+                                }}>
+                                    <div style={{textAlign: 'center', marginBottom: '2rem'}}>
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '0.8rem',
+                                            background: 'var(--bg-card)',
+                                            padding: '0.8rem 1.5rem',
+                                            borderRadius: '50px',
+                                            marginBottom: '1rem',
+                                            border: '1px solid var(--gold)'
+                                        }}>
+                                            <span style={{fontSize: '1.8rem'}}>⚗️</span>
+                                            <span style={{
+                                                fontFamily: 'Cinzel',
+                                                fontSize: '1.5rem',
+                                                color: 'var(--gold)',
+                                                fontWeight: 700
+                                            }}>
+                                                Mana Base Calculator
+                                            </span>
+                                        </div>
+                                        <p style={{fontSize: '1.1rem', color: 'var(--text-secondary)', maxWidth: '700px', margin: '0 auto'}}>
+                                            Calculate the perfect land distribution for your Commander deck based on color requirements
+                                        </p>
+                                    </div>
+
+                                    <StandaloneManaCalculator />
+                                </div>
+
+                                {/* Featured Decks Section */}
+                                <div id="featured-decks" style={{textAlign: 'center', marginBottom: '2rem'}}>
+                                    <h2 style={{fontFamily: 'Cinzel', fontSize: '2rem', color: 'var(--gold)', marginBottom: '0.5rem'}}>
+                                        Featured Commander Decks
+                                    </h2>
+                                    <p style={{color: 'var(--text-secondary)', fontSize: '1.05rem', marginBottom: '1.5rem'}}>
+                                        See how different strategies use varying ratios • Explore and get inspired
+                                    </p>
+                                    
+                                    {/* Search Bar */}
+                                    <div style={{maxWidth: '500px', margin: '0 auto'}}>
+                                        <input
+                                            type="text"
+                                            placeholder="🔍 Search decks by name, commander, or strategy..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.8rem 1.2rem',
+                                                fontSize: '1rem',
+                                                borderRadius: '50px',
+                                                border: '2px solid var(--border-color)',
+                                                background: 'var(--bg-secondary)',
+                                                color: 'var(--text-primary)',
+                                                outline: 'none',
+                                                transition: 'border-color 0.2s'
+                                            }}
+                                            onFocus={(e) => e.target.style.borderColor = 'var(--gold)'}
+                                            onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="deck-grid">
+                                {DEMO_DECKS.filter(deck => 
+                                    deck.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    deck.commander.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    deck.strategy.toLowerCase().includes(searchQuery.toLowerCase())
+                                ).map(deck => (
+                                    <div 
+                                        key={deck.id} 
+                                        className="deck-card"
+                                        onClick={() => setSelectedDeck(deck)}
+                                        style={{cursor: 'pointer'}}
+                                    >
+                                        <div style={{fontFamily: 'Cinzel', fontSize: '1.4rem', marginBottom: '0.5rem'}}>{deck.name}
+                                            {deck.isExample && <span style={{fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400, marginLeft: '0.5rem'}}>(Example)</span>}</div>
+                                        <div style={{color: 'var(--text-secondary)', marginBottom: '0.3rem', fontSize: '0.9rem'}}>{deck.commander}</div>
+                                        <div style={{
+                                            color: 'var(--accent-bright)', 
+                                            fontSize: '0.85rem', 
+                                            fontWeight: 600,
+                                            marginBottom: '0.8rem',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.5px'
+                                        }}>
+                                            {deck.strategy}
+                                        </div>
+                                        <div style={{display: 'flex', gap: '0.3rem', marginBottom: '1rem'}}>
+                                            {deck.colors.map(color => (
+                                                <div key={color} className={`mana-pip pip-${color}`}></div>
+                                            ))}
+                                        </div>
+                                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem'}}>
+                                            <div style={{background: 'var(--bg-secondary)', padding: '0.6rem', borderRadius: '6px', textAlign: 'center'}}>
+                                                <div style={{fontSize: '1.2rem', fontWeight: 600, color: 'var(--accent-bright)'}}>{deck.lands}</div>
+                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>LANDS</div>
+                                            </div>
+                                            <div style={{background: 'var(--bg-secondary)', padding: '0.6rem', borderRadius: '6px', textAlign: 'center'}}>
+                                                <div style={{fontSize: '1.2rem', fontWeight: 600, color: 'var(--accent-bright)'}}>{deck.creatures}</div>
+                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>CREATURES</div>
+                                            </div>
+                                            <div style={{background: 'var(--bg-secondary)', padding: '0.6rem', borderRadius: '6px', textAlign: 'center'}}>
+                                                <div style={{fontSize: '1.2rem', fontWeight: 600, color: 'var(--accent-bright)'}}>{deck.noncreature}</div>
+                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>SPELLS</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {showCreateModal && (
+                        <CreateDeckModal 
+                            onClose={() => setShowCreateModal(false)}
+                            onSave={(deck) => {
+                                setDecks([...decks, { ...deck, id: Date.now() }]);
+                                setShowCreateModal(false);
+                            }}
+                        />
+                    )}
+
+                    {selectedDeck && (
+                        <div style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'rgba(0, 0, 0, 0.85)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 1000,
+                            padding: '2rem'
+                        }}
+                        onClick={() => setSelectedDeck(null)}
+                        >
+                            <div style={{
+                                background: 'var(--bg-card)',
+                                border: '2px solid var(--accent)',
+                                borderRadius: '16px',
+                                padding: '2.5rem',
+                                maxWidth: '900px',
+                                width: '100%',
+                                maxHeight: '90vh',
+                                overflow: 'auto'
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            >
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem'}}>
+                                    <div>
+                                        <h2 style={{fontFamily: 'Cinzel', fontSize: '2rem', color: 'var(--accent-bright)', marginBottom: '0.5rem'}}>
+                                            {selectedDeck.name}
+                                        </h2>
+                                        <div style={{color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>
+                                            Commander: {selectedDeck.commander}
+                                        </div>
+                                        <div style={{display: 'flex', gap: '0.3rem', marginBottom: '0.5rem'}}>
+                                            {selectedDeck.colors.map(color => (
+                                                <div key={color} className={`mana-pip pip-${color}`}></div>
+                                            ))}
+                                        </div>
+                                        <div style={{
+                                            color: 'var(--accent-bright)', 
+                                            fontSize: '0.9rem', 
+                                            fontWeight: 600,
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            {selectedDeck.strategy}
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => setSelectedDeck(null)}
+                                        style={{
+                                            background: 'transparent',
+                                            border: 'none',
+                                            fontSize: '2rem',
+                                            cursor: 'pointer',
+                                            color: 'var(--text-muted)',
+                                            padding: '0',
+                                            lineHeight: 1
+                                        }}
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+
+                                {/* Main Categories */}
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(3, 1fr)',
+                                    gap: '1rem',
+                                    marginBottom: '2rem'
+                                }}>
+                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', textAlign: 'center'}}>
+                                        <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.lands}</div>
+                                        <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>LANDS</div>
+                                    </div>
+                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', textAlign: 'center'}}>
+                                        <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.creatures}</div>
+                                        <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>CREATURES</div>
+                                    </div>
+                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', textAlign: 'center'}}>
+                                        <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.noncreature}</div>
+                                        <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>SPELLS</div>
+                                    </div>
+                                </div>
+
+                                {/* Subtype Breakdown - Like Homepage Example */}
+                                {selectedDeck.categories && Object.keys(selectedDeck.categories).length > 0 && (
+                                    <div style={{
+                                        background: 'rgba(212, 175, 55, 0.1)',
+                                        border: '1px solid rgba(212, 175, 55, 0.3)',
+                                        borderRadius: '8px',
+                                        padding: '1.5rem',
+                                        marginBottom: '2rem'
+                                    }}>
+                                        <h4 style={{
+                                            color: 'var(--accent-bright)',
+                                            marginBottom: '1rem',
+                                            fontSize: '1.1rem',
+                                            fontWeight: 600
+                                        }}>
+                                            📊 Subtype Breakdown
+                                        </h4>
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                            gap: '0.8rem',
+                                            fontSize: '0.95rem'
+                                        }}>
+                                            {Object.entries(selectedDeck.categories)
+                                                .filter(([key, value]) => value > 0 && !key.includes('-quick'))
+                                                .slice(0, 12)
+                                                .map(([key, value]) => {
+                                                    // Find the display name
+                                                    let displayName = key;
+                                                    Object.values(DECK_CATEGORIES).forEach(majorGroup => {
+                                                        majorGroup.categories.forEach(category => {
+                                                            category.subcategories.forEach(sub => {
+                                                                if (sub.id === key) displayName = sub.name;
+                                                            });
+                                                        });
+                                                    });
+                                                    
+                                                    return (
+                                                        <div key={key} style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px'}}>
+                                                            <span style={{color: 'var(--text-secondary)'}}>{displayName}:</span>
+                                                            <strong style={{color: 'var(--accent-bright)'}}>{value}</strong>
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Action Buttons */}
+                                <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem'}}>
+                                    {selectedDeck.id && (
+                                        <button
+                                            className="btn btn-secondary"
+                                            style={{flex: 1}}
+                                            onClick={() => {
+                                                alert('Full deck view coming soon! This will show all categories, sideboard, and mana calculator results.');
+                                            }}
+                                        >
+                                            📋 See Full Deck
+                                        </button>
+                                    )}
+                                    <button
+                                        className="btn btn-primary"
+                                        style={{flex: 1}}
+                                        onClick={() => {
+                                            setSelectedDeck(null);
+                                            setShowCreateModal(true);
+                                            // Pre-fill with selected deck's categories
+                                            setTimeout(() => {
+                                                if (selectedDeck.categories) {
+                                                    // This would need to be passed through props in real implementation
+                                                    console.log('Pre-filling with:', selectedDeck.categories);
+                                                }
+                                            }, 100);
+                                        }}
+                                    >
+                                        ⚔️ Build Similar Deck
+                                    </button>
+                                </div>
+
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '1rem',
+                                    marginTop: '1.5rem',
+                                    background: 'rgba(66, 135, 245, 0.1)',
+                                    borderRadius: '8px',
+                                    color: 'var(--text-secondary)',
+                                    fontSize: '0.9rem'
+                                }}>
+                                    💡 {selectedDeck.id ? 'Click "Build Similar Deck" to start with these ratios and customize them!' : `This shows the ratio structure of a ${selectedDeck.strategy.toLowerCase()} strategy deck`}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        }
+
+        function StandaloneManaCalculator() {
+            const [pipCounts, setPipCounts] = useState({
+                W: { single: 0, double: 0, triple: 0 },
+                U: { single: 0, double: 0, triple: 0 },
+                B: { single: 0, double: 0, triple: 0 },
+                R: { single: 0, double: 0, triple: 0 },
+                G: { single: 0, double: 0, triple: 0 }
+            });
+            const [dualLands, setDualLands] = useState({
+                WU: 0, WB: 0, WR: 0, WG: 0,
+                UB: 0, UR: 0, UG: 0,
+                BR: 0, BG: 0,
+                RG: 0
+            });
+            const [totalLands, setTotalLands] = useState(38);
+            const [triLands, setTriLands] = useState(0);
+            const [otherLands, setOtherLands] = useState(0);
+            const [showResults, setShowResults] = useState(false);
+            const [manaCalculation, setManaCalculation] = useState(null);
+            const [randomQuote, setRandomQuote] = useState('');
+
+            const calculateManaBase = () => {
+                const colors = ['W', 'U', 'B', 'R', 'G'];
+                const colorNames = {W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green'};
+                
+                const totalPips = {};
+                let grandTotal = 0;
+                
+                colors.forEach(color => {
+                    const pips = pipCounts[color];
+                    const total = pips.single + (pips.double * 2) + (pips.triple * 3);
+                    totalPips[color] = total;
+                    grandTotal += total;
+                });
+
+                if (grandTotal === 0) {
+                    alert('Please enter at least one mana pip to calculate your mana base.');
+                    return;
+                }
+
+                const recommendations = {};
+                const totalDualLands = Object.values(dualLands).reduce((a, b) => a + b, 0);
+                const totalMultiLands = totalDualLands + triLands;
+                const totalOccupiedSlots = totalMultiLands + otherLands;
+                const availableForBasics = totalLands - totalOccupiedSlots;
+
+                colors.forEach(color => {
+                    const percentage = (totalPips[color] / grandTotal) * 100;
+                    const rawSources = (totalPips[color] / grandTotal) * totalLands;
+                    
+                    let dualContribution = 0;
+                    Object.entries(dualLands).forEach(([pair, count]) => {
+                        if (pair.includes(color)) {
+                            dualContribution += count;
+                        }
+                    });
+
+                    const neededBasics = Math.max(0, Math.round(rawSources - dualContribution));
+                    
+                    recommendations[color] = {
+                        pips: totalPips[color],
+                        percentage: percentage.toFixed(1),
+                        totalSources: Math.round(rawSources),
+                        fromDuals: dualContribution,
+                        basicsNeeded: neededBasics,
+                        name: colorNames[color]
+                    };
+                });
+
+                const totalBasicsNeeded = Object.values(recommendations)
+                    .reduce((sum, rec) => sum + rec.basicsNeeded, 0);
+
+                const result = {
+                    recommendations,
+                    totalPips: grandTotal,
+                    totalDuals: totalDualLands,
+                    triLands: triLands,
+                    otherLands: otherLands,
+                    totalMultiLands: totalMultiLands,
+                    totalOccupiedSlots: totalOccupiedSlots,
+                    totalBasicsNeeded,
+                    availableForBasics,
+                    isValid: totalBasicsNeeded <= availableForBasics
+                };
+
+                // Pick a random funny quote
+                const randomIndex = Math.floor(Math.random() * FUNNY_MANA_QUOTES.length);
+                setRandomQuote(FUNNY_MANA_QUOTES[randomIndex]);
+
+                setManaCalculation(result);
+                setShowResults(true);
+            };
+
+            const updatePipCount = (color, type, value) => {
+                setPipCounts(prev => ({
+                    ...prev,
+                    [color]: {
+                        ...prev[color],
+                        [type]: parseInt(value) || 0
+                    }
+                }));
+            };
+
+            const updateDualLands = (pair, value) => {
+                setDualLands(prev => ({
+                    ...prev,
+                    [pair]: parseInt(value) || 0
+                }));
+            };
+
+            const colorPairs = [
+                {pair: 'WU', colors: ['W', 'U'], name: 'Azorius'},
+                {pair: 'WB', colors: ['W', 'B'], name: 'Orzhov'},
+                {pair: 'WR', colors: ['W', 'R'], name: 'Boros'},
+                {pair: 'WG', colors: ['W', 'G'], name: 'Selesnya'},
+                {pair: 'UB', colors: ['U', 'B'], name: 'Dimir'},
+                {pair: 'UR', colors: ['U', 'R'], name: 'Izzet'},
+                {pair: 'UG', colors: ['U', 'G'], name: 'Simic'},
+                {pair: 'BR', colors: ['B', 'R'], name: 'Rakdos'},
+                {pair: 'BG', colors: ['B', 'G'], name: 'Golgari'},
+                {pair: 'RG', colors: ['R', 'G'], name: 'Gruul'}
+            ];
+
+            return (
+                <div className="mana-calculator" style={{maxWidth: '1000px', margin: '0 auto'}}>
+                    <div className="calculator-title" style={{textAlign: 'center'}}>⚗️ Mana Base Calculator</div>
+                    <div style={{fontSize: '1rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center'}}>
+                        Build your optimal mana base based on your deck's color requirements
+                    </div>
+
+                    <div style={{marginBottom: '1.5rem'}}>
+                        <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
+                            Total Lands in Your Deck
+                        </label>
+                        <input 
+                            type="number"
+                            className="small-input"
+                            value={totalLands}
+                            onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
+                            min="0"
+                            max="99"
+                            style={{width: '100px'}}
+                        />
+                        <small style={{color: 'var(--text-muted)', marginLeft: '1rem'}}>
+                            Recommended: 36-40 lands
+                        </small>
+                    </div>
+
+                    <div style={{marginBottom: '1.5rem'}}>
+                        <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
+                            Tri-Lands (Triomes & 3+ color lands)
+                        </label>
+                        <input 
+                            type="number"
+                            className="small-input"
+                            value={triLands}
+                            onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
+                            min="0"
+                            max="20"
+                            style={{width: '100px'}}
+                        />
+                        <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
+                            <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem'}}>
+                                <strong>Include:</strong> Triomes (Ketria, Savai, etc.), Panoramas, or sac lands that search for 3+ basic land types
+                            </small>
+                            <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic'}}>
+                                💡 These subtract from your total lands but provide 3+ colors
+                            </small>
+                        </div>
+                    </div>
+
+                    <div style={{marginBottom: '1.5rem'}}>
+                        <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
+                            Other Lands (Colorless & Utility)
+                        </label>
+                        <input 
+                            type="number"
+                            className="small-input"
+                            value={otherLands}
+                            onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
+                            min="0"
+                            max="20"
+                            style={{width: '100px'}}
+                        />
+                        <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
+                            <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem'}}>
+                                <strong>Include:</strong> Command Tower, Reliquary Tower, Wastes, Rogue's Passage, utility lands, etc.
+                            </small>
+                            <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic'}}>
+                                💡 These subtract from total lands but don't provide colored mana
+                            </small>
+                        </div>
+                    </div>
+
+                    {/* STEP 1: Count Mana Pips */}
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
+                        border: '3px solid rgba(66, 135, 245, 0.4)',
+                        borderRadius: '12px',
+                        padding: '1.5rem',
+                        marginBottom: '2rem'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.8rem',
+                            marginBottom: '0.5rem'
+                        }}>
+                            <div style={{
+                                background: 'linear-gradient(135deg, #4287f5 0%, #886aea 100%)',
+                                color: 'white',
+                                width: '38px',
+                                height: '38px',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                                fontSize: '1.2rem'
+                            }}>
+                                1
+                            </div>
+                            <label style={{fontWeight: 700, fontSize: '1.3rem', color: 'var(--text-primary)', margin: 0}}>
+                                🎴 Count Mana Pips from Your SPELLS
+                            </label>
+                        </div>
+                        <div style={{
+                            background: 'rgba(66, 135, 245, 0.15)',
+                            border: '1px solid rgba(66, 135, 245, 0.3)',
+                            borderRadius: '8px',
+                            padding: '1rem',
+                            marginBottom: '1rem',
+                            marginLeft: '2.5rem'
+                        }}>
+                            <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem'}}>
+                                What to count:
+                            </div>
+                            <div style={{color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.6'}}>
+                                Look at <strong>all the spells in your deck</strong> (creatures, instants, sorceries, enchantments, etc.) and count the colored mana symbols {'{W}'}{'{U}'}{'{B}'}{'{R}'}{'{G}'} in their mana costs.
+                                <br/><br/>
+                                <strong>Example:</strong> Wrath of God {'{2}{W}{W}'} = 2 White pips (double)<br/>
+                                <strong>Example:</strong> Sol Ring {'{1}'} = 0 pips (colorless doesn't count)
+                                <br/><br/>
+                                <div style={{
+                                    background: 'rgba(212, 175, 55, 0.15)',
+                                    border: '1px solid rgba(212, 175, 55, 0.3)',
+                                    borderRadius: '6px',
+                                    padding: '0.8rem',
+                                    fontSize: '0.9rem'
+                                }}>
+                                    <strong style={{color: 'var(--accent-bright)'}}>🧠 How it works:</strong> The calculator <strong>weights pips</strong> intelligently. Cards with {'{U}{U}'} (double) count more heavily than cards with {'{1}{U}'} (single) because they're harder to cast. This ensures your mana base can reliably cast your most color-intensive spells!
+                                </div>
+                            </div>
+                        </div>
+                        <div className="pip-counter" style={{overflowX: 'auto'}}>
+                            {['W', 'U', 'B', 'R', 'G'].map(color => (
+                                <div key={color} className="pip-input-group" style={{minWidth: '160px'}}>
+                                    <div className="pip-label">
+                                        <div className={`pip-icon pip-${color}`}></div>
+                                        <span>{color}</span>
+                                    </div>
+                                    <div style={{display: 'flex', gap: '0.3rem', marginTop: '0.5rem', flexWrap: 'wrap'}}>
+                                        <div style={{flex: '1 1 50px', minWidth: '50px'}}>
+                                            <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Single</div>
+                                            <input 
+                                                type="number"
+                                                className="small-input"
+                                                style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                value={pipCounts[color].single}
+                                                onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                min="0"
+                                            />
+                                        </div>
+                                        <div style={{flex: '1 1 50px', minWidth: '50px'}}>
+                                            <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Double</div>
+                                            <input 
+                                                type="number"
+                                                className="small-input"
+                                                style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                value={pipCounts[color].double}
+                                                onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                min="0"
+                                            />
+                                        </div>
+                                        <div style={{flex: '1 1 50px', minWidth: '50px'}}>
+                                            <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Triple+</div>
+                                            <input 
+                                                type="number"
+                                                className="small-input"
+                                                style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                value={pipCounts[color].triple}
+                                                onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
+                                                min="0"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* STEP 2: Dual Lands */}
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
+                        border: '3px solid rgba(0, 115, 62, 0.4)',
+                        borderRadius: '12px',
+                        padding: '1.5rem',
+                        marginBottom: '2rem'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.8rem',
+                            marginBottom: '0.5rem'
+                        }}>
+                            <div style={{
+                                background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
+                                color: 'white',
+                                width: '38px',
+                                height: '38px',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                                fontSize: '1.2rem'
+                            }}>
+                                2
+                            </div>
+                            <label style={{fontWeight: 700, fontSize: '1.3rem', color: 'var(--text-primary)', margin: 0}}>
+                                🏔️ Count Actual LANDS in Your Deck
+                            </label>
+                        </div>
+                        <div style={{
+                            background: 'rgba(0, 115, 62, 0.15)',
+                            border: '1px solid rgba(0, 115, 62, 0.3)',
+                            borderRadius: '8px',
+                            padding: '1rem',
+                            marginBottom: '1rem',
+                            marginLeft: '2.5rem'
+                        }}>
+                            <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem'}}>
+                                What to count:
+                            </div>
+                            <div style={{color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.6'}}>
+                                How many <strong>dual lands</strong> (lands that produce or fetch 2 colors) are you actually running in your deck? This is completely separate from Step 1.
+                                <br/><br/>
+                                <strong>Include:</strong> Shocklands (Temple Garden), Fetchlands (Flooded Strand), Pain lands (Adarkar Wastes), Check lands, etc.
+                                <br/>
+                                <strong>Example:</strong> If you have 4 Temple Gardens and 3 Windswept Heaths in your deck, enter 7 for Selesnya below.
+                            </div>
+                        </div>
+                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', paddingLeft: '2.5rem'}}>
+                            {colorPairs.map(({pair, colors, name}) => (
+                                <div key={pair}>
+                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem'}}>
+                                        <div className={`pip-icon pip-${colors[0]}`} style={{width: '16px', height: '16px'}}></div>
+                                        <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
+                                        <span style={{fontSize: '0.85rem'}}>{name}</span>
+                                    </div>
+                                    <input 
+                                        type="number"
+                                        className="small-input"
+                                        style={{width: '100%'}}
+                                        value={dualLands[pair]}
+                                        onChange={(e) => updateDualLands(pair, e.target.value)}
+                                        min="0"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Calculate Button */}
+                    <div style={{textAlign: 'center', marginBottom: '1.5rem', marginTop: '2rem'}}>
+                        <button 
+                            className="btn btn-primary"
+                            onClick={calculateManaBase}
+                            style={{
+                                padding: '1rem 3rem',
+                                fontSize: '1.2rem',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.8rem'
+                            }}
+                        >
+                            <span style={{fontSize: '1.5rem'}}>⚗️</span>
+                            <span>Calculate My Mana Base</span>
+                        </button>
+                    </div>
+
+                    <div style={{
+                        background: 'rgba(212, 175, 55, 0.15)', 
+                        border: '1px solid var(--gold)', 
+                        borderRadius: '8px', 
+                        padding: '1rem', 
+                        marginBottom: '1.5rem',
+                        fontSize: '0.9rem'
+                    }}>
+                        <div style={{fontWeight: 600, color: 'var(--gold)', marginBottom: '0.5rem'}}>
+                            💡 Calculator Notes
+                        </div>
+                        <ul style={{marginLeft: '1.5rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
+                            <li><strong>Tri-lands:</strong> Enter the number you're running above. They'll be subtracted from your total land count.</li>
+                            <li><strong>4-5 Color Decks:</strong> This calculator works best for 1-3 color decks. For 4+ colors, results are approximations.</li>
+                            <li><strong>Utility Lands:</strong> "Remaining Slots" in results are for Command Tower, utility lands, colorless lands, etc.</li>
+                        </ul>
+                    </div>
+
+                    {showResults && manaCalculation && (
+                        <div className="mana-results">
+                            <div style={{fontWeight: 600, fontSize: '1.3rem', marginBottom: '1rem', color: 'var(--gold)', textAlign: 'center'}}>
+                                📊 Your Optimal Mana Base
+                            </div>
+                            
+                            {Object.entries(manaCalculation.recommendations).map(([color, data]) => {
+                                if (data.pips === 0) return null;
+                                return (
+                                    <div key={color} className="result-item">
+                                        <div className="result-label">
+                                            <div className={`pip-icon pip-${color}`}></div>
+                                            <span>{data.name}</span>
+                                            <small style={{color: 'var(--text-muted)', marginLeft: '0.5rem'}}>
+                                                ({data.pips} pips, {data.percentage}%)
+                                            </small>
+                                        </div>
+                                        <div style={{textAlign: 'right'}}>
+                                            <div className="result-value">{data.basicsNeeded}</div>
+                                            <small style={{color: 'var(--text-muted)', fontSize: '0.75rem'}}>
+                                                basics ({data.fromDuals} from duals)
+                                            </small>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+
+                            <div style={{marginTop: '1.5rem', padding: '1rem', background: 'var(--bg-tertiary)', borderRadius: '8px'}}>
+                                <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                    <span>Total Dual Lands:</span>
+                                    <strong>{manaCalculation.totalDuals}</strong>
+                                </div>
+                                {manaCalculation.triLands > 0 && (
+                                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                        <span>Tri-Lands (Triomes):</span>
+                                        <strong>{manaCalculation.triLands}</strong>
+                                    </div>
+                                )}
+                                {manaCalculation.otherLands > 0 && (
+                                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                        <span>Other Lands (Colorless):</span>
+                                        <strong>{manaCalculation.otherLands}</strong>
+                                    </div>
+                                )}
+                                <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                    <span>Total Basics Needed:</span>
+                                    <strong>{manaCalculation.totalBasicsNeeded}</strong>
+                                </div>
+                                {(totalLands - manaCalculation.totalOccupiedSlots - manaCalculation.totalBasicsNeeded) > 0 && (
+                                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                        <span>Remaining Slots:</span>
+                                        <strong>{totalLands - manaCalculation.totalOccupiedSlots - manaCalculation.totalBasicsNeeded}</strong>
+                                        <small style={{color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(for utility lands)</small>
+                                    </div>
+                                )}
+                                <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                    <span>Target Land Count:</span>
+                                    <strong>{totalLands}</strong>
+                                </div>
+                                <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)'}}>
+                                    <span>Spells Needed for 100:</span>
+                                    <strong style={{color: 'var(--accent-bright)'}}>{100 - totalLands}</strong>
+                                </div>
+                                {!manaCalculation.isValid && (
+                                    <div style={{marginTop: '1rem', padding: '0.8rem', background: 'rgba(211, 32, 42, 0.2)', borderRadius: '6px', color: 'var(--red-mana)'}}>
+                                        ⚠️ Warning: You need {manaCalculation.totalBasicsNeeded} basics but only have {manaCalculation.availableForBasics} slots available after all lands!
+                                        <div style={{marginTop: '0.8rem', fontSize: '0.9rem', color: 'var(--text-primary)', background: 'rgba(0, 0, 0, 0.3)', padding: '0.8rem', borderRadius: '4px'}}>
+                                            <strong>Quick Fixes:</strong>
+                                            <div style={{marginTop: '0.5rem', lineHeight: '1.8'}}>
+                                                • Increase total lands to <strong>{totalLands + (manaCalculation.totalBasicsNeeded - manaCalculation.availableForBasics)}</strong> lands<br/>
+                                                • Remove <strong>{manaCalculation.totalBasicsNeeded - manaCalculation.availableForBasics}</strong> colorless/utility lands<br/>
+                                                • Add more dual lands (reduces basics needed)
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {manaCalculation.isValid && (
+                                    <div style={{marginTop: '1rem', padding: '0.8rem', background: 'rgba(0, 115, 62, 0.2)', borderRadius: '6px', color: 'var(--green-mana)'}}>
+                                        ✓ Perfect! You have enough land slots for your color requirements.
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Funny Random Quote */}
+                            {randomQuote && (
+                                <div style={{
+                                    marginTop: '1.5rem',
+                                    padding: '1.2rem',
+                                    background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(196, 167, 125, 0.15) 100%)',
+                                    border: '2px solid var(--gold)',
+                                    borderRadius: '12px',
+                                    textAlign: 'center',
+                                    fontSize: '1.1rem',
+                                    fontStyle: 'italic',
+                                    color: 'var(--text-primary)',
+                                    fontWeight: 500
+                                }}>
+                                    "{randomQuote}"
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {!showResults && (
+                        <div style={{textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', background: 'var(--bg-secondary)', borderRadius: '8px'}}>
+                            👆 Fill in your mana requirements above, then click "Calculate My Mana Base" to see results!
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function CreateDeckModal({ onClose, onSave }) {
+            const [deckData, setDeckData] = useState({
+                name: '',
+                commander: '',
+                colors: [],
+                categories: {}
+            });
+            const [commanderCard, setCommanderCard] = useState(null);
+            const [loadingCommander, setLoadingCommander] = useState(false);
+            const [notableCards, setNotableCards] = useState([]);
+            const [cardInput, setCardInput] = useState('');
+            
+            // Mana calculator state
+            const [pipCounts, setPipCounts] = useState({
+                W: { single: 0, double: 0, triple: 0 },
+                U: { single: 0, double: 0, triple: 0 },
+                B: { single: 0, double: 0, triple: 0 },
+                R: { single: 0, double: 0, triple: 0 },
+                G: { single: 0, double: 0, triple: 0 }
+            });
+            const [dualLands, setDualLands] = useState({
+                WU: 0, WB: 0, WR: 0, WG: 0,
+                UB: 0, UR: 0, UG: 0,
+                BR: 0, BG: 0,
+                RG: 0
+            });
+            const [totalLands, setTotalLands] = useState(38);
+            const [triLands, setTriLands] = useState(0);
+            const [otherLands, setOtherLands] = useState(0);
+            const [showResults, setShowResults] = useState(false);
+            const [manaCalculation, setManaCalculation] = useState(null);
+            const [randomQuote, setRandomQuote] = useState('');
+            
+            // Sideboard state
+            const [sideboardOpen, setSideboardOpen] = useState(false);
+            const [sideboardCategories, setSideboardCategories] = useState({});
+            const [sideboardQuickInputs, setSideboardQuickInputs] = useState({});
+            
+            // Mana calculator collapse state
+            const [manaCalcOpen, setManaCalcOpen] = useState(false);
+            
+            // Category section collapse states
+            const [categoryOpen, setCategoryOpen] = useState({
+                creatures: true,
+                noncreature: false,
+                lands: false
+            });
+
+            useEffect(() => {
+                const initialCategories = {};
+                const initialSideboard = {};
+                Object.values(DECK_CATEGORIES).forEach(majorGroup => {
+                    majorGroup.categories.forEach(cat => {
+                        cat.subcategories.forEach(sub => {
+                            initialCategories[sub.id] = sub.defaultValue;
+                            initialSideboard[sub.id] = 0; // Sideboard starts at 0
+                        });
+                    });
+                });
+                setDeckData(prev => ({ ...prev, categories: initialCategories }));
+                setSideboardCategories(initialSideboard);
+            }, []);
+
+            // Fetch commander card when name changes
+            useEffect(() => {
+                const fetchCommander = async () => {
+                    if (deckData.commander.length > 3) {
+                        setLoadingCommander(true);
+                        const card = await fetchCardFromScryfall(deckData.commander);
+                        setCommanderCard(card);
+                        setLoadingCommander(false);
+                    }
+                };
+                const timeoutId = setTimeout(fetchCommander, 500);
+                return () => clearTimeout(timeoutId);
+            }, [deckData.commander]);
+
+            // Sideboard functions
+            const updateSideboardCategory = (categoryId, value) => {
+                setSideboardCategories(prev => ({
+                    ...prev,
+                    [categoryId]: parseInt(value) || 0
+                }));
+            };
+
+            const sideboardTotal = useMemo(() => {
+                const detailedTotal = Object.values(sideboardCategories).reduce((sum, val) => sum + val, 0);
+                const quickTotal = Object.values(sideboardQuickInputs).reduce((sum, val) => sum + val, 0);
+                return detailedTotal + quickTotal;
+            }, [sideboardCategories, sideboardQuickInputs]);
+
+            // Calculate totals
+            const totals = useMemo(() => {
+                const getCategoryKeys = (majorGroupId) => {
+                    const keys = [];
+                    DECK_CATEGORIES[majorGroupId].categories.forEach(cat => {
+                        cat.subcategories.forEach(sub => keys.push(sub.id));
+                    });
+                    return keys;
+                };
+
+                // Get quick totals for major categories
+                const landsQuick = deckData.categories['lands-quick'] || 0;
+                const creaturesQuick = deckData.categories['creatures-quick'] || 0;
+                const noncreatureQuick = deckData.categories['noncreature-quick'] || 0;
+
+                // Get category group quick totals
+                const getCategoryGroupQuick = (majorGroupId) => {
+                    let total = 0;
+                    DECK_CATEGORIES[majorGroupId].categories.forEach(cat => {
+                        total += deckData.categories[`${cat.id}-quick`] || 0;
+                    });
+                    return total;
+                };
+
+                // Get detailed totals from subcategories
+                const landsDetailed = getCategoryKeys('lands')
+                    .reduce((sum, key) => sum + (deckData.categories[key] || 0), 0);
+                const creaturesDetailed = getCategoryKeys('creatures')
+                    .reduce((sum, key) => sum + (deckData.categories[key] || 0), 0);
+                const noncreatureDetailed = getCategoryKeys('noncreature')
+                    .reduce((sum, key) => sum + (deckData.categories[key] || 0), 0);
+
+                // Add category group quick totals
+                const landsGroupQuick = getCategoryGroupQuick('lands');
+                const creaturesGroupQuick = getCategoryGroupQuick('creatures');
+                const noncreatureGroupQuick = getCategoryGroupQuick('noncreature');
+
+                // Total = quick major + quick groups + detailed
+                const lands = landsQuick + landsGroupQuick + landsDetailed;
+                const creatures = creaturesQuick + creaturesGroupQuick + creaturesDetailed;
+                const noncreature = noncreatureQuick + noncreatureGroupQuick + noncreatureDetailed;
+                
+                const nonLandCards = creatures + noncreature;
+                const total = lands + nonLandCards;
+
+                return { lands, creatures, noncreature, nonLandCards, total };
+            }, [deckData.categories]);
+
+            // Mana base calculator
+            const calculateManaBase = () => {
+                const colors = ['W', 'U', 'B', 'R', 'G'];
+                const colorNames = {W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green'};
+                
+                // Calculate total pips
+                const totalPips = {};
+                let grandTotal = 0;
+                
+                colors.forEach(color => {
+                    const pips = pipCounts[color];
+                    const total = pips.single + (pips.double * 2) + (pips.triple * 3);
+                    totalPips[color] = total;
+                    grandTotal += total;
+                });
+
+                if (grandTotal === 0) {
+                    alert('Please enter at least one mana pip to calculate your mana base.');
+                    return;
+                }
+
+                // Calculate percentages and recommended sources
+                const recommendations = {};
+                const totalDualLands = Object.values(dualLands).reduce((a, b) => a + b, 0);
+                const totalMultiLands = totalDualLands + triLands;
+                const totalOccupiedSlots = totalMultiLands + otherLands;
+                const availableForBasics = totalLands - totalOccupiedSlots;
+
+                colors.forEach(color => {
+                    const percentage = (totalPips[color] / grandTotal) * 100;
+                    const rawSources = (totalPips[color] / grandTotal) * totalLands;
+                    
+                    // Count dual lands that produce this color
+                    let dualContribution = 0;
+                    Object.entries(dualLands).forEach(([pair, count]) => {
+                        if (pair.includes(color)) {
+                            dualContribution += count;
+                        }
+                    });
+
+                    const neededBasics = Math.max(0, Math.round(rawSources - dualContribution));
+                    
+                    recommendations[color] = {
+                        pips: totalPips[color],
+                        percentage: percentage.toFixed(1),
+                        totalSources: Math.round(rawSources),
+                        fromDuals: dualContribution,
+                        basicsNeeded: neededBasics,
+                        name: colorNames[color]
+                    };
+                });
+
+                const totalBasicsNeeded = Object.values(recommendations)
+                    .reduce((sum, rec) => sum + rec.basicsNeeded, 0);
+
+                const result = {
+                    recommendations,
+                    totalPips: grandTotal,
+                    totalDuals: totalDualLands,
+                    triLands: triLands,
+                    otherLands: otherLands,
+                    totalMultiLands: totalMultiLands,
+                    totalOccupiedSlots: totalOccupiedSlots,
+                    totalBasicsNeeded,
+                    availableForBasics,
+                    isValid: totalBasicsNeeded <= availableForBasics
+                };
+
+                // Pick a random funny quote
+                const randomIndex = Math.floor(Math.random() * FUNNY_MANA_QUOTES.length);
+                setRandomQuote(FUNNY_MANA_QUOTES[randomIndex]);
+
+                setManaCalculation(result);
+                setShowResults(true);
+            };
+
+            const updatePipCount = (color, type, value) => {
+                setPipCounts(prev => ({
+                    ...prev,
+                    [color]: {
+                        ...prev[color],
+                        [type]: parseInt(value) || 0
+                    }
+                }));
+            };
+
+            const updateDualLands = (pair, value) => {
+                setDualLands(prev => ({
+                    ...prev,
+                    [pair]: parseInt(value) || 0
+                }));
+            };
+
+            const addNotableCard = async () => {
+                if (!cardInput.trim()) return;
+                const cardData = await fetchCardFromScryfall(cardInput.trim());
+                if (cardData) {
+                    setNotableCards([...notableCards, {
+                        name: cardData.name,
+                        imageUrl: cardData.image_uris?.normal || cardData.image_uris?.large,
+                        typeLine: cardData.type_line
+                    }]);
+                    setCardInput('');
+                }
+            };
+
+            const toggleColor = (color) => {
+                setDeckData(prev => ({
+                    ...prev,
+                    colors: prev.colors.includes(color) 
+                        ? prev.colors.filter(c => c !== color)
+                        : [...prev.colors, color]
+                }));
+            };
+
+            const colorPairs = [
+                {pair: 'WU', colors: ['W', 'U'], name: 'Azorius'},
+                {pair: 'WB', colors: ['W', 'B'], name: 'Orzhov'},
+                {pair: 'WR', colors: ['W', 'R'], name: 'Boros'},
+                {pair: 'WG', colors: ['W', 'G'], name: 'Selesnya'},
+                {pair: 'UB', colors: ['U', 'B'], name: 'Dimir'},
+                {pair: 'UR', colors: ['U', 'R'], name: 'Izzet'},
+                {pair: 'UG', colors: ['U', 'G'], name: 'Simic'},
+                {pair: 'BR', colors: ['B', 'R'], name: 'Rakdos'},
+                {pair: 'BG', colors: ['B', 'G'], name: 'Golgari'},
+                {pair: 'RG', colors: ['R', 'G'], name: 'Gruul'}
+            ];
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">Create New Deck</h2>
+                            <button className="close-btn" onClick={onClose}>×</button>
+                        </div>
+
+                        <div className="modal-content-wrapper">
+                            <div className="modal-body">
+                                <div style={{marginBottom: '1.5rem'}}>
+                                    <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
+                                        Deck Name
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        className="form-input" 
+                                        placeholder="My Amazing Commander Deck"
+                                        value={deckData.name}
+                                        onChange={(e) => setDeckData({...deckData, name: e.target.value})}
+                                    />
+                                </div>
+
+                                <div style={{marginBottom: '1.5rem'}}>
+                                    <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
+                                        Commander(s)
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        className="form-input" 
+                                        placeholder="e.g., Atraxa, Praetors' Voice or Kozilek, Butcher of Truth"
+                                        value={deckData.commander}
+                                        onChange={(e) => setDeckData({...deckData, commander: e.target.value})}
+                                    />
+                                    {loadingCommander && (
+                                        <div style={{textAlign: 'center', marginTop: '1rem', color: 'var(--text-muted)'}}>
+                                            Loading commander...
+                                        </div>
+                                    )}
+                                    {commanderCard && (
+                                        <div className="commander-preview">
+                                            <img 
+                                                src={commanderCard.image_uris?.normal || commanderCard.image_uris?.large}
+                                                alt={commanderCard.name}
+                                                className="commander-card-image"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div style={{marginBottom: '1.5rem'}}>
+                                    <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
+                                        Color Identity
+                                    </label>
+                                    <div className="color-picker">
+                                        {[
+                                            { color: 'W', name: 'White' },
+                                            { color: 'U', name: 'Blue' },
+                                            { color: 'B', name: 'Black' },
+                                            { color: 'R', name: 'Red' },
+                                            { color: 'G', name: 'Green' },
+                                            { color: 'C', name: 'Colorless' }
+                                        ].map(({ color, name }) => (
+                                            <div 
+                                                key={color}
+                                                className={`color-option pip-${color} ${deckData.colors.includes(color) ? 'selected' : ''}`}
+                                                onClick={() => toggleColor(color)}
+                                                title={name}
+                                                style={{position: 'relative'}}
+                                            ></div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div style={{marginBottom: '1.5rem'}}>
+                                    <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
+                                        Notable Cards / Win Conditions
+                                    </label>
+                                    <div style={{display: 'flex', gap: '0.5rem', marginTop: '1rem'}}>
+                                        <input 
+                                            type="text"
+                                            className="form-input"
+                                            placeholder="e.g., Sol Ring, Craterhoof Behemoth..."
+                                            value={cardInput}
+                                            onChange={(e) => setCardInput(e.target.value)}
+                                            onKeyPress={(e) => e.key === 'Enter' && addNotableCard()}
+                                        />
+                                        <button className="btn btn-secondary" onClick={addNotableCard}>Add</button>
+                                    </div>
+
+                                    {notableCards.length > 0 && (
+                                        <div className="notable-card-list">
+                                            {notableCards.map((card, idx) => (
+                                                <div key={idx} className="card-preview">
+                                                    <button className="card-remove" onClick={() => setNotableCards(notableCards.filter((_, i) => i !== idx))}>
+                                                        ×
+                                                    </button>
+                                                    {card.imageUrl && (
+                                                        <img src={card.imageUrl} alt={card.name} className="card-preview-image" />
+                                                    )}
+                                                    <div style={{fontWeight: 600, fontSize: '0.9rem', marginTop: '0.5rem'}}>{card.name}</div>
+                                                    <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>{card.typeLine}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* FULL CATEGORY SYSTEM - REORDERED & QUICK ENTRY */}
+                                <div style={{marginBottom: '2rem'}}>
+                                    <h3 style={{
+                                        color: 'var(--accent-bright)',
+                                        marginBottom: '1rem',
+                                        fontSize: '1.2rem',
+                                        fontWeight: 600
+                                    }}>
+                                        📊 Deck Categories
+                                    </h3>
+                                    
+                                    {/* REORDERED: Creatures, Non-Creature, Lands */}
+                                    {['creatures', 'noncreature', 'lands'].map(majorGroupId => {
+                                        const majorGroup = DECK_CATEGORIES[majorGroupId];
+                                        if (!majorGroup) return null;
+                                        
+                                        const groupTotal = majorGroup.categories.reduce((sum, category) => {
+                                            return sum + category.subcategories.reduce((catSum, sub) => {
+                                                return catSum + (deckData.categories[sub.id] || 0);
+                                            }, 0);
+                                        }, 0);
+
+                                        return (
+                                            <div key={majorGroupId} style={{marginBottom: '1rem'}}>
+                                                <button
+                                                    onClick={() => setCategoryOpen(prev => ({...prev, [majorGroupId]: !prev[majorGroupId]}))}
+                                                    className="btn btn-secondary"
+                                                    style={{
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        padding: '1rem 1.5rem',
+                                                        fontSize: '1rem',
+                                                        fontWeight: 600,
+                                                        background: categoryOpen[majorGroupId] ? 'var(--bg-tertiary)' : 'var(--bg-secondary)'
+                                                    }}
+                                                >
+                                                    <span style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
+                                                        <span>{majorGroup.name}</span>
+                                                        <span style={{
+                                                            background: 'var(--accent)',
+                                                            color: 'white',
+                                                            padding: '0.2rem 0.6rem',
+                                                            borderRadius: '12px',
+                                                            fontSize: '0.85rem',
+                                                            fontWeight: 700
+                                                        }}>
+                                                            {groupTotal}
+                                                        </span>
+                                                    </span>
+                                                    <span style={{fontSize: '1.2rem', transform: categoryOpen[majorGroupId] ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s'}}>
+                                                        ▼
+                                                    </span>
+                                                </button>
+
+                                                {categoryOpen[majorGroupId] && (
+                                                    <div style={{
+                                                        marginTop: '0.5rem',
+                                                        padding: '1.5rem',
+                                                        background: 'var(--bg-tertiary)',
+                                                        border: '1px solid var(--border-color)',
+                                                        borderRadius: '8px'
+                                                    }}>
+                                                        {/* QUICK TOTAL INPUT */}
+                                                        <div style={{
+                                                            background: 'rgba(212, 175, 55, 0.15)',
+                                                            border: '2px dashed var(--gold)',
+                                                            borderRadius: '8px',
+                                                            padding: '1rem',
+                                                            marginBottom: '1.5rem'
+                                                        }}>
+                                                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                                                <label style={{fontWeight: 600, color: 'var(--gold)', fontSize: '0.95rem'}}>
+                                                                    ⚡ Quick Total (Skip Subtypes)
+                                                                </label>
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder="e.g., 34"
+                                                                    value={deckData.categories[`${majorGroupId}-quick`] || ''}
+                                                                    onChange={(e) => {
+                                                                        const newCategories = {...deckData.categories};
+                                                                        newCategories[`${majorGroupId}-quick`] = parseInt(e.target.value) || 0;
+                                                                        setDeckData({...deckData, categories: newCategories});
+                                                                    }}
+                                                                    min="0"
+                                                                    style={{
+                                                                        width: '80px',
+                                                                        padding: '0.5rem',
+                                                                        fontSize: '0.95rem',
+                                                                        borderRadius: '4px',
+                                                                        border: '2px solid var(--gold)',
+                                                                        background: 'var(--bg-secondary)',
+                                                                        color: 'var(--text-primary)'
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.4'}}>
+                                                                Enter total {majorGroup.name.toLowerCase()} count here if you don't need subtype breakdown
+                                                            </small>
+                                                        </div>
+
+                                                        {/* SUBCATEGORIES WITH QUICK ENTRY */}
+                                                        {majorGroup.categories.map(category => {
+                                                            const categoryTotal = category.subcategories.reduce((sum, sub) => {
+                                                                return sum + (deckData.categories[sub.id] || 0);
+                                                            }, 0);
+                                                            
+                                                            return (
+                                                                <div key={category.id} style={{marginBottom: '1.5rem'}}>
+                                                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.8rem'}}>
+                                                                        <h4 style={{
+                                                                            color: 'var(--accent-bright)',
+                                                                            fontSize: '0.95rem',
+                                                                            fontWeight: 600,
+                                                                            textTransform: 'uppercase',
+                                                                            letterSpacing: '0.5px',
+                                                                            margin: 0
+                                                                        }}>
+                                                                            {category.name}
+                                                                        </h4>
+                                                                        {/* Quick entry for this category group */}
+                                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                                            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Quick:</span>
+                                                                            <input
+                                                                                type="number"
+                                                                                placeholder="0"
+                                                                                value={deckData.categories[`${category.id}-quick`] || ''}
+                                                                                onChange={(e) => {
+                                                                                    const newCategories = {...deckData.categories};
+                                                                                    newCategories[`${category.id}-quick`] = parseInt(e.target.value) || 0;
+                                                                                    setDeckData({...deckData, categories: newCategories});
+                                                                                }}
+                                                                                min="0"
+                                                                                style={{
+                                                                                    width: '60px',
+                                                                                    padding: '0.3rem',
+                                                                                    fontSize: '0.85rem',
+                                                                                    borderRadius: '4px',
+                                                                                    border: '1px solid var(--accent)',
+                                                                                    background: 'var(--bg-secondary)',
+                                                                                    color: 'var(--text-primary)'
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div style={{
+                                                                        display: 'grid',
+                                                                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                                                                        gap: '0.5rem'
+                                                                    }}>
+                                                                        {category.subcategories.map(sub => (
+                                                                            <div key={sub.id} style={{
+                                                                                display: 'flex',
+                                                                                justifyContent: 'space-between',
+                                                                                alignItems: 'center',
+                                                                                padding: '0.5rem',
+                                                                                background: 'var(--bg-secondary)',
+                                                                                borderRadius: '4px'
+                                                                            }}>
+                                                                                <label style={{
+                                                                                    fontSize: '0.85rem',
+                                                                                    color: 'var(--text-secondary)',
+                                                                                    flex: 1
+                                                                                }}>
+                                                                                    {sub.name}
+                                                                                </label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    className="small-input"
+                                                                                    value={deckData.categories[sub.id] || 0}
+                                                                                    onChange={(e) => {
+                                                                                        const newCategories = {...deckData.categories};
+                                                                                        newCategories[sub.id] = parseInt(e.target.value) || 0;
+                                                                                        setDeckData({...deckData, categories: newCategories});
+                                                                                    }}
+                                                                                    min="0"
+                                                                                    style={{
+                                                                                        width: '60px',
+                                                                                        padding: '0.3rem',
+                                                                                        fontSize: '0.85rem'
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* SIDEBOARD SECTION */}
+                                <div style={{marginBottom: '2rem'}}>
+                                    <button
+                                        onClick={() => setSideboardOpen(!sideboardOpen)}
+                                        className="btn btn-secondary"
+                                        style={{
+                                            width: '100%',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            padding: '1rem 1.5rem',
+                                            fontSize: '1.05rem',
+                                            fontWeight: 600
+                                        }}
+                                    >
+                                        <span style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
+                                            <span>📋</span>
+                                            <span>Sideboard</span>
+                                            <span style={{
+                                                background: 'var(--accent)',
+                                                color: 'white',
+                                                padding: '0.2rem 0.6rem',
+                                                borderRadius: '12px',
+                                                fontSize: '0.85rem',
+                                                fontWeight: 700
+                                            }}>
+                                                {sideboardTotal}
+                                            </span>
+                                            {sideboardTotal > 0 && (
+                                                <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>
+                                                    • {(() => {
+                                                        const creatures = Object.entries(DECK_CATEGORIES.creatures.categories).reduce((sum, [_, category]) => {
+                                                            const quick = sideboardQuickInputs[category.id] || 0;
+                                                            const detailed = category.subcategories.reduce((s, sub) => s + (sideboardCategories[sub.id] || 0), 0);
+                                                            return sum + quick + detailed;
+                                                        }, 0);
+                                                        const spells = Object.entries(DECK_CATEGORIES.noncreature.categories).reduce((sum, [_, category]) => {
+                                                            const quick = sideboardQuickInputs[category.id] || 0;
+                                                            const detailed = category.subcategories.reduce((s, sub) => s + (sideboardCategories[sub.id] || 0), 0);
+                                                            return sum + quick + detailed;
+                                                        }, 0);
+                                                        const lands = Object.entries(DECK_CATEGORIES.lands.categories).reduce((sum, [_, category]) => {
+                                                            const quick = sideboardQuickInputs[category.id] || 0;
+                                                            const detailed = category.subcategories.reduce((s, sub) => s + (sideboardCategories[sub.id] || 0), 0);
+                                                            return sum + quick + detailed;
+                                                        }, 0);
+                                                        
+                                                        const parts = [];
+                                                        if (creatures > 0) parts.push(`${creatures} creature${creatures !== 1 ? 's' : ''}`);
+                                                        if (spells > 0) parts.push(`${spells} spell${spells !== 1 ? 's' : ''}`);
+                                                        if (lands > 0) parts.push(`${lands} land${lands !== 1 ? 's' : ''}`);
+                                                        return parts.join(', ');
+                                                    })()}
+                                                </span>
+                                            )}
+                                        </span>
+                                        <span style={{fontSize: '1.2rem', transform: sideboardOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s'}}>
+                                            ▼
+                                        </span>
+                                    </button>
+                                    
+                                    {/* Sideboard Summary */}
+                                    {sideboardTotal > 0 && !sideboardOpen && (
+                                        <div style={{
+                                            marginTop: '0.8rem',
+                                            padding: '1rem',
+                                            background: 'rgba(212, 175, 55, 0.1)',
+                                            border: '1px solid rgba(212, 175, 55, 0.3)',
+                                            borderRadius: '8px'
+                                        }}>
+                                            <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600}}>
+                                                💭 Considering:
+                                            </div>
+                                            <div style={{display: 'flex', flexWrap: 'wrap', gap: '0.5rem', fontSize: '0.85rem'}}>
+                                                {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => {
+                                                    return majorGroup.categories.flatMap(category => 
+                                                        category.subcategories
+                                                            .filter(sub => sideboardCategories[sub.id] > 0)
+                                                            .map(sub => (
+                                                                <span key={sub.id} style={{
+                                                                    background: 'var(--bg-secondary)',
+                                                                    padding: '0.3rem 0.6rem',
+                                                                    borderRadius: '12px',
+                                                                    color: 'var(--accent-bright)',
+                                                                    fontWeight: 500
+                                                                }}>
+                                                                    {sideboardCategories[sub.id]} {sub.name}
+                                                                </span>
+                                                            ))
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {sideboardOpen && (
+                                        <div style={{
+                                            marginTop: '1rem',
+                                            padding: '1.5rem',
+                                            background: 'var(--bg-tertiary)',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: '8px'
+                                        }}>
+                                            <div style={{
+                                                marginBottom: '1.5rem',
+                                                padding: '1rem',
+                                                background: 'rgba(212, 175, 55, 0.1)',
+                                                border: '1px solid var(--accent)',
+                                                borderRadius: '6px',
+                                                fontSize: '0.9rem',
+                                                color: 'var(--text-secondary)'
+                                            }}>
+                                                <strong style={{color: 'var(--accent-bright)'}}>💡 Sideboard Note:</strong> These cards don't count toward your 100-card deck total. Use this for cards you're considering, alternatives, or format-specific sideboard options.
+                                            </div>
+
+                                            {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => (
+                                                <div key={majorGroupId} style={{marginBottom: '1.5rem'}}>
+                                                    <h4 style={{
+                                                        color: 'var(--accent-bright)',
+                                                        marginBottom: '1rem',
+                                                        fontSize: '1rem',
+                                                        fontWeight: 600,
+                                                        textTransform: 'uppercase',
+                                                        letterSpacing: '0.5px'
+                                                    }}>
+                                                        {majorGroup.name}
+                                                    </h4>
+                                                    
+                                                    {majorGroup.categories.map(category => (
+                                                        <div key={category.id} style={{marginBottom: '1rem'}}>
+                                                            <div style={{
+                                                                fontWeight: 600,
+                                                                marginBottom: '0.5rem',
+                                                                color: 'var(--text-primary)',
+                                                                fontSize: '0.9rem'
+                                                            }}>
+                                                                {category.name}
+                                                            </div>
+                                                            <div style={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.8rem',
+                                                                marginBottom: '0.5rem',
+                                                                padding: '0.5rem',
+                                                                background: 'var(--bg-secondary)',
+                                                                borderRadius: '4px'
+                                                            }}>
+                                                                <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Quick:</span>
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder="0"
+                                                                    value={sideboardQuickInputs[category.id] || ''}
+                                                                    onChange={(e) => {
+                                                                        const val = parseInt(e.target.value) || 0;
+                                                                        setSideboardQuickInputs(prev => ({...prev, [category.id]: val}));
+                                                                    }}
+                                                                    min="0"
+                                                                    style={{
+                                                                        width: '60px',
+                                                                        padding: '0.3rem',
+                                                                        fontSize: '0.85rem',
+                                                                        borderRadius: '4px',
+                                                                        border: '1px solid var(--accent)',
+                                                                        background: 'var(--bg-tertiary)',
+                                                                        color: 'var(--text-primary)',
+                                                                        textAlign: 'center'
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <div style={{
+                                                                display: 'grid',
+                                                                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                                                                gap: '0.5rem'
+                                                            }}>
+                                                                {category.subcategories.map(sub => (
+                                                                    <div key={sub.id} style={{
+                                                                        display: 'flex',
+                                                                        justifyContent: 'space-between',
+                                                                        alignItems: 'center',
+                                                                        padding: '0.5rem',
+                                                                        background: 'var(--bg-secondary)',
+                                                                        borderRadius: '4px'
+                                                                    }}>
+                                                                        <label style={{
+                                                                            fontSize: '0.85rem',
+                                                                            color: 'var(--text-secondary)',
+                                                                            flex: 1
+                                                                        }}>
+                                                                            {sub.name}
+                                                                        </label>
+                                                                        <input
+                                                                            type="number"
+                                                                            className="small-input"
+                                                                            value={sideboardCategories[sub.id] || 0}
+                                                                            onChange={(e) => updateSideboardCategory(sub.id, e.target.value)}
+                                                                            min="0"
+                                                                            style={{
+                                                                                width: '60px',
+                                                                                padding: '0.3rem',
+                                                                                fontSize: '0.85rem'
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* MANA BASE CALCULATOR - COLLAPSIBLE */}
+                                <div style={{marginBottom: '2rem'}}>
+                                    <button
+                                        onClick={() => setManaCalcOpen(!manaCalcOpen)}
+                                        className="btn btn-secondary"
+                                        style={{
+                                            width: '100%',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            padding: '1rem 1.5rem',
+                                            fontSize: '1.05rem',
+                                            fontWeight: 600
+                                        }}
+                                    >
+                                        <span style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
+                                            <span>⚗️</span>
+                                            <span>Mana Base Calculator</span>
+                                            <span style={{fontSize: '0.8rem', opacity: 0.7}}>(Optional)</span>
+                                        </span>
+                                        <span style={{fontSize: '1.2rem', transform: manaCalcOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s'}}>
+                                            ▼
+                                        </span>
+                                    </button>
+                                    
+                                    {manaCalcOpen && (
+                                <div className="mana-calculator" style={{marginTop: '1rem'}}>
+                                    <div className="calculator-title">⚗️ Mana Base Calculator</div>
+                                    <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem'}}>
+                                        Build your optimal mana base based on your deck's color requirements!
+                                    </div>
+
+                                        <div style={{marginBottom: '1.5rem'}}>
+                                            <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
+                                                Total Lands in Deck
+                                            </label>
+                                            <input 
+                                                type="number"
+                                                className="small-input"
+                                                value={totalLands}
+                                                onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
+                                                min="0"
+                                                max="99"
+                                            />
+                                            <small style={{color: 'var(--text-muted)', marginLeft: '1rem'}}>
+                                                Recommended: 36-38 lands
+                                            </small>
+                                        </div>
+
+                                        <div style={{marginBottom: '1.5rem'}}>
+                                            <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
+                                                Tri-Lands (Triomes & 3+ color lands)
+                                            </label>
+                                            <input 
+                                                type="number"
+                                                className="small-input"
+                                                value={triLands}
+                                                onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
+                                                min="0"
+                                                max="20"
+                                            />
+                                            <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
+                                                <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
+                                                    <strong>Include:</strong> Triomes (Ketria, Savai, etc.), Panoramas, sac lands that search for 3+ basic types
+                                                </small>
+                                                <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic', fontSize: '0.8rem'}}>
+                                                    💡 These subtract from total but provide 3+ colors
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        <div style={{marginBottom: '1.5rem'}}>
+                                            <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
+                                                Other Lands (Colorless & Utility)
+                                            </label>
+                                            <input 
+                                                type="number"
+                                                className="small-input"
+                                                value={otherLands}
+                                                onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
+                                                min="0"
+                                                max="20"
+                                            />
+                                            <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
+                                                <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
+                                                    <strong>Include:</strong> Command Tower, Reliquary Tower, Wastes, utility lands
+                                                </small>
+                                                <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic', fontSize: '0.8rem'}}>
+                                                    💡 Subtract from total but don't provide colored mana
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        {/* STEP 1: Count Mana Pips */}
+                                        <div style={{
+                                            background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
+                                            border: '3px solid rgba(66, 135, 245, 0.4)',
+                                            borderRadius: '12px',
+                                            padding: '1.5rem',
+                                            marginBottom: '1.5rem'
+                                        }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.8rem',
+                                                marginBottom: '0.5rem'
+                                            }}>
+                                                <div style={{
+                                                    background: 'linear-gradient(135deg, #4287f5 0%, #886aea 100%)',
+                                                    color: 'white',
+                                                    width: '36px',
+                                                    height: '36px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontWeight: 700,
+                                                    fontSize: '1.15rem'
+                                                }}>
+                                                    1
+                                                </div>
+                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                    🎴 Count Mana Pips from Your SPELLS
+                                                </label>
+                                            </div>
+                                            <div style={{
+                                                background: 'rgba(66, 135, 245, 0.15)',
+                                                border: '1px solid rgba(66, 135, 245, 0.3)',
+                                                borderRadius: '8px',
+                                                padding: '1rem',
+                                                marginBottom: '1rem',
+                                                marginLeft: '2.5rem'
+                                            }}>
+                                                <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '0.9rem'}}>
+                                                    What to count:
+                                                </div>
+                                                <div style={{color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.6'}}>
+                                                    Look at <strong>all the spells in your deck</strong> and count colored mana symbols in their costs. Wrath of God = 2 White (double).
+                                                    <br/><br/>
+                                                    <div style={{
+                                                        background: 'rgba(212, 175, 55, 0.15)',
+                                                        border: '1px solid rgba(212, 175, 55, 0.3)',
+                                                        borderRadius: '6px',
+                                                        padding: '0.7rem',
+                                                        fontSize: '0.82rem'
+                                                    }}>
+                                                        <strong style={{color: 'var(--accent-bright)'}}>🧠 Smart weighting:</strong> The calculator knows {'{U}{U}'} is harder to cast than {'{1}{U}'}. It weights pips accordingly!
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="pip-counter" style={{overflowX: 'auto'}}>
+                                                {['W', 'U', 'B', 'R', 'G'].map(color => (
+                                                    <div key={color} className="pip-input-group" style={{minWidth: '160px'}}>
+                                                        <div className="pip-label">
+                                                            <div className={`pip-icon pip-${color}`}></div>
+                                                            <span>{color}</span>
+                                                        </div>
+                                                        <div style={{display: 'flex', gap: '0.3rem', marginTop: '0.5rem', flexWrap: 'wrap'}}>
+                                                            <div style={{flex: '1 1 50px', minWidth: '50px'}}>
+                                                                <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Single</div>
+                                                                <input 
+                                                                    type="number"
+                                                                    className="small-input"
+                                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                                    value={pipCounts[color].single}
+                                                                    onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                                    min="0"
+                                                                />
+                                                            </div>
+                                                            <div style={{flex: '1 1 50px', minWidth: '50px'}}>
+                                                                <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Double</div>
+                                                                <input 
+                                                                    type="number"
+                                                                    className="small-input"
+                                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                                    value={pipCounts[color].double}
+                                                                    onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                                    min="0"
+                                                                />
+                                                            </div>
+                                                            <div style={{flex: '1 1 50px', minWidth: '50px'}}>
+                                                                <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Triple+</div>
+                                                                <input 
+                                                                    type="number"
+                                                                    className="small-input"
+                                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                                    value={pipCounts[color].triple}
+                                                                    onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
+                                                                    min="0"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* STEP 2: Dual Lands */}
+                                        <div style={{
+                                            background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
+                                            border: '3px solid rgba(0, 115, 62, 0.4)',
+                                            borderRadius: '12px',
+                                            padding: '1.5rem',
+                                            marginBottom: '1.5rem'
+                                        }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.8rem',
+                                                marginBottom: '0.5rem'
+                                            }}>
+                                                <div style={{
+                                                    background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
+                                                    color: 'white',
+                                                    width: '36px',
+                                                    height: '36px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontWeight: 700,
+                                                    fontSize: '1.15rem'
+                                                }}>
+                                                    2
+                                                </div>
+                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                    🏔️ Count Actual LANDS in Your Deck
+                                                </label>
+                                            </div>
+                                            <div style={{
+                                                background: 'rgba(0, 115, 62, 0.15)',
+                                                border: '1px solid rgba(0, 115, 62, 0.3)',
+                                                borderRadius: '8px',
+                                                padding: '1rem',
+                                                marginBottom: '1rem',
+                                                marginLeft: '2.5rem'
+                                            }}>
+                                                <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '0.9rem'}}>
+                                                    What to count:
+                                                </div>
+                                                <div style={{color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.6'}}>
+                                                    How many <strong>dual lands</strong> (produce or fetch 2 colors) are you running? This is separate from Step 1.
+                                                    <br/>
+                                                    <strong>Include:</strong> Shocklands, Fetchlands, Pain lands, etc. Example: 4 Temple Gardens + 3 Windswept Heaths = 7 for Selesnya.
+                                                </div>
+                                            </div>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', paddingLeft: '2.5rem'}}>
+                                                {colorPairs.map(({pair, colors, name}) => (
+                                                    <div key={pair}>
+                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem'}}>
+                                                            <div className={`pip-icon pip-${colors[0]}`} style={{width: '16px', height: '16px'}}></div>
+                                                            <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
+                                                            <span style={{fontSize: '0.85rem'}}>{name}</span>
+                                                        </div>
+                                                        <input 
+                                                            type="number"
+                                                            className="small-input"
+                                                            style={{width: '100%'}}
+                                                            value={dualLands[pair]}
+                                                            onChange={(e) => updateDualLands(pair, e.target.value)}
+                                                            min="0"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Calculate Button */}
+                                        <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
+                                            <button 
+                                                className="btn btn-primary"
+                                                onClick={calculateManaBase}
+                                                style={{
+                                                    padding: '0.9rem 2.5rem',
+                                                    fontSize: '1.1rem',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '0.7rem'
+                                                }}
+                                            >
+                                                <span style={{fontSize: '1.3rem'}}>⚗️</span>
+                                                <span>Calculate Mana Base</span>
+                                            </button>
+                                        </div>
+
+                                        <div style={{
+                                            background: 'rgba(212, 175, 55, 0.15)', 
+                                            border: '1px solid var(--gold)', 
+                                            borderRadius: '8px', 
+                                            padding: '1rem', 
+                                            marginTop: '1rem',
+                                            fontSize: '0.85rem'
+                                        }}>
+                                            <div style={{fontWeight: 600, color: 'var(--gold)', marginBottom: '0.5rem'}}>
+                                                💡 Calculator Notes
+                                            </div>
+                                            <ul style={{marginLeft: '1.5rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
+                                                <li><strong>Tri-lands:</strong> Enter the number you're running above. They'll be subtracted from your total land count.</li>
+                                                <li><strong>4-5 Colors:</strong> Best for 1-3 color decks. Results for 4+ colors are approximations.</li>
+                                                <li><strong>Utility Lands:</strong> "Remaining Slots" = Command Tower, utility, colorless, etc.</li>
+                                            </ul>
+                                        </div>
+
+                                        {showResults && manaCalculation && (
+                                            <div className="mana-results">
+                                                <div style={{fontWeight: 600, fontSize: '1.2rem', marginBottom: '1rem', color: 'var(--gold)'}}>
+                                                    📊 Recommended Mana Base
+                                                </div>
+                                                
+                                                {Object.entries(manaCalculation.recommendations).map(([color, data]) => {
+                                                    if (data.pips === 0) return null;
+                                                    return (
+                                                        <div key={color} className="result-item">
+                                                            <div className="result-label">
+                                                                <div className={`pip-icon pip-${color}`}></div>
+                                                                <span>{data.name}</span>
+                                                                <small style={{color: 'var(--text-muted)', marginLeft: '0.5rem'}}>
+                                                                    ({data.pips} pips, {data.percentage}%)
+                                                                </small>
+                                                            </div>
+                                                            <div style={{textAlign: 'right'}}>
+                                                                <div className="result-value">{data.basicsNeeded}</div>
+                                                                <small style={{color: 'var(--text-muted)', fontSize: '0.75rem'}}>
+                                                                    basics ({data.fromDuals} from duals)
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+
+                                                <div style={{marginTop: '1rem', padding: '1rem', background: 'var(--bg-tertiary)', borderRadius: '8px'}}>
+                                                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                                        <span>Total Dual Lands:</span>
+                                                        <strong>{manaCalculation.totalDuals}</strong>
+                                                    </div>
+                                                    {manaCalculation.triLands > 0 && (
+                                                        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                                            <span>Tri-Lands (Triomes):</span>
+                                                            <strong>{manaCalculation.triLands}</strong>
+                                                        </div>
+                                                    )}
+                                                    {manaCalculation.otherLands > 0 && (
+                                                        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                                            <span>Other Lands (Colorless):</span>
+                                                            <strong>{manaCalculation.otherLands}</strong>
+                                                        </div>
+                                                    )}
+                                                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                                        <span>Total Basics Needed:</span>
+                                                        <strong>{manaCalculation.totalBasicsNeeded}</strong>
+                                                    </div>
+                                                    {(totalLands - manaCalculation.totalOccupiedSlots - manaCalculation.totalBasicsNeeded) > 0 && (
+                                                        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                                                            <span>Remaining Slots:</span>
+                                                            <strong>{totalLands - manaCalculation.totalOccupiedSlots - manaCalculation.totalBasicsNeeded}</strong>
+                                                            <small style={{color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(utility)</small>
+                                                        </div>
+                                                    )}
+                                                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                        <span>Target Land Count:</span>
+                                                        <strong>{totalLands}</strong>
+                                                    </div>
+                                                    <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)'}}>
+                                                        <span>Spells Needed for 100:</span>
+                                                        <strong style={{color: 'var(--accent-bright)'}}>{100 - totalLands}</strong>
+                                                    </div>
+                                                    {!manaCalculation.isValid && (
+                                                        <div style={{marginTop: '1rem', padding: '0.8rem', background: 'rgba(211, 32, 42, 0.2)', borderRadius: '6px', color: 'var(--red-mana)'}}>
+                                                            ⚠️ Warning: You need {manaCalculation.totalBasicsNeeded} basics but only have {manaCalculation.availableForBasics} slots available after all lands!
+                                                            <div style={{marginTop: '0.8rem', fontSize: '0.85rem', color: 'var(--text-primary)', background: 'rgba(0, 0, 0, 0.3)', padding: '0.8rem', borderRadius: '4px'}}>
+                                                                <strong>Quick Fixes:</strong>
+                                                                <div style={{marginTop: '0.5rem', lineHeight: '1.8'}}>
+                                                                    • Increase total lands to <strong>{totalLands + (manaCalculation.totalBasicsNeeded - manaCalculation.availableForBasics)}</strong> lands<br/>
+                                                                    • Remove <strong>{manaCalculation.totalBasicsNeeded - manaCalculation.availableForBasics}</strong> colorless/utility lands<br/>
+                                                                    • Add more dual lands (reduces basics needed)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {manaCalculation.isValid && (
+                                                        <div style={{marginTop: '1rem', padding: '0.8rem', background: 'rgba(0, 115, 62, 0.2)', borderRadius: '6px', color: 'var(--green-mana)'}}>
+                                                            ✓ Perfect! You have enough land slots for your color requirements.
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Funny Random Quote */}
+                                                {randomQuote && (
+                                                    <div style={{
+                                                        marginTop: '1.5rem',
+                                                        padding: '1rem',
+                                                        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(196, 167, 125, 0.15) 100%)',
+                                                        border: '2px solid var(--gold)',
+                                                        borderRadius: '10px',
+                                                        textAlign: 'center',
+                                                        fontSize: '1rem',
+                                                        fontStyle: 'italic',
+                                                        color: 'var(--text-primary)',
+                                                        fontWeight: 500
+                                                    }}>
+                                                        "{randomQuote}"
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {!showResults && (
+                                            <div style={{textAlign: 'center', padding: '2rem', color: 'var(--text-muted)'}}>
+                                                Fill in your mana requirements above, then click "Calculate Mana Base"!
+                                            </div>
+                                        )}
+                                    </div>
+                                    )}
+                                </div>
+
+                                <div style={{textAlign: 'center', marginTop: '2rem'}}>
+                                    <button 
+                                        className="btn btn-primary" 
+                                        style={{padding: '1rem 3rem', fontSize: '1.1rem'}}
+                                        onClick={() => onSave({
+                                            ...deckData, 
+                                            notableCards, 
+                                            lands: totals.lands,
+                                            creatures: totals.creatures,
+                                            noncreature: totals.noncreature
+                                        })}
+                                    >
+                                        Save Deck
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="stats-panel">
+                                <h3 style={{fontFamily: 'Cinzel', color: 'var(--gold)', marginBottom: '1.5rem'}}>Live Deck Stats</h3>
+
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
+                                    <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.lands}</div>
+                                </div>
+
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🧟 Creatures</div>
+                                    <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.creatures}</div>
+                                </div>
+
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>⚡ Non-Creature</div>
+                                    <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.noncreature}</div>
+                                </div>
+
+                                {/* Quick Totals (Category-level) */}
+                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid rgba(212, 175, 55, 0.5)'}}>
+                                    <div style={{fontWeight: 600, marginBottom: '1rem', color: 'var(--gold)', fontSize: '0.9rem'}}>⚡ Quick Totals</div>
+                                    
+                                    {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => {
+                                        const quickCounts = [];
+                                        
+                                        // Major quick total
+                                        const majorQuick = deckData.categories[`${majorGroupId}-quick`] || 0;
+                                        if (majorQuick > 0) {
+                                            quickCounts.push({ name: `Total ${majorGroup.name.replace(/[🏞🧟⚡]/g, '').trim()}`, count: majorQuick });
+                                        }
+                                        
+                                        // Category group quick totals + detailed subtypes
+                                        majorGroup.categories.forEach(category => {
+                                            const catQuick = deckData.categories[`${category.id}-quick`] || 0;
+                                            
+                                            // Calculate detailed subtypes total for this category
+                                            const catDetailed = category.subcategories.reduce((sum, sub) => {
+                                                return sum + (deckData.categories[sub.id] || 0);
+                                            }, 0);
+                                            
+                                            const catTotal = catQuick + catDetailed;
+                                            
+                                            if (catTotal > 0) {
+                                                quickCounts.push({ 
+                                                    name: category.name, 
+                                                    count: catTotal,
+                                                    quick: catQuick,
+                                                    detailed: catDetailed
+                                                });
+                                            }
+                                        });
+                                        
+                                        if (quickCounts.length === 0) return null;
+                                        
+                                        return (
+                                            <div key={majorGroupId} style={{marginBottom: '1rem'}}>
+                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase'}}>
+                                                    {majorGroup.icon} {majorGroup.name.replace(/[🏞🧟⚡]/g, '').trim()}
+                                                </div>
+                                                <div style={{fontSize: '0.85rem', lineHeight: '1.8', color: 'var(--text-secondary)'}}>
+                                                    {quickCounts.map((item, idx) => (
+                                                        <div key={idx} style={{marginBottom: '0.5rem'}}>
+                                                            <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.3rem 0.5rem', background: 'rgba(212, 175, 55, 0.1)', borderRadius: '4px'}}>
+                                                                <span>{item.name}</span>
+                                                                <strong style={{color: 'var(--gold)'}}>{item.count}</strong>
+                                                            </div>
+                                                            {(item.quick > 0 || item.detailed > 0) && (item.quick > 0 && item.detailed > 0) && (
+                                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem', marginLeft: '0.5rem', fontStyle: 'italic'}}>
+                                                                    (Quick: {item.quick} + Detailed: {item.detailed})
+                                                                </div>
+                                                            )}
+                                                            {item.quick > 0 && item.detailed === 0 && (
+                                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem', marginLeft: '0.5rem', fontStyle: 'italic'}}>
+                                                                    (Quick input only)
+                                                                </div>
+                                                            )}
+                                                            {item.quick === 0 && item.detailed > 0 && (
+                                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem', marginLeft: '0.5rem', fontStyle: 'italic'}}>
+                                                                    (From detailed subtypes)
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                    
+                                    {!Object.keys(deckData.categories).some(key => key.includes('-quick') && deckData.categories[key] > 0) && (
+                                        <div style={{textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', padding: '1rem'}}>
+                                            No quick totals entered yet
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Detailed Subtypes */}
+                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid var(--border-color)'}}>
+                                    <div style={{fontWeight: 600, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '0.9rem'}}>📊 Key Subtypes</div>
+                                    
+                                    {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => {
+                                        const subtypeCounts = [];
+                                        majorGroup.categories.forEach(category => {
+                                            category.subcategories.forEach(sub => {
+                                                const count = deckData.categories[sub.id] || 0;
+                                                if (count > 0) {
+                                                    subtypeCounts.push({ name: sub.name, count });
+                                                }
+                                            });
+                                        });
+                                        
+                                        if (subtypeCounts.length === 0) return null;
+                                        
+                                        return (
+                                            <div key={majorGroupId} style={{marginBottom: '1rem'}}>
+                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase'}}>
+                                                    {majorGroup.icon} {majorGroup.name.replace(/[🏞🧟⚡]/g, '').trim()}
+                                                </div>
+                                                <div style={{fontSize: '0.85rem', lineHeight: '1.8', color: 'var(--text-secondary)'}}>
+                                                    {subtypeCounts.slice(0, 5).map((item, idx) => (
+                                                        <div key={idx} style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem'}}>
+                                                            <span>{item.name}</span>
+                                                            <strong style={{color: 'var(--accent-bright)'}}>{item.count}</strong>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                    
+                                    {!Object.entries(DECK_CATEGORIES).some(([majorGroupId, majorGroup]) => {
+                                        return majorGroup.categories.some(category => {
+                                            return category.subcategories.some(sub => (deckData.categories[sub.id] || 0) > 0);
+                                        });
+                                    }) && (
+                                        <div style={{textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', padding: '1rem'}}>
+                                            No detailed subtypes entered yet
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div style={{
+                                    background: 'var(--gradient-card)', 
+                                    border: `2px solid ${totals.total === 100 ? 'var(--green-mana)' : totals.total > 100 ? 'var(--red-mana)' : 'var(--border-color)'}`,
+                                    borderRadius: '12px',
+                                    padding: '1.5rem',
+                                    textAlign: 'center',
+                                    marginTop: '1.5rem'
+                                }}>
+                                    <div style={{fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--text-secondary)'}}>
+                                        Total Cards
+                                    </div>
+                                    <div style={{
+                                        fontSize: '3rem',
+                                        fontWeight: 700,
+                                        color: totals.total === 100 ? 'var(--green-mana)' : totals.total > 100 ? 'var(--red-mana)' : 'var(--accent-bright)'
+                                    }}>
+                                        {totals.total} / 100
+                                    </div>
+                                    {totals.total === 100 && (
+                                        <div style={{marginTop: '0.5rem', color: 'var(--green-mana)'}}>✓ Perfect!</div>
+                                    )}
+                                    {totals.total > 100 && (
+                                        <div style={{marginTop: '0.5rem', color: 'var(--red-mana)'}}>⚠ {totals.total - 100} over</div>
+                                    )}
+                                    {totals.total < 100 && totals.total > 0 && (
+                                        <div style={{marginTop: '0.5rem', color: 'var(--text-muted)'}}>{100 - totals.total} remaining</div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
