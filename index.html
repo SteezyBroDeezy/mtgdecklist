@@ -1016,6 +1016,7 @@
                 return saved ? JSON.parse(saved) : DEMO_DECKS;
             });
             const [showCreateModal, setShowCreateModal] = useState(false);
+            const [deckToCopy, setDeckToCopy] = useState(null);
             const [searchQuery, setSearchQuery] = useState('');
             const [selectedDeck, setSelectedDeck] = useState(null);
             const [user, setUser] = useState(null);
@@ -1068,8 +1069,9 @@ const saveDeckToFirebase = async (deck) => {
                     const firebaseDecks = [];
                     snapshot.forEach((doc) => {
                         firebaseDecks.push({
-                            id: doc.id,
-                            ...doc.data()
+                            
+                            ...doc.data(),
+                            id: doc.id
                         });
                     });
                     
@@ -1774,7 +1776,11 @@ return (
                     )}
                     {showCreateModal && (
                         <CreateDeckModal 
-                            onClose={() => setShowCreateModal(false)}
+                            initialData={deckToCopy}
+                            onClose={() => {
+                                setShowCreateModal(false);
+                                setDeckToCopy(null);
+                            }}
                             onSave={async (deck) => {
                                 const newDeck = { ...deck, id: Date.now() };
                                 
@@ -1790,6 +1796,7 @@ return (
                                 }
                                 
                                 setShowCreateModal(false);
+                                setDeckToCopy(null);
                             }}
                         />
                     )}
@@ -2253,15 +2260,10 @@ return (
                                             className="btn btn-primary"
                                             style={{flex: 1}}
                                             onClick={() => {
-                                                if (selectedDeck.isExample) {
-                                                    // For example decks, create a fresh deck with similar structure
-                                                    setSelectedDeck(null);
-                                                    setShowCreateModal(true);
-                                                } else {
-                                                    // For user decks, copy their actual data
-                                                    setSelectedDeck(null);
-                                                    setShowCreateModal(true);
-                                                }
+                                                // Set the deck to copy and open create modal
+                                                setDeckToCopy(selectedDeck);
+                                                setSelectedDeck(null);
+                                                setShowCreateModal(true);
                                             }}
                                         >
                                             ⚔️ Build Similar Deck
@@ -3275,7 +3277,8 @@ return (
 
     // ↑ AUTHMODAL COMPONENT ENDS HERE ↑
 
-        function CreateDeckModal({ onClose, onSave }) {
+        function CreateDeckModal({ onClose, onSave, initialData = null }) {
+            
             const [deckData, setDeckData] = useState({
                 name: '',
                 commander: '',
@@ -3318,6 +3321,40 @@ return (
             // Mana calculator collapse state
             const [manaCalcOpen, setManaCalcOpen] = useState(false);
             
+            // Update deck data when initialData changes (for "Build Similar Deck")
+            useEffect(() => {
+                if (initialData) {
+                    console.log("🔵 initialData received:", initialData);
+                    console.log("🔵 creatures value:", initialData.creatures);
+                    console.log("🔵 noncreature value:", initialData.noncreature);
+                    console.log("🔵 lands value:", initialData.lands);
+                    
+                    // Build quick totals from the deck's top-level counts
+                    const quickCategories = {};
+                    if (initialData.creatures > 0) quickCategories['creatures-quick'] = initialData.creatures;
+                    if (initialData.noncreature > 0) quickCategories['noncreature-quick'] = initialData.noncreature;
+                    if (initialData.lands > 0) quickCategories['lands-quick'] = initialData.lands;
+                    
+                    console.log("🟢 quickCategories built:", quickCategories);
+                    
+                    setDeckData({
+                        name: '',  // Blank name so user can enter their own
+                        commander: initialData.commander || '',
+                        colors: initialData.colors || [],
+                        categories: quickCategories,
+                        isPublic: true
+                    });
+                    
+                    console.log("✅ setDeckData called with categories:", quickCategories);
+                }
+            }, [initialData]);
+            
+            // Debug: Watch deckData changes
+            useEffect(() => {
+                console.log("📊 deckData updated:", deckData);
+                console.log("📊 categories in deckData:", deckData.categories);
+            }, [deckData]);
+            
             // Category section collapse states
             const [categoryOpen, setCategoryOpen] = useState({
                 creatures: true,
@@ -3336,9 +3373,19 @@ return (
                         });
                     });
                 });
-                setDeckData(prev => ({ ...prev, categories: initialCategories }));
+                
+                console.log("🔴 initialCategories useEffect running");
+                console.log("🔴 initialData exists?", !!initialData);
+                
+                // Only set defaults if NOT copying a deck (no initialData)
+                if (!initialData) {
+                    console.log("🟡 Setting default categories (creating new deck from scratch)");
+                    setDeckData(prev => ({ ...prev, categories: initialCategories }));
+                } else {
+                    console.log("🟢 NOT setting defaults - copying deck with initialData!");
+                }
                 setSideboardCategories(initialSideboard);
-            }, []);
+            }, [initialData]);
 
             // Fetch commander card when name changes
             useEffect(() => {
