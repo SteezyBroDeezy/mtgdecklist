@@ -1047,12 +1047,178 @@
             const [showSettings, setShowSettings] = useState(false);
             const [selectedDecksToDelete, setSelectedDecksToDelete] = useState([]);
             const [deleteMode, setDeleteMode] = useState(false);
+            const [publicDecks, setPublicDecks] = useState([]);
+            const [myDecksSearch, setMyDecksSearch] = useState('');
+            const [browseSearch, setBrowseSearch] = useState('');
+            const [browseSortBy, setBrowseSortBy] = useState('newest'); // NEW: Sort option
 
             // Save decks to localStorage whenever they change
             useEffect(() => {
                 localStorage.setItem('commanderCodexDecks', JSON.stringify(decks));
             }, [decks]);
             
+            // Add deck to public collection (preventing duplicates)
+            const addToPublicDecks = async (deck) => {
+                console.log("addToPublicDecks called with:", deck);
+                
+                if (!deck.isPublic) {
+                    console.log("Deck is not public, skipping");
+                    return;
+                }
+                
+                if (!deck.id) {
+                    console.error("ERROR: Deck has no ID!", deck);
+                    return;
+                }
+                
+                try {
+                    // Check if deck already exists in public collection
+                    const existingDeck = await db.collection("publicDecks")
+                        .where("originalDeckId", "==", deck.id)
+                        .get();
+                    
+                    if (!existingDeck.empty) {
+                        console.log("Deck already in public collection, updating...");
+                        // Update existing public deck
+                        const docId = existingDeck.docs[0].id;
+                        await db.collection("publicDecks").doc(docId).update({
+                            name: deck.name,
+                            commander: deck.commander,
+                            colors: deck.colors,
+                            categories: deck.categories,
+                            sideboard: deck.sideboard || {},
+                            notableCards: deck.notableCards || [],
+                            updatedAt: new Date()
+                        });
+                        console.log("✅ Public deck updated successfully!");
+                        return;
+                    }
+                    
+                    // Add new public deck
+                    console.log("Adding new public deck with data:", {
+                        name: deck.name,
+                        commander: deck.commander,
+                        originalDeckId: deck.id,
+                        userId: deck.userId
+                    });
+                    
+                    await db.collection("publicDecks").add({
+                        ...deck,
+                        originalDeckId: deck.id,
+                        userId: deck.userId,
+                        viewCount: 0,              // ← NEW: Track views
+                        buildSimilarCount: 0,      // ← NEW: Track builds
+                        createdAt: deck.createdAt || new Date(),
+                        updatedAt: new Date()
+                    });
+                    console.log("✅ Deck added to public collection!");
+                } catch (error) {
+                    console.error("❌ Error adding to public collection:", error);
+                }
+            };
+
+            // Remove deck from public collection
+            const removeFromPublicDecks = async (deckId) => {
+                try {
+                    const snapshot = await db.collection("publicDecks")
+                        .where("originalDeckId", "==", deckId)
+                        .get();
+                    
+                    const deletePromises = snapshot.docs.map(doc => doc.ref.delete());
+                    await Promise.all(deletePromises);
+                    console.log("Deck removed from public collection!");
+                } catch (error) {
+                    console.error("Error removing from public collection:", error);
+                }
+            };
+
+            // Load all public decks
+            const loadPublicDecks = async () => {
+                console.log("Loading public decks...");
+                try {
+                    const snapshot = await db.collection("publicDecks")
+                        .orderBy("updatedAt", "desc")
+                        .limit(100)
+                        .get();
+                    
+                    const decks = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        decks.push({
+                            ...data,
+                            id: doc.id,  // Use the publicDecks document ID (override any id in data)
+                            publicDeckId: doc.id  // Also store as publicDeckId for clarity
+                        });
+                    });
+                    
+                    setPublicDecks(decks);
+                    console.log("✅ Loaded", decks.length, "public decks");
+                } catch (error) {
+                    console.error("❌ Error loading public decks:", error);
+                }
+            };
+
+            // Load public decks on component mount
+            useEffect(() => {
+                loadPublicDecks();
+            }, []);
+
+            // Increment view count when someone views a deck
+            const incrementViewCount = async (publicDeckId) => {
+                console.log("🔢 incrementViewCount called with ID:", publicDeckId);
+                try {
+                    // First, get the deck to check if viewCount exists
+                    const deckRef = db.collection("publicDecks").doc(publicDeckId);
+                    console.log("📖 Fetching deck document...");
+                    const deckDoc = await deckRef.get();
+                    
+                    if (deckDoc.exists) {
+                        const data = deckDoc.data();
+                        console.log("✅ Deck found, current viewCount:", data.viewCount);
+                        // If viewCount doesn't exist, initialize it first
+                        if (data.viewCount === undefined) {
+                            console.log("🆕 viewCount doesn't exist, initializing to 1...");
+                            await deckRef.update({ viewCount: 1 });
+                            console.log("✅ View count initialized to 1 for deck:", publicDeckId);
+                        } else {
+                            console.log("➕ Incrementing existing viewCount...");
+                            await deckRef.update({
+                                viewCount: firebase.firestore.FieldValue.increment(1)
+                            });
+                            console.log("✅ View count incremented for deck:", publicDeckId);
+                        }
+                    } else {
+                        console.log("❌ Deck document not found:", publicDeckId);
+                    }
+                } catch (error) {
+                    console.error("❌ Error incrementing view count:", error);
+                }
+            };
+
+            // Increment build similar count when someone builds similar
+            const incrementBuildCount = async (publicDeckId) => {
+                try {
+                    // First, get the deck to check if buildSimilarCount exists
+                    const deckRef = db.collection("publicDecks").doc(publicDeckId);
+                    const deckDoc = await deckRef.get();
+                    
+                    if (deckDoc.exists) {
+                        const data = deckDoc.data();
+                        // If buildSimilarCount doesn't exist, initialize it first
+                        if (data.buildSimilarCount === undefined) {
+                            await deckRef.update({ buildSimilarCount: 1 });
+                            console.log("✅ Build count initialized to 1 for deck:", publicDeckId);
+                        } else {
+                            await deckRef.update({
+                                buildSimilarCount: firebase.firestore.FieldValue.increment(1)
+                            });
+                            console.log("✅ Build count incremented for deck:", publicDeckId);
+                        }
+                    }
+                } catch (error) {
+                    console.error("❌ Error incrementing build count:", error);
+                }
+            };
                     
             // Save a deck to Firebase
 const saveDeckToFirebase = async (deck) => {
@@ -1069,8 +1235,16 @@ const saveDeckToFirebase = async (deck) => {
             updatedAt: new Date()
         };
         
-        await db.collection("decks").add(deckWithUser);
+        const docRef = await db.collection("decks").add(deckWithUser);
         console.log("Deck saved to Firebase!");
+        
+        // If deck is public, add to public collection
+        if (deck.isPublic) {
+            await addToPublicDecks({...deckWithUser, id: docRef.id});
+            // Refresh public decks list
+            await loadPublicDecks();
+        }
+        
         return true;
     } catch (error) {
         console.error("Error saving deck:", error);
@@ -1108,6 +1282,7 @@ const saveDeckToFirebase = async (deck) => {
 // ↑ FIREBASE DECK FUNCTIONS END HERE ↑
 
 
+
             useEffect(() => {
                 const unsubscribe = auth.onAuthStateChanged((currentUser) => {
                     setUser(currentUser);
@@ -1142,7 +1317,14 @@ const saveDeckToFirebase = async (deck) => {
             setShowAuthModal(false);
         })
         .catch((error) => {
-            alert("Error: " + error.message);
+            // More helpful error message
+            if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                alert("❌ Incorrect email or password. Please try again.");
+            } else if (error.code === 'auth/too-many-requests') {
+                alert("⚠️ Too many failed attempts. Please try again later or reset your password.");
+            } else {
+                alert("Error: " + error.message);
+            }
         });
                 };
 
@@ -1223,10 +1405,32 @@ return (
                                 <button 
                                     className="btn btn-secondary"
                                     onClick={() => setShowCreateModal(true)}
-                                    style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+                                    style={{
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: '0.75rem',
+                                        padding: '0.75rem 1.5rem',
+                                        whiteSpace: 'nowrap',
+                                        fontSize: '1.1rem'
+                                    }}
                                 >
-                                    <span>⚔️</span>
+                                    <span style={{fontSize: '1.8rem'}}>⚔️</span>
                                     <span>Create Deck</span>
+                                </button>
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => setView('browse')}
+                                    style={{
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: '0.75rem',
+                                        padding: '0.75rem 1.5rem',
+                                        whiteSpace: 'nowrap',
+                                        fontSize: '1.1rem'
+                                    }}
+                                >
+                                    <span style={{fontSize: '1.8rem'}}>📚</span>
+                                    <span>Browse Decks</span>
                                 </button>
                                 <button 
                                     className="btn btn-secondary"
@@ -1252,9 +1456,16 @@ return (
                                         <button 
                                             className="btn btn-secondary"
                                             onClick={() => setView('mydecks')}
-                                            style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+                                            style={{
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                gap: '0.75rem',
+                                                padding: '0.75rem 1.5rem',
+                                                whiteSpace: 'nowrap',
+                                                fontSize: '1.1rem'
+                                            }}
                                         >
-                                            <span>📚</span>
+                                            <span style={{fontSize: '1.8rem'}}>📚</span>
                                             <span>My Decks</span>
                                         </button>
                                         <button 
@@ -1371,13 +1582,7 @@ return (
                                     </button>
                                     <button 
                                         className="btn btn-secondary" 
-                                        onClick={() => {
-                                            const element = document.getElementById('featured-decks');
-                                            const offset = 100;
-                                            const elementPosition = element.getBoundingClientRect().top;
-                                            const offsetPosition = elementPosition + window.pageYOffset - offset;
-                                            window.scrollTo({top: offsetPosition, behavior: 'smooth'});
-                                        }}
+                                        onClick={() => setView('browse')}
                                         style={{
                                             padding: '1.2rem 2.5rem', 
                                             fontSize: '1.2rem',
@@ -1871,8 +2076,20 @@ return (
                                         updatedAt: new Date()
                                     });
 
+                                    // Handle public collection syncing
+                                    if (updatedDeck.isPublic) {
+                                        await addToPublicDecks({
+                                            ...updatedDeck, 
+                                            id: deckId,
+                                            userId: user.uid
+                                        });
+                                    } else {
+                                        await removeFromPublicDecks(deckId);
+                                    }
+
                                     // Reload decks from Firebase
                                     await loadDecksFromFirebase(user.uid);
+                                    await loadPublicDecks();
                                     
                                     // Close modal
                                     setShowEditModal(false);
@@ -1902,6 +2119,9 @@ return (
                             onClose={() => setShowSettings(false)}
                             user={user}
                             decks={decks}
+                            addToPublicDecks={addToPublicDecks}
+                            removeFromPublicDecks={removeFromPublicDecks}
+                            loadPublicDecks={loadPublicDecks}
                         />
                     )}
 
@@ -2018,6 +2238,28 @@ return (
                                     </div>
                                 </div>
 
+                                {/* Search Bar for My Decks */}
+                                {user && decks.filter(d => !d.isExample).length > 0 && (
+                                    <div style={{marginBottom: '2rem'}}>
+                                        <input
+                                            type="text"
+                                            value={myDecksSearch}
+                                            onChange={(e) => setMyDecksSearch(e.target.value)}
+                                            placeholder="🔍 Search by deck name or commander..."
+                                            style={{
+                                                width: '100%',
+                                                padding: '1rem',
+                                                background: 'var(--bg-tertiary)',
+                                                border: '2px solid var(--border-color)',
+                                                borderRadius: '12px',
+                                                color: 'var(--text-primary)',
+                                                fontSize: '1.1rem',
+                                                fontFamily: 'Cinzel'
+                                            }}
+                                        />
+                                    </div>
+                                )}
+
                                 {user ? (
                                     decks.filter(d => !d.isExample).length > 0 ? (
                                         <div style={{
@@ -2025,7 +2267,15 @@ return (
                                             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
                                             gap: '1.5rem'
                                         }}>
-                                            {decks.filter(d => !d.isExample).map((deck) => (
+                                            {decks
+                                                .filter(d => !d.isExample)
+                                                .filter(deck => {
+                                                    if (!myDecksSearch) return true;
+                                                    const search = myDecksSearch.toLowerCase();
+                                                    return deck.name.toLowerCase().includes(search) ||
+                                                           deck.commander.toLowerCase().includes(search);
+                                                })
+                                                .map((deck) => (
                                                 <div
                                                     key={deck.id}
                                                     style={{
@@ -2181,6 +2431,271 @@ return (
                                         >
                                             Login / Sign Up
                                         </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+
+                    {/* Browse Public Decks View */}
+                    {view === 'browse' && (
+                        <div className="container">
+                            <div style={{
+                                maxWidth: '1200px',
+                                margin: '3rem auto',
+                                padding: '2rem'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginBottom: '2rem',
+                                    flexWrap: 'wrap',
+                                    gap: '1rem'
+                                }}>
+                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                        <svg width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
+                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
+                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
+                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
+                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
+                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                        </svg>
+                                        <h1 style={{
+                                            fontFamily: 'Pirata One, cursive',
+                                            fontSize: '2.5rem',
+                                            color: 'var(--bone)',
+                                            margin: 0
+                                        }}>
+                                            Browse Public Decks
+                                        </h1>
+                                        <svg width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
+                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
+                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
+                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
+                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
+                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                        </svg>
+                                    </div>
+                                    <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                                        <button 
+                                            className="btn btn-secondary"
+                                            onClick={() => {
+                                                loadPublicDecks();
+                                                alert('🔄 Public decks refreshed!');
+                                            }}
+                                            style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+                                        >
+                                            <span>🔄</span>
+                                            <span>Refresh</span>
+                                        </button>
+                                        <button 
+                                            className="btn btn-secondary"
+                                            onClick={() => setView('home')}
+                                            style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+                                        >
+                                            <span>🏠</span>
+                                            <span>Back to Home</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Search Bar */}
+                                <div style={{marginBottom: '1rem'}}>
+                                    <input
+                                        type="text"
+                                        value={browseSearch}
+                                        onChange={(e) => setBrowseSearch(e.target.value)}
+                                        placeholder="🔍 Search by deck name or commander..."
+                                        style={{
+                                            width: '100%',
+                                            padding: '1rem',
+                                            background: 'var(--bg-tertiary)',
+                                            border: '2px solid var(--border-color)',
+                                            borderRadius: '12px',
+                                            color: 'var(--text-primary)',
+                                            fontSize: '1.1rem',
+                                            fontFamily: 'Cinzel'
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Sort Dropdown */}
+                                <div style={{marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem'}}>
+                                    <label style={{
+                                        color: 'var(--text-secondary)',
+                                        fontSize: '1rem',
+                                        fontWeight: 600
+                                    }}>
+                                        Sort by:
+                                    </label>
+                                    <select
+                                        value={browseSortBy}
+                                        onChange={(e) => setBrowseSortBy(e.target.value)}
+                                        style={{
+                                            padding: '0.75rem 1rem',
+                                            background: 'var(--bg-tertiary)',
+                                            border: '2px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)',
+                                            fontSize: '1rem',
+                                            fontFamily: 'Cinzel',
+                                            cursor: 'pointer',
+                                            minWidth: '200px'
+                                        }}
+                                    >
+                                        <option value="newest">📅 Newest First</option>
+                                        <option value="mostViewed">👁️ Most Viewed</option>
+                                        <option value="mostBuilt">🏗️ Most Built</option>
+                                    </select>
+                                </div>
+
+                                {publicDecks.length > 0 ? (
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                                        gap: '1.5rem'
+                                    }}>
+                                        {publicDecks
+                                            .filter(deck => {
+                                                if (!browseSearch) return true;
+                                                const search = browseSearch.toLowerCase();
+                                                return deck.name.toLowerCase().includes(search) ||
+                                                       deck.commander.toLowerCase().includes(search);
+                                            })
+                                            .sort((a, b) => {
+                                                // Sort based on selected option
+                                                if (browseSortBy === 'mostViewed') {
+                                                    return (b.viewCount || 0) - (a.viewCount || 0);
+                                                } else if (browseSortBy === 'mostBuilt') {
+                                                    return (b.buildSimilarCount || 0) - (a.buildSimilarCount || 0);
+                                                } else { // 'newest'
+                                                    return (b.updatedAt?.toDate?.() || new Date(0)) - (a.updatedAt?.toDate?.() || new Date(0));
+                                                }
+                                            })
+                                            .map((deck) => (
+                                                <div
+                                                    key={deck.id}
+                                                    style={{
+                                                        background: 'var(--gradient-card)',
+                                                        border: '2px solid var(--border-color)',
+                                                        borderRadius: '12px',
+                                                        padding: '1.5rem',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.3s ease',
+                                                        ':hover': {
+                                                            borderColor: 'var(--gold)',
+                                                            transform: 'translateY(-2px)'
+                                                        }
+                                                    }}
+                                                    onClick={async () => {
+                                                        console.log("🖱️ Deck card clicked, ID:", deck.id);
+                                                        // Increment view count when deck is clicked
+                                                        await incrementViewCount(deck.id);
+                                                        // Reload public decks to show updated count
+                                                        await loadPublicDecks();
+                                                        setSelectedDeck(deck);
+                                                    }}
+                                                >
+                                                    <h3 style={{
+                                                        fontFamily: 'Cinzel',
+                                                        color: 'var(--accent-bright)',
+                                                        marginBottom: '0.75rem',
+                                                        fontSize: '1.3rem'
+                                                    }}>
+                                                        {deck.name}
+                                                    </h3>
+                                                    <div style={{
+                                                        color: 'var(--text-secondary)',
+                                                        marginBottom: '1rem',
+                                                        fontSize: '0.95rem'
+                                                    }}>
+                                                        Commander: {deck.commander}
+                                                    </div>
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        gap: '0.3rem',
+                                                        marginBottom: '1rem'
+                                                    }}>
+                                                        {deck.colors && deck.colors.map(color => (
+                                                            <div key={color} className={`mana-pip pip-${color}`}></div>
+                                                        ))}
+                                                    </div>
+                                                    
+                                                    {/* Stats Display */}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        gap: '1rem',
+                                                        marginBottom: '1rem',
+                                                        fontSize: '0.85rem',
+                                                        color: 'var(--accent-bright)'
+                                                    }}>
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.3rem'
+                                                        }}>
+                                                            <span>👁️</span>
+                                                            <span>{deck.viewCount || 0} views</span>
+                                                        </div>
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.3rem'
+                                                        }}>
+                                                            <span>🏗️</span>
+                                                            <span>{deck.buildSimilarCount || 0} builds</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        fontSize: '0.85rem',
+                                                        color: 'var(--text-muted)'
+                                                    }}>
+                                                        <span>🌍 Public Deck</span>
+                                                        <span>Click to View</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                    </div>
+                                ) : (
+                                    <div style={{
+                                        textAlign: 'center',
+                                        padding: '4rem 2rem',
+                                        background: 'var(--bg-secondary)',
+                                        borderRadius: '12px',
+                                        border: '1px solid var(--border-color)'
+                                    }}>
+                                        <div style={{fontSize: '3rem', marginBottom: '1rem'}}>📚</div>
+                                        <h3 style={{
+                                            color: 'var(--accent-bright)',
+                                            marginBottom: '1rem'
+                                        }}>
+                                            No Public Decks Yet
+                                        </h3>
+                                        <p style={{color: 'var(--text-secondary)', lineHeight: '1.6'}}>
+                                            Be the first to share your deck! Create a deck and toggle "Make Public"<br/>
+                                            to add it to this community collection.
+                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -2356,7 +2871,13 @@ return (
                                         <button
                                             className="btn btn-primary"
                                             style={{flex: 1}}
-                                            onClick={() => {
+                                            onClick={async () => {
+                                                // Increment build count if this is a public deck (has viewCount field)
+                                                if (selectedDeck.viewCount !== undefined && selectedDeck.id) {
+                                                    await incrementBuildCount(selectedDeck.id);
+                                                    // Reload public decks to show updated count
+                                                    await loadPublicDecks();
+                                                }
                                                 // Set the deck to copy and open create modal
                                                 setDeckToCopy(selectedDeck);
                                                 setSelectedDeck(null);
@@ -2919,7 +3440,7 @@ return (
         }
 
         // Settings Modal Component
-        function SettingsModal({ onClose, user, decks }) {
+        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks }) {
             const [bulkPrivacy, setBulkPrivacy] = useState('public');
             const [updating, setUpdating] = useState(false);
 
@@ -2959,6 +3480,30 @@ return (
                     
                     await Promise.all(updates);
                     
+                    // Sync with public collection
+                    if (newPrivacySetting) {
+                        // Add all decks to public collection
+                        console.log("Adding", userDecks.length, "decks to public collection...");
+                        const publicSyncPromises = userDecks.map(deck => {
+                            console.log("Processing deck:", deck.name, "with ID:", deck.id);
+                            return addToPublicDecks({
+                                ...deck, 
+                                isPublic: true,
+                                userId: user.uid
+                            });
+                        });
+                        await Promise.all(publicSyncPromises);
+                        console.log("✅ All decks added to public collection!");
+                    } else {
+                        // Remove all decks from public collection
+                        console.log("Removing", userDecks.length, "decks from public collection...");
+                        const removeSyncPromises = userDecks.map(deck => 
+                            removeFromPublicDecks(deck.id)
+                        );
+                        await Promise.all(removeSyncPromises);
+                        console.log("✅ All decks removed from public collection!");
+                    }
+                    
                     alert(`✅ All ${userDecks.length} deck(s) are now ${bulkPrivacy}!`);
                     
                     // Reload decks from Firebase
@@ -2975,6 +3520,7 @@ return (
                         });
                     });
                     
+                    await loadPublicDecks(); // Reload public decks
                     window.location.reload(); // Refresh to show updated decks
                 } catch (error) {
                     console.error("Error updating decks:", error);
@@ -3194,6 +3740,8 @@ return (
         const [isSignUp, setIsSignUp] = useState(true);
         const [email, setEmail] = useState('');
         const [password, setPassword] = useState('');
+        const [isForgotPassword, setIsForgotPassword] = useState(false);
+        const [resetEmailSent, setResetEmailSent] = useState(false);
 
         const handleSubmit = (e) => {
             e.preventDefault();
@@ -3202,6 +3750,33 @@ return (
             } else {
                 onLogin(email, password);
             }
+        };
+
+        const handlePasswordReset = (e) => {
+            e.preventDefault();
+            if (!email) {
+                alert('Please enter your email address');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    setResetEmailSent(true);
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/user-not-found') {
+                        alert('No account found with this email address');
+                    } else {
+                        alert('Error: ' + error.message);
+                    }
+                });
         };
 
         return (
@@ -3248,125 +3823,294 @@ return (
                         marginBottom: '1.5rem',
                         textAlign: 'center'
                     }}>
-                        {isSignUp ? 'Create Account' : 'Login'}
+                        {isForgotPassword ? 'Reset Password' : (isSignUp ? 'Create Account' : 'Login')}
                     </h2>
 
-                    <div style={{
-                        display: 'flex',
-                        gap: '1rem',
-                        marginBottom: '1.5rem',
-                        borderBottom: '1px solid var(--border-color)'
-                    }}>
-                        <button
-                            onClick={() => setIsSignUp(true)}
-                            style={{
-                                flex: 1,
-                                background: 'transparent',
-                                border: 'none',
-                                color: isSignUp ? 'var(--gold)' : 'var(--text-muted)',
-                                padding: '0.75rem',
-                                cursor: 'pointer',
-                                borderBottom: isSignUp ? '2px solid var(--gold)' : 'none',
-                                fontWeight: isSignUp ? 600 : 400
-                            }}
-                        >
-                            Sign Up
-                        </button>
-                        <button
-                            onClick={() => setIsSignUp(false)}
-                            style={{
-                                flex: 1,
-                                background: 'transparent',
-                                border: 'none',
-                                color: !isSignUp ? 'var(--gold)' : 'var(--text-muted)',
-                                padding: '0.75rem',
-                                cursor: 'pointer',
-                                borderBottom: !isSignUp ? '2px solid var(--gold)' : 'none',
-                                fontWeight: !isSignUp ? 600 : 400
-                            }}
-                        >
-                            Login
-                        </button>
-                    </div>
+                    {!isForgotPassword && (
+                        <div style={{
+                            display: 'flex',
+                            gap: '1rem',
+                            marginBottom: '1.5rem',
+                            borderBottom: '1px solid var(--border-color)'
+                        }}>
+                            <button
+                                onClick={() => setIsSignUp(true)}
+                                style={{
+                                    flex: 1,
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: isSignUp ? 'var(--gold)' : 'var(--text-muted)',
+                                    padding: '0.75rem',
+                                    cursor: 'pointer',
+                                    borderBottom: isSignUp ? '2px solid var(--gold)' : 'none',
+                                    fontWeight: isSignUp ? 600 : 400
+                                }}
+                            >
+                                Sign Up
+                            </button>
+                            <button
+                                onClick={() => setIsSignUp(false)}
+                                style={{
+                                    flex: 1,
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: !isSignUp ? 'var(--gold)' : 'var(--text-muted)',
+                                    padding: '0.75rem',
+                                    cursor: 'pointer',
+                                    borderBottom: !isSignUp ? '2px solid var(--gold)' : 'none',
+                                    fontWeight: !isSignUp ? 600 : 400
+                                }}
+                            >
+                                Login
+                            </button>
+                        </div>
+                    )}
 
-                    <form onSubmit={handleSubmit}>
-                        <div style={{marginBottom: '1rem'}}>
-                            <label style={{
-                                display: 'block',
-                                marginBottom: '0.5rem',
-                                color: 'var(--text-secondary)'
+                    {isForgotPassword ? (
+                        // Password Reset Form
+                        resetEmailSent ? (
+                            <div style={{
+                                textAlign: 'center',
+                                padding: '2rem 1rem'
                             }}>
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
+                                <div style={{
+                                    fontSize: '3rem',
+                                    marginBottom: '1rem'
+                                }}>✉️</div>
+                                <h3 style={{
+                                    color: 'var(--gold)',
+                                    marginBottom: '1rem',
+                                    fontSize: '1.2rem'
+                                }}>Check Your Email</h3>
+                                <p style={{
+                                    color: 'var(--text-secondary)',
+                                    marginBottom: '1.5rem',
+                                    lineHeight: '1.6'
+                                }}>
+                                    We've sent a password reset link to:<br/>
+                                    <strong style={{color: 'var(--gold)'}}>{email}</strong>
+                                </p>
+                                <p style={{
+                                    color: 'var(--text-muted)',
+                                    fontSize: '0.85rem',
+                                    marginBottom: '1rem',
+                                    lineHeight: '1.5'
+                                }}>
+                                    Click the link in the email to reset your password. The link will expire in 1 hour.
+                                </p>
+                                <p style={{
+                                    color: 'var(--accent-bright)',
+                                    fontSize: '0.85rem',
+                                    marginBottom: '1.5rem',
+                                    lineHeight: '1.5',
+                                    fontStyle: 'italic'
+                                }}>
+                                    📬 Don't see the email? Check your spam/junk folder!
+                                </p>
+                                <button
+                                    onClick={() => {
+                                        setIsForgotPassword(false);
+                                        setResetEmailSent(false);
+                                        setEmail('');
+                                    }}
+                                    className="btn btn-primary"
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        fontSize: '1rem',
+                                        fontWeight: 600
+                                    }}
+                                >
+                                    Back to Login
+                                </button>
+                            </div>
+                        ) : (
+                            <form onSubmit={handlePasswordReset}>
+                                <p style={{
+                                    color: 'var(--text-secondary)',
+                                    marginBottom: '1.5rem',
+                                    fontSize: '0.9rem',
+                                    lineHeight: '1.5'
+                                }}>
+                                    Enter your email address and we'll send you a link to reset your password.
+                                </p>
+                                <div style={{marginBottom: '1.5rem'}}>
+                                    <label style={{
+                                        display: 'block',
+                                        marginBottom: '0.5rem',
+                                        color: 'var(--text-secondary)'
+                                    }}>
+                                        Email Address
+                                    </label>
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            background: 'var(--bg-tertiary)',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)',
+                                            fontSize: '1rem'
+                                        }}
+                                        placeholder="your@email.com"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary"
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        fontSize: '1rem',
+                                        fontWeight: 600,
+                                        marginBottom: '1rem'
+                                    }}
+                                >
+                                    Send Reset Link
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsForgotPassword(false);
+                                        setEmail('');
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '8px',
+                                        color: 'var(--text-secondary)',
+                                        cursor: 'pointer',
+                                        fontSize: '1rem'
+                                    }}
+                                >
+                                    Back to Login
+                                </button>
+                            </form>
+                        )
+                    ) : (
+                        // Normal Login/Signup Form
+                        <form onSubmit={handleSubmit}>
+                            <div style={{marginBottom: '1rem'}}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '0.5rem',
+                                    color: 'var(--text-secondary)'
+                                }}>
+                                    Username or Email
+                                </label>
+                                <input
+                                    type={isSignUp ? "text" : "text"}
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'var(--bg-tertiary)',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '8px',
+                                        color: 'var(--text-primary)',
+                                        fontSize: '1rem'
+                                    }}
+                                    placeholder={isSignUp ? "username or email@example.com" : "username or email@example.com"}
+                                />
+                                {isSignUp && (
+                                    <div style={{
+                                        fontSize: '0.75rem',
+                                        color: 'var(--text-muted)',
+                                        marginTop: '0.5rem',
+                                        fontStyle: 'italic',
+                                        lineHeight: '1.4'
+                                    }}>
+                                        💡 Tip: Using an email allows you to reset your password if you get locked out of your account.
+                                    </div>
+                                )}
+                            </div>
+
+                            <div style={{marginBottom: '1.5rem'}}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '0.5rem',
+                                    color: 'var(--text-secondary)'
+                                }}>
+                                    Password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    minLength={6}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'var(--bg-tertiary)',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '8px',
+                                        color: 'var(--text-primary)',
+                                        fontSize: '1rem'
+                                    }}
+                                    placeholder="At least 6 characters"
+                                />
+                                {!isSignUp && (
+                                    <div style={{
+                                        marginTop: '0.5rem',
+                                        textAlign: 'right'
+                                    }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsForgotPassword(true)}
+                                            style={{
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: 'var(--gold)',
+                                                fontSize: '0.8rem',
+                                                cursor: 'pointer',
+                                                textDecoration: 'underline',
+                                                padding: '0.25rem'
+                                            }}
+                                        >
+                                            Forgot Password?
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
                                 style={{
                                     width: '100%',
                                     padding: '0.75rem',
-                                    background: 'var(--bg-tertiary)',
-                                    border: '1px solid var(--border-color)',
-                                    borderRadius: '8px',
-                                    color: 'var(--text-primary)',
-                                    fontSize: '1rem'
+                                    fontSize: '1rem',
+                                    fontWeight: 600
                                 }}
-                                placeholder="your@email.com"
-                            />
-                        </div>
+                            >
+                                {isSignUp ? 'Create Account' : 'Login'}
+                            </button>
+                        </form>
+                    )}
 
-                        <div style={{marginBottom: '1.5rem'}}>
-                            <label style={{
-                                display: 'block',
-                                marginBottom: '0.5rem',
-                                color: 'var(--text-secondary)'
-                            }}>
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                minLength={6}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.75rem',
-                                    background: 'var(--bg-tertiary)',
-                                    border: '1px solid var(--border-color)',
-                                    borderRadius: '8px',
-                                    color: 'var(--text-primary)',
-                                    fontSize: '1rem'
-                                }}
-                                placeholder="At least 6 characters"
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="btn btn-primary"
-                            style={{
-                                width: '100%',
-                                padding: '0.75rem',
-                                fontSize: '1rem',
-                                fontWeight: 600
-                            }}
-                        >
-                            {isSignUp ? 'Create Account' : 'Login'}
-                        </button>
-                    </form>
-
-                    <p style={{
-                        marginTop: '1rem',
-                        textAlign: 'center',
-                        color: 'var(--text-muted)',
-                        fontSize: '0.85rem'
-                    }}>
-                        {isSignUp 
-                            ? 'Already have an account? Switch to Login above.'
-                            : "Don't have an account? Switch to Sign Up above."}
-                    </p>
+                    {!isForgotPassword && (
+                        <p style={{
+                            marginTop: '1rem',
+                            textAlign: 'center',
+                            color: 'var(--text-muted)',
+                            fontSize: '0.85rem'
+                        }}>
+                            {isSignUp 
+                                ? 'Already have an account? Switch to Login above.'
+                                : "Don't have an account? Switch to Sign Up above."}
+                        </p>
+                    )}
                 </div>
             </div>
         );
@@ -3556,8 +4300,8 @@ return (
                 // Only set defaults if NOT copying a deck (no initialData)
                 if (!initialData) {
                     setDeckData(prev => ({ ...prev, categories: initialCategories }));
+                    setSideboardCategories(initialSideboard);
                 }
-                setSideboardCategories(initialSideboard);
             }, [initialData]);
 
             // Fetch commander card when name changes
@@ -3582,11 +4326,6 @@ return (
                 }));
             };
 
-            const sideboardTotal = useMemo(() => {
-                const detailedTotal = Object.values(sideboardCategories).reduce((sum, val) => sum + val, 0);
-                const quickTotal = Object.values(sideboardQuickInputs).reduce((sum, val) => sum + val, 0);
-                return detailedTotal + quickTotal;
-            }, [sideboardCategories, sideboardQuickInputs]);
 
             // Calculate totals
             const totals = useMemo(() => {
@@ -3635,6 +4374,29 @@ return (
 
                 return { lands, creatures, noncreature, nonLandCards, total };
             }, [deckData.categories]);
+
+            // Sideboard totals calculation
+            const sideboardTotals = useMemo(() => {
+                const getCategoryKeys = (majorGroupId) => {
+                    const keys = [];
+                    DECK_CATEGORIES[majorGroupId].categories.forEach(cat => {
+                        cat.subcategories.forEach(sub => keys.push(sub.id));
+                    });
+                    return keys;
+                };
+
+                // Calculate detailed totals from sideboard subcategories
+                const lands = getCategoryKeys('lands')
+                    .reduce((sum, key) => sum + (sideboardCategories[key] || 0), 0);
+                const creatures = getCategoryKeys('creatures')
+                    .reduce((sum, key) => sum + (sideboardCategories[key] || 0), 0);
+                const noncreature = getCategoryKeys('noncreature')
+                    .reduce((sum, key) => sum + (sideboardCategories[key] || 0), 0);
+                
+                const total = lands + creatures + noncreature;
+
+                return { lands, creatures, noncreature, total };
+            }, [sideboardCategories]);
 
             // Mana base calculator
             const calculateManaBase = () => {
@@ -3784,7 +4546,7 @@ return (
             };
 
             return (
-                <div className="modal-overlay" onClick={handleClose}>
+                <div className="modal-overlay" >
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h2 className="modal-title">Create New Deck</h2>
@@ -3813,10 +4575,10 @@ return (
                                             gap: '0.5rem',
                                             fontWeight: 600,
                                             color: 'var(--gold)',
-                                            fontSize: '1rem'
+                                            fontSize: '1.15rem'
                                         }}>
                                             <span>🌟</span>
-                                            <span>Share This Deck Publicly</span>
+                                            <span>Help others brew epic decks - share yours!</span>
                                         </div>
                                         <label style={{
                                             position: 'relative',
@@ -3857,18 +4619,18 @@ return (
                                         </label>
                                     </div>
                                     <div style={{
-                                        fontSize: '0.9rem',
+                                        fontSize: '1.15rem',
                                         color: 'var(--text-secondary)',
                                         lineHeight: '1.6',
                                         marginTop: '0.5rem'
                                     }}>
                                         {deckData.isPublic ? (
                                             <span>
-                                                ⚔️ <strong style={{color: 'var(--gold)'}}>Your deck will be shared!</strong> Other planeswalkers can learn from your strategy and deck ratios. Together, we build a stronger Commander community! 🎲
+                                                ✨ <strong style={{color: 'var(--gold)'}}>Deck is public!</strong> Inspire other commanders! 🔥
                                             </span>
                                         ) : (
                                             <span>
-                                                🔒 <strong>Deck is private.</strong> Share it publicly to help fellow planeswalkers learn from your strategy! Public decks inspire better deckbuilding across the multiverse. ✨
+                                                🔒 <strong>Private deck.</strong> Share your tech with the community! 🎯
                                             </span>
                                         )}
                                     </div>
@@ -4096,8 +4858,8 @@ return (
                                                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.8rem'}}>
                                                                         <h4 style={{
                                                                             color: 'var(--accent-bright)',
-                                                                            fontSize: '0.95rem',
-                                                                            fontWeight: 600,
+                                                                            fontSize: '1.1rem',
+                                                                            fontWeight: 700,
                                                                             textTransform: 'uppercase',
                                                                             letterSpacing: '0.5px',
                                                                             margin: 0
@@ -4144,7 +4906,7 @@ return (
                                                                                 borderRadius: '4px'
                                                                             }}>
                                                                                 <label style={{
-                                                                                    fontSize: '0.85rem',
+                                                                                    fontSize: '0.65rem',
                                                                                     color: 'var(--text-secondary)',
                                                                                     flex: 1
                                                                                 }}>
@@ -4205,9 +4967,9 @@ return (
                                                 fontSize: '0.85rem',
                                                 fontWeight: 700
                                             }}>
-                                                {sideboardTotal}
+                                                {sideboardTotals.total}
                                             </span>
-                                            {sideboardTotal > 0 && (
+                                            {sideboardTotals.total > 0 && (
                                                 <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>
                                                     • {(() => {
                                                         const creatures = Object.entries(DECK_CATEGORIES.creatures.categories).reduce((sum, [_, category]) => {
@@ -4241,7 +5003,7 @@ return (
                                     </button>
                                     
                                     {/* Sideboard Summary */}
-                                    {sideboardTotal > 0 && !sideboardOpen && (
+                                    {sideboardTotals.total > 0 && !sideboardOpen && (
                                         <div style={{
                                             marginTop: '0.8rem',
                                             padding: '1rem',
@@ -4846,6 +5608,27 @@ return (
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.noncreature}</div>
                                 </div>
 
+                                {/* Sideboard Totals */}
+                                {sideboardTotals.total > 0 && (
+                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
+                                        <div style={{fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '1rem'}}>📦 Sideboard (Total: {sideboardTotals.total})</div>
+                                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem'}}>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>🧟 Creatures:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.creatures}</span>
+                                            </div>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>⚡ Non-Creature:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.noncreature}</span>
+                                            </div>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>🌍 Lands:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.lands}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Quick Totals (Category-level) */}
                                 <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid rgba(212, 175, 55, 0.5)'}}>
                                     <div style={{fontWeight: 600, marginBottom: '1rem', color: 'var(--gold)', fontSize: '0.9rem'}}>⚡ Quick Totals</div>
@@ -5094,11 +5877,27 @@ return (
                 }));
             };
 
-            const sideboardTotal = useMemo(() => {
-                const detailedTotal = Object.values(sideboardCategories).reduce((sum, val) => sum + val, 0);
-                const quickTotal = Object.values(sideboardQuickInputs).reduce((sum, val) => sum + val, 0);
-                return detailedTotal + quickTotal;
-            }, [sideboardCategories, sideboardQuickInputs]);
+            const sideboardTotals = useMemo(() => {
+                const getCategoryKeys = (majorGroupId) => {
+                    const keys = [];
+                    DECK_CATEGORIES[majorGroupId].categories.forEach(cat => {
+                        cat.subcategories.forEach(sub => keys.push(sub.id));
+                    });
+                    return keys;
+                };
+
+                // Calculate detailed totals from sideboard subcategories
+                const lands = getCategoryKeys('lands')
+                    .reduce((sum, key) => sum + (sideboardCategories[key] || 0), 0);
+                const creatures = getCategoryKeys('creatures')
+                    .reduce((sum, key) => sum + (sideboardCategories[key] || 0), 0);
+                const noncreature = getCategoryKeys('noncreature')
+                    .reduce((sum, key) => sum + (sideboardCategories[key] || 0), 0);
+                
+                const total = lands + creatures + noncreature;
+
+                return { lands, creatures, noncreature, total };
+            }, [sideboardCategories]);
 
             // Calculate totals
             const totals = useMemo(() => {
@@ -5296,7 +6095,7 @@ return (
             };
 
             return (
-                <div className="modal-overlay" onClick={handleClose}>
+                <div className="modal-overlay" >
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h2 className="modal-title">Edit Deck</h2>
@@ -5325,10 +6124,10 @@ return (
                                             gap: '0.5rem',
                                             fontWeight: 600,
                                             color: 'var(--gold)',
-                                            fontSize: '1rem'
+                                            fontSize: '1.15rem'
                                         }}>
                                             <span>🌟</span>
-                                            <span>Share This Deck Publicly</span>
+                                            <span>Help others brew epic decks - share yours!</span>
                                         </div>
                                         <label style={{
                                             position: 'relative',
@@ -5369,18 +6168,18 @@ return (
                                         </label>
                                     </div>
                                     <div style={{
-                                        fontSize: '0.9rem',
+                                        fontSize: '1.15rem',
                                         color: 'var(--text-secondary)',
                                         lineHeight: '1.6',
                                         marginTop: '0.5rem'
                                     }}>
                                         {deckData.isPublic ? (
                                             <span>
-                                                ⚔️ <strong style={{color: 'var(--gold)'}}>Your deck will be shared!</strong> Other planeswalkers can learn from your strategy and deck ratios. Together, we build a stronger Commander community! 🎲
+                                                ✨ <strong style={{color: 'var(--gold)'}}>Deck is public!</strong> Inspire other commanders! 🔥
                                             </span>
                                         ) : (
                                             <span>
-                                                🔒 <strong>Deck is private.</strong> Share it publicly to help fellow planeswalkers learn from your strategy! Public decks inspire better deckbuilding across the multiverse. ✨
+                                                🔒 <strong>Private deck.</strong> Share your tech with the community! 🎯
                                             </span>
                                         )}
                                     </div>
@@ -5608,8 +6407,8 @@ return (
                                                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.8rem'}}>
                                                                         <h4 style={{
                                                                             color: 'var(--accent-bright)',
-                                                                            fontSize: '0.95rem',
-                                                                            fontWeight: 600,
+                                                                            fontSize: '1.1rem',
+                                                                            fontWeight: 700,
                                                                             textTransform: 'uppercase',
                                                                             letterSpacing: '0.5px',
                                                                             margin: 0
@@ -5656,7 +6455,7 @@ return (
                                                                                 borderRadius: '4px'
                                                                             }}>
                                                                                 <label style={{
-                                                                                    fontSize: '0.85rem',
+                                                                                    fontSize: '0.65rem',
                                                                                     color: 'var(--text-secondary)',
                                                                                     flex: 1
                                                                                 }}>
@@ -5717,9 +6516,9 @@ return (
                                                 fontSize: '0.85rem',
                                                 fontWeight: 700
                                             }}>
-                                                {sideboardTotal}
+                                                {sideboardTotals.total}
                                             </span>
-                                            {sideboardTotal > 0 && (
+                                            {sideboardTotals.total > 0 && (
                                                 <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>
                                                     • {(() => {
                                                         const creatures = Object.entries(DECK_CATEGORIES.creatures.categories).reduce((sum, [_, category]) => {
@@ -5753,7 +6552,7 @@ return (
                                     </button>
                                     
                                     {/* Sideboard Summary */}
-                                    {sideboardTotal > 0 && !sideboardOpen && (
+                                    {sideboardTotals.total > 0 && !sideboardOpen && (
                                         <div style={{
                                             marginTop: '0.8rem',
                                             padding: '1rem',
@@ -6357,6 +7156,27 @@ return (
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>⚡ Non-Creature</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.noncreature}</div>
                                 </div>
+
+                                {/* Sideboard Totals */}
+                                {sideboardTotals.total > 0 && (
+                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
+                                        <div style={{fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '1rem'}}>📦 Sideboard (Total: {sideboardTotals.total})</div>
+                                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem'}}>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>🧟 Creatures:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.creatures}</span>
+                                            </div>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>⚡ Non-Creature:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.noncreature}</span>
+                                            </div>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>🌍 Lands:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.lands}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Quick Totals (Category-level) */}
                                 <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid rgba(212, 175, 55, 0.5)'}}>
