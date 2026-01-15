@@ -1562,7 +1562,70 @@ return (
 
       
                 <>
-                    <header className="app-header">
+                    {/* MOBILE HEADER - Simple Home + Account */}
+                    <header className="app-header mobile-header-only" style={{display: 'none'}}>
+                        <style>{`
+                            @media (max-width: 768px) {
+                                .mobile-header-only {
+                                    display: flex !important;
+                                }
+                                .desktop-header-only {
+                                    display: none !important;
+                                }
+                            }
+                        `}</style>
+                        <div className="header-content" style={{justifyContent: 'space-between', padding: '0.75rem 1rem'}}>
+                            <button 
+                                className="btn btn-secondary"
+                                onClick={() => setView('home')}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    padding: '0.75rem 1.5rem',
+                                    fontSize: '1.1rem'
+                                }}
+                            >
+                                <span style={{fontSize: '1.5rem'}}>🏠</span>
+                                <span>Home</span>
+                            </button>
+                            
+                            {user ? (
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => setShowSettings(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.75rem 1.5rem',
+                                        fontSize: '1.1rem'
+                                    }}
+                                >
+                                    <span style={{fontSize: '1.5rem'}}>👤</span>
+                                    <span>Account</span>
+                                </button>
+                            ) : (
+                                <button 
+                                    className="btn btn-primary"
+                                    onClick={() => setShowAuthModal(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.75rem 1.5rem',
+                                        fontSize: '1.1rem'
+                                    }}
+                                >
+                                    <span style={{fontSize: '1.5rem'}}>🔑</span>
+                                    <span>Login</span>
+                                </button>
+                            )}
+                        </div>
+                    </header>
+
+                    {/* DESKTOP HEADER - Full Navigation */}
+                    <header className="app-header desktop-header-only">
                         <div className="header-content">
                             <div className="logo" onClick={() => setView('home')} style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
                                 <svg width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
@@ -1731,12 +1794,7 @@ return (
 
                                     <button 
                                         className="mobile-action-button btn btn-secondary"
-                                        onClick={() => {
-                                            const calc = document.querySelector('.featured-calculator-box');
-                                            if (calc) {
-                                                calc.scrollIntoView({behavior: 'smooth', block: 'start'});
-                                            }
-                                        }}
+                                        onClick={() => setView('calculator')}
                                     >
                                         <span>⚗️</span>
                                         <span>Mana Calculator</span>
@@ -2376,6 +2434,32 @@ return (
                             removeFromPublicDecks={removeFromPublicDecks}
                             loadPublicDecks={loadPublicDecks}
                         />
+                    )}
+
+                    {/* Mana Calculator View - Simplified for Mobile */}
+                    {view === 'calculator' && (
+                        <div className="container" style={{padding: '1rem', maxWidth: '600px', margin: '2rem auto'}}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem'}}>
+                                <h2 style={{
+                                    fontFamily: 'Cinzel',
+                                    color: 'var(--gold)',
+                                    margin: 0,
+                                    fontSize: '1.8rem'
+                                }}>
+                                    Mana Calculator
+                                </h2>
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => setView('home')}
+                                    style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+                                >
+                                    <span>🏠</span>
+                                    <span>Back</span>
+                                </button>
+                            </div>
+                            
+                            <ManaCalculator />
+                        </div>
                     )}
 
                     {/* My Decks View */}
