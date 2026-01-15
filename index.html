@@ -1567,13 +1567,15 @@ return (
                         <style>{`
                             @media (max-width: 768px) {
                                 .mobile-header-only {
-                                    display: flex !important;
+                                    display: block !important;
                                 }
                                 .desktop-header-only {
                                     display: none !important;
                                 }
                             }
                         `}</style>
+                        
+                        {/* Row 1: Main header with logo and buttons */}
                         <div className="header-content" style={{
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -1681,6 +1683,45 @@ return (
                                     </button>
                                 )}
                             </div>
+                        </div>
+                        
+                        {/* Row 2: Small text + Mana Calc button */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '0.5rem 1rem',
+                            background: 'rgba(0,0,0,0.2)',
+                            borderTop: '1px solid var(--border-color)'
+                        }}>
+                            {!user && (
+                                <span style={{
+                                    fontSize: '0.75rem',
+                                    color: 'var(--text-muted)',
+                                    fontStyle: 'italic'
+                                }}>
+                                    Create an account to save your decks
+                                </span>
+                            )}
+                            {user && (
+                                <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>
+                                    Welcome back!
+                                </span>
+                            )}
+                            <button 
+                                className="btn btn-secondary"
+                                onClick={() => setView('calculator')}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.3rem',
+                                    padding: '0.4rem 0.75rem',
+                                    fontSize: '0.8rem'
+                                }}
+                            >
+                                <span style={{fontSize: '1rem'}}>⚗️</span>
+                                <span>Mana Calc</span>
+                            </button>
                         </div>
                     </header>
 
@@ -2570,7 +2611,7 @@ return (
                                     </button>
                                 </div>
                                 
-                                <ManaCalculator />
+                                <StandaloneManaCalculator />
                             </div>
                         </div>
                     )}
