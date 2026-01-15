@@ -1639,15 +1639,14 @@ return (
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center',
-                                        width: '45px',
-                                        height: '45px',
-                                        padding: '0.5rem',
-                                        fontSize: '1.5rem',
-                                        borderRadius: '8px'
+                                        gap: '0.3rem',
+                                        padding: '0.5rem 0.75rem',
+                                        fontSize: '0.85rem',
+                                        borderRadius: '8px',
+                                        whiteSpace: 'nowrap'
                                     }}
                                 >
-                                    ⚗️
+                                    Mana Calc
                                 </button>
                                 
                                 {user ? (
@@ -2565,38 +2564,24 @@ return (
                             padding: '1rem'
                         }}>
                             <div style={{
-                                maxWidth: '600px',
-                                margin: '0 auto',
-                                padding: '1.5rem',
-                                background: 'var(--bg-secondary)',
-                                borderRadius: '12px',
-                                border: '2px solid var(--border-color)'
+                                maxWidth: '100%',
+                                margin: '0 auto'
                             }}>
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    marginBottom: '1.5rem',
-                                    paddingBottom: '1rem',
-                                    borderBottom: '2px solid var(--border-color)'
-                                }}>
-                                    <h2 style={{
-                                        fontFamily: 'Cinzel',
-                                        color: 'var(--gold)',
-                                        margin: 0,
-                                        fontSize: '1.5rem'
-                                    }}>
-                                        ⚗️ Mana Calc
-                                    </h2>
-                                    <button 
-                                        className="btn btn-secondary"
-                                        onClick={() => setView('home')}
-                                        style={{display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', padding: '0.5rem 1rem'}}
-                                    >
-                                        <span>🏠</span>
-                                        <span>Back</span>
-                                    </button>
-                                </div>
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => setView('home')}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        fontSize: '0.9rem',
+                                        padding: '0.5rem 1rem',
+                                        marginBottom: '1rem'
+                                    }}
+                                >
+                                    <span>🏠</span>
+                                    <span>Back</span>
+                                </button>
                                 
                                 <StandaloneManaCalculator />
                             </div>
@@ -3420,6 +3405,7 @@ return (
             const [showLandsHelp, setShowLandsHelp] = useState(false);
             const [showPipsSection, setShowPipsSection] = useState(true);
             const [showLandsSection, setShowLandsSection] = useState(true);
+            const [showTopHelp, setShowTopHelp] = useState(false);
 
             const calculateManaBase = () => {
                 const colors = ['W', 'U', 'B', 'R', 'G'];
@@ -3524,11 +3510,81 @@ return (
             ];
 
             return (
-                <div className="mana-calculator" style={{maxWidth: '1000px', margin: '0 auto'}}>
-                    <div className="calculator-title" style={{textAlign: 'center'}}>⚗️ Mana Base Calculator</div>
-                    <div style={{fontSize: '1rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center'}}>
-                        Build your optimal mana base based on your deck's color requirements
+                <div className="mana-calculator" style={{maxWidth: '100%', margin: '0 auto'}}>
+                    {/* Top Help Button */}
+                    <div style={{marginBottom: '1.5rem', textAlign: 'right'}}>
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => setShowTopHelp(!showTopHelp)}
+                            style={{
+                                padding: '0.5rem 1rem',
+                                fontSize: '0.9rem',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}
+                        >
+                            {showTopHelp ? '▼ Hide Help' : 'ℹ️ Help'}
+                        </button>
                     </div>
+                    
+                    {/* Expandable Help Section */}
+                    {showTopHelp && (
+                        <div style={{
+                            background: 'var(--bg-secondary)',
+                            border: '2px solid var(--border-color)',
+                            borderRadius: '12px',
+                            padding: '1.5rem',
+                            marginBottom: '1.5rem',
+                            fontSize: '0.95rem',
+                            lineHeight: '1.6'
+                        }}>
+                            <h3 style={{
+                                fontFamily: 'Cinzel',
+                                color: 'var(--gold)',
+                                marginTop: 0,
+                                marginBottom: '1rem',
+                                fontSize: '1.3rem'
+                            }}>
+                                📚 How to Use the Mana Calculator
+                            </h3>
+                            
+                            <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
+                                <strong>Step 1: Enter Your Total Lands</strong><br/>
+                                <span style={{color: 'var(--text-secondary)'}}>
+                                    Start with how many lands you want in your deck (usually 36-40 for Commander).
+                                </span>
+                            </div>
+                            
+                            <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
+                                <strong>Step 2: Count Mana Pips from Spells</strong><br/>
+                                <span style={{color: 'var(--text-secondary)'}}>
+                                    Look at all your spells and count colored mana symbols (W/U/B/R/G). 
+                                    The calculator weights them by importance: {'{W}{W}'} counts more than {'{1}{W}'}.
+                                </span>
+                            </div>
+                            
+                            <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
+                                <strong>Step 3: Count Your Dual Lands</strong><br/>
+                                <span style={{color: 'var(--text-secondary)'}}>
+                                    Enter how many dual lands (shocklands, fetchlands, etc.) you're already running.
+                                </span>
+                            </div>
+                            
+                            <div style={{
+                                background: 'rgba(212, 175, 55, 0.15)',
+                                border: '1px solid var(--gold)',
+                                borderRadius: '8px',
+                                padding: '1rem',
+                                marginTop: '1rem'
+                            }}>
+                                <strong style={{color: 'var(--gold)'}}>💡 Result:</strong>
+                                <p style={{margin: '0.5rem 0 0 0', color: 'var(--text-secondary)'}}>
+                                    The calculator tells you exactly how many basic lands of each color you need to reliably cast your spells!
+                                </p>
+                            </div>
+                        </div>
+                    )}
 
                     <div style={{marginBottom: '1.5rem'}}>
                         <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
