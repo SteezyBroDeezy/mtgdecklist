@@ -1562,7 +1562,7 @@ return (
 
       
                 <>
-                    {/* MOBILE HEADER - Logo + Title + Login/Settings */}
+                    {/* MOBILE HEADER - Logo + Title + Buttons */}
                     <header className="app-header mobile-header-only" style={{display: 'none'}}>
                         <style>{`
                             @media (max-width: 768px) {
@@ -1575,7 +1575,6 @@ return (
                             }
                         `}</style>
                         
-                        {/* Row 1: Main header with logo and buttons */}
                         <div className="header-content" style={{
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -1631,8 +1630,26 @@ return (
                                 </svg>
                             </div>
                             
-                            {/* Login or Settings + Sign Out */}
+                            {/* Mana Calc + Login/Settings Buttons */}
                             <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                                {/* Mana Calc Button - Always visible */}
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => setView('calculator')}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: '45px',
+                                        height: '45px',
+                                        padding: '0.5rem',
+                                        fontSize: '1.5rem',
+                                        borderRadius: '8px'
+                                    }}
+                                >
+                                    ⚗️
+                                </button>
+                                
                                 {user ? (
                                     <>
                                         <button 
@@ -1683,45 +1700,6 @@ return (
                                     </button>
                                 )}
                             </div>
-                        </div>
-                        
-                        {/* Row 2: Small text + Mana Calc button */}
-                        <div style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '0.5rem 1rem',
-                            background: 'rgba(0,0,0,0.2)',
-                            borderTop: '1px solid var(--border-color)'
-                        }}>
-                            {!user && (
-                                <span style={{
-                                    fontSize: '0.75rem',
-                                    color: 'var(--text-muted)',
-                                    fontStyle: 'italic'
-                                }}>
-                                    Create an account to save your decks
-                                </span>
-                            )}
-                            {user && (
-                                <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>
-                                    Welcome back!
-                                </span>
-                            )}
-                            <button 
-                                className="btn btn-secondary"
-                                onClick={() => setView('calculator')}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.3rem',
-                                    padding: '0.4rem 0.75rem',
-                                    fontSize: '0.8rem'
-                                }}
-                            >
-                                <span style={{fontSize: '1rem'}}>⚗️</span>
-                                <span>Mana Calc</span>
-                            </button>
                         </div>
                     </header>
 
@@ -1906,6 +1884,16 @@ return (
                                     <p style={{color: 'var(--text-secondary)', fontSize: '1.1rem'}}>
                                         Track Commander deck ratios
                                     </p>
+                                    {!user && (
+                                        <p style={{
+                                            color: 'var(--gold)',
+                                            fontSize: '0.9rem',
+                                            fontStyle: 'italic',
+                                            marginTop: '0.5rem'
+                                        }}>
+                                            💾 Create an account to save your decks
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div style={{maxWidth: '500px', margin: '0 auto'}}>
