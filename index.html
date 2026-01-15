@@ -1562,7 +1562,7 @@ return (
 
       
                 <>
-                    {/* MOBILE HEADER - Simple Home + Account */}
+                    {/* MOBILE HEADER - Logo + Title + Login/Settings */}
                     <header className="app-header mobile-header-only" style={{display: 'none'}}>
                         <style>{`
                             @media (max-width: 768px) {
@@ -1574,53 +1574,113 @@ return (
                                 }
                             }
                         `}</style>
-                        <div className="header-content" style={{justifyContent: 'space-between', padding: '0.75rem 1rem'}}>
-                            <button 
-                                className="btn btn-secondary"
-                                onClick={() => setView('home')}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                    padding: '0.75rem 1.5rem',
-                                    fontSize: '1.1rem'
-                                }}
-                            >
-                                <span style={{fontSize: '1.5rem'}}>🏠</span>
-                                <span>Home</span>
-                            </button>
+                        <div className="header-content" style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '0.75rem 1rem',
+                            width: '100%'
+                        }}>
+                            {/* Logo + Title */}
+                            <div onClick={() => setView('home')} style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                cursor: 'pointer',
+                                flex: 1
+                            }}>
+                                <svg width="35" height="35" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
+                                    <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
+                                    <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
+                                    <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
+                                    <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
+                                    <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
+                                    <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
+                                    <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                    <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                    <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                    <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                    <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
+                                    <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
+                                    <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                </svg>
+                                <span style={{
+                                    fontFamily: 'Pirata One, cursive',
+                                    fontSize: '1.3rem',
+                                    color: 'var(--bone)',
+                                    whiteSpace: 'nowrap'
+                                }}>
+                                    MTG Deck Skeleton
+                                </span>
+                                <svg width="35" height="35" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
+                                    <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
+                                    <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
+                                    <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
+                                    <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
+                                    <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
+                                    <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
+                                    <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                    <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                    <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                    <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                    <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
+                                    <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
+                                    <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                </svg>
+                            </div>
                             
-                            {user ? (
-                                <button 
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowSettings(true)}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.5rem',
-                                        padding: '0.75rem 1.5rem',
-                                        fontSize: '1.1rem'
-                                    }}
-                                >
-                                    <span style={{fontSize: '1.5rem'}}>👤</span>
-                                    <span>Account</span>
-                                </button>
-                            ) : (
-                                <button 
-                                    className="btn btn-primary"
-                                    onClick={() => setShowAuthModal(true)}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.5rem',
-                                        padding: '0.75rem 1.5rem',
-                                        fontSize: '1.1rem'
-                                    }}
-                                >
-                                    <span style={{fontSize: '1.5rem'}}>🔑</span>
-                                    <span>Login</span>
-                                </button>
-                            )}
+                            {/* Login or Settings + Sign Out */}
+                            <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                                {user ? (
+                                    <>
+                                        <button 
+                                            className="btn btn-secondary"
+                                            onClick={() => setShowSettings(true)}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: '45px',
+                                                height: '45px',
+                                                padding: '0.5rem',
+                                                fontSize: '1.5rem',
+                                                borderRadius: '8px'
+                                            }}
+                                        >
+                                            ⚙️
+                                        </button>
+                                        <button 
+                                            className="btn btn-secondary"
+                                            onClick={() => {
+                                                auth.signOut();
+                                                setView('home');
+                                            }}
+                                            style={{
+                                                padding: '0.5rem 1rem',
+                                                fontSize: '0.9rem',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
+                                            Sign Out
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button 
+                                        className="btn btn-primary"
+                                        onClick={() => setShowAuthModal(true)}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+                                            padding: '0.5rem 1rem',
+                                            fontSize: '0.9rem'
+                                        }}
+                                    >
+                                        <span>🔑</span>
+                                        <span>Login</span>
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </header>
 
@@ -1767,9 +1827,41 @@ return (
                             {/* MOBILE-ONLY: Simplified Action Menu */}
                             <div className="mobile-simple-home" style={{display: 'none'}}>
                                 <div style={{textAlign: 'center', marginBottom: '2rem'}}>
-                                    <h1 style={{fontFamily: 'Pirata One, cursive', fontSize: '2.5rem', color: 'var(--bone)', margin: '1rem 0'}}>
-                                        Deck Skeleton
-                                    </h1>
+                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1rem'}}>
+                                        <svg width="50" height="50" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
+                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
+                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
+                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
+                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
+                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                        </svg>
+                                        <h1 style={{fontFamily: 'Pirata One, cursive', fontSize: '2.5rem', color: 'var(--bone)', margin: 0}}>
+                                            MTG Deck Skeleton
+                                        </h1>
+                                        <svg width="50" height="50" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
+                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
+                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
+                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
+                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
+                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                        </svg>
+                                    </div>
                                     <p style={{color: 'var(--text-secondary)', fontSize: '1.1rem'}}>
                                         Track Commander deck ratios
                                     </p>
@@ -1843,7 +1935,7 @@ return (
                                         <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
                                         <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
                                     </svg>
-                                    <h1 style={{fontFamily: 'Pirata One, cursive', fontSize: '3.5rem', letterSpacing: '3px', margin: 0}}>Deck Skeleton</h1>
+                                    <h1 style={{fontFamily: 'Pirata One, cursive', fontSize: '3.5rem', letterSpacing: '3px', margin: 0}}>MTG Deck Skeleton</h1>
                                     <svg width="60" height="60" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
                                         <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
                                         <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
@@ -2438,27 +2530,48 @@ return (
 
                     {/* Mana Calculator View - Simplified for Mobile */}
                     {view === 'calculator' && (
-                        <div className="container" style={{padding: '1rem', maxWidth: '600px', margin: '2rem auto'}}>
-                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem'}}>
-                                <h2 style={{
-                                    fontFamily: 'Cinzel',
-                                    color: 'var(--gold)',
-                                    margin: 0,
-                                    fontSize: '1.8rem'
+                        <div className="container" style={{
+                            minHeight: '100vh',
+                            background: 'var(--bg-primary)',
+                            paddingTop: '2rem',
+                            paddingBottom: '2rem'
+                        }}>
+                            <div style={{
+                                maxWidth: '800px',
+                                margin: '0 auto',
+                                padding: '1rem',
+                                background: 'var(--bg-secondary)',
+                                borderRadius: '12px',
+                                border: '2px solid var(--border-color)'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginBottom: '2rem',
+                                    paddingBottom: '1rem',
+                                    borderBottom: '2px solid var(--border-color)'
                                 }}>
-                                    Mana Calculator
-                                </h2>
-                                <button 
-                                    className="btn btn-secondary"
-                                    onClick={() => setView('home')}
-                                    style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
-                                >
-                                    <span>🏠</span>
-                                    <span>Back</span>
-                                </button>
+                                    <h2 style={{
+                                        fontFamily: 'Cinzel',
+                                        color: 'var(--gold)',
+                                        margin: 0,
+                                        fontSize: '1.8rem'
+                                    }}>
+                                        Mana Calculator
+                                    </h2>
+                                    <button 
+                                        className="btn btn-secondary"
+                                        onClick={() => setView('home')}
+                                        style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+                                    >
+                                        <span>🏠</span>
+                                        <span>Back</span>
+                                    </button>
+                                </div>
+                                
+                                <ManaCalculator />
                             </div>
-                            
-                            <ManaCalculator />
                         </div>
                     )}
 
