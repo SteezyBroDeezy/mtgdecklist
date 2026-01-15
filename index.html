@@ -3418,6 +3418,8 @@ return (
             const [randomQuote, setRandomQuote] = useState('');
             const [showPipsHelp, setShowPipsHelp] = useState(false);
             const [showLandsHelp, setShowLandsHelp] = useState(false);
+            const [showPipsSection, setShowPipsSection] = useState(true);
+            const [showLandsSection, setShowLandsSection] = useState(true);
 
             const calculateManaBase = () => {
                 const colors = ['W', 'U', 'B', 'R', 'G'];
@@ -3587,59 +3589,76 @@ return (
                         background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
                         border: '3px solid rgba(66, 135, 245, 0.4)',
                         borderRadius: '12px',
-                        padding: '1.5rem',
+                        padding: '1rem',
                         marginBottom: '2rem'
                     }}>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.8rem',
-                            marginBottom: '0.5rem'
-                        }}>
-                            <div style={{
-                                background: 'linear-gradient(135deg, #4287f5 0%, #886aea 100%)',
-                                color: 'white',
-                                width: '38px',
-                                height: '38px',
-                                borderRadius: '50%',
+                        {/* Clickable Header */}
+                        <div 
+                            style={{
                                 display: 'flex',
+                                justifyContent: 'space-between',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                fontWeight: 700,
-                                fontSize: '1.2rem'
-                            }}>
-                                1
-                            </div>
-                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                <label style={{fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)', margin: 0}}>
-                                    🎴 Count Mana Pips from Spells
+                                cursor: 'pointer',
+                                marginBottom: showPipsSection ? '1rem' : '0',
+                                padding: '0.5rem'
+                            }}
+                            onClick={() => setShowPipsSection(!showPipsSection)}
+                        >
+                            <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #4287f5 0%, #886aea 100%)',
+                                    color: 'white',
+                                    width: '38px',
+                                    height: '38px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: '1.2rem'
+                                }}>
+                                    1
+                                </div>
+                                <label style={{fontWeight: 700, fontSize: '1.3rem', color: 'var(--text-primary)', margin: 0, cursor: 'pointer'}}>
+                                    🎴 Count Mana Pips from Your SPELLS
                                 </label>
-                                <button
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowPipsHelp(!showPipsHelp)}
-                                    style={{padding: '0.3rem 0.7rem', fontSize: '0.8rem'}}
-                                >
-                                    {showPipsHelp ? '▼ Hide' : '▶ Help'}
-                                </button>
+                            </div>
+                            <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
+                                {showPipsSection ? '▼' : '▶'}
                             </div>
                         </div>
-                        {showPipsHelp && (
-                            <div style={{
-                                background: 'rgba(66, 135, 245, 0.15)',
-                                border: '1px solid rgba(66, 135, 245, 0.3)',
-                                borderRadius: '8px',
-                                padding: '1rem',
-                                marginBottom: '1rem',
-                                fontSize: '0.85rem'
-                            }}>
-                                <div style={{color: 'var(--text-secondary)', lineHeight: '1.6'}}>
-                                    Count colored mana symbols in spell costs.
-                                    <br/><br/>
-                                    <strong>Example:</strong> Wrath of God {'{2}{W}{W}'} = 2 White pips<br/>
-                                    <strong>Example:</strong> Sol Ring {'{1}'} = 0 pips
+
+                        {/* Collapsible Content */}
+                        {showPipsSection && (
+                            <>
+                        <div style={{
+                            background: 'rgba(66, 135, 245, 0.15)',
+                            border: '1px solid rgba(66, 135, 245, 0.3)',
+                            borderRadius: '8px',
+                            padding: '1rem',
+                            marginBottom: '1rem',
+                            marginLeft: '2.5rem'
+                        }}>
+                            <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem'}}>
+                                What to count:
+                            </div>
+                            <div style={{color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.6'}}>
+                                Look at <strong>all the spells in your deck</strong> (creatures, instants, sorceries, enchantments, etc.) and count the colored mana symbols {'{W}'}{'{U}'}{'{B}'}{'{R}'}{'{G}'} in their mana costs.
+                                <br/><br/>
+                                <strong>Example:</strong> Wrath of God {'{2}{W}{W}'} = 2 White pips (double)<br/>
+                                <strong>Example:</strong> Sol Ring {'{1}'} = 0 pips (colorless doesn't count)
+                                <br/><br/>
+                                <div style={{
+                                    background: 'rgba(212, 175, 55, 0.15)',
+                                    border: '1px solid rgba(212, 175, 55, 0.3)',
+                                    borderRadius: '6px',
+                                    padding: '0.8rem',
+                                    fontSize: '0.9rem'
+                                }}>
+                                    <strong style={{color: 'var(--accent-bright)'}}>🧠 How it works:</strong> The calculator <strong>weights pips</strong> intelligently. Cards with {'{U}{U}'} (double) count more heavily than cards with {'{1}{U}'} (single) because they're harder to cast. This ensures your mana base can reliably cast your most color-intensive spells!
                                 </div>
                             </div>
-                        )}
+                        </div>
                         <div className="pip-counter" style={{overflowX: 'auto'}}>
                             {['W', 'U', 'B', 'R', 'G'].map(color => (
                                 <div key={color} className="pip-input-group" style={{minWidth: '160px'}}>
@@ -3685,6 +3704,8 @@ return (
                                 </div>
                             ))}
                         </div>
+                            </>
+                        )}
                     </div>
 
                     {/* STEP 2: Dual Lands */}
@@ -3692,59 +3713,68 @@ return (
                         background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
                         border: '3px solid rgba(0, 115, 62, 0.4)',
                         borderRadius: '12px',
-                        padding: '1.5rem',
+                        padding: '1rem',
                         marginBottom: '2rem'
                     }}>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.8rem',
-                            marginBottom: '0.5rem'
-                        }}>
-                            <div style={{
-                                background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
-                                color: 'white',
-                                width: '38px',
-                                height: '38px',
-                                borderRadius: '50%',
+                        {/* Clickable Header */}
+                        <div 
+                            style={{
                                 display: 'flex',
+                                justifyContent: 'space-between',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                fontWeight: 700,
-                                fontSize: '1.2rem'
-                            }}>
-                                2
-                            </div>
-                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                <label style={{fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)', margin: 0}}>
-                                    🏔️ Count Actual Lands in Deck
+                                cursor: 'pointer',
+                                marginBottom: showLandsSection ? '1rem' : '0',
+                                padding: '0.5rem'
+                            }}
+                            onClick={() => setShowLandsSection(!showLandsSection)}
+                        >
+                            <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
+                                    color: 'white',
+                                    width: '38px',
+                                    height: '38px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: '1.2rem'
+                                }}>
+                                    2
+                                </div>
+                                <label style={{fontWeight: 700, fontSize: '1.3rem', color: 'var(--text-primary)', margin: 0, cursor: 'pointer'}}>
+                                    🏔️ Count Actual LANDS in Your Deck
                                 </label>
-                                <button
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowLandsHelp(!showLandsHelp)}
-                                    style={{padding: '0.3rem 0.7rem', fontSize: '0.8rem'}}
-                                >
-                                    {showLandsHelp ? '▼ Hide' : '▶ Help'}
-                                </button>
+                            </div>
+                            <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
+                                {showLandsSection ? '▼' : '▶'}
                             </div>
                         </div>
-                        {showLandsHelp && (
-                            <div style={{
-                                background: 'rgba(0, 115, 62, 0.15)',
-                                border: '1px solid rgba(0, 115, 62, 0.3)',
-                                borderRadius: '8px',
-                                padding: '1rem',
-                                marginBottom: '1rem',
-                                fontSize: '0.85rem'
-                            }}>
-                                <div style={{color: 'var(--text-secondary)', lineHeight: '1.6'}}>
-                                    How many dual lands (2 colors) are in your deck?
-                                    <br/><br/>
-                                    <strong>Include:</strong> Shocklands, Fetchlands, Pain lands, etc.
-                                </div>
+
+                        {/* Collapsible Content */}
+                        {showLandsSection && (
+                            <>
+                        <div style={{
+                            background: 'rgba(0, 115, 62, 0.15)',
+                            border: '1px solid rgba(0, 115, 62, 0.3)',
+                            borderRadius: '8px',
+                            padding: '1rem',
+                            marginBottom: '1rem',
+                            marginLeft: '2.5rem'
+                        }}>
+                            <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem'}}>
+                                What to count:
                             </div>
-                        )}
-                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem'}}>
+                            <div style={{color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.6'}}>
+                                How many <strong>dual lands</strong> (lands that produce or fetch 2 colors) are you actually running in your deck? This is completely separate from Step 1.
+                                <br/><br/>
+                                <strong>Include:</strong> Shocklands (Temple Garden), Fetchlands (Flooded Strand), Pain lands (Adarkar Wastes), Check lands, etc.
+                                <br/>
+                                <strong>Example:</strong> If you have 4 Temple Gardens and 3 Windswept Heaths in your deck, enter 7 for Selesnya below.
+                            </div>
+                        </div>
+                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', paddingLeft: '2.5rem'}}>
                             {colorPairs.map(({pair, colors, name}) => (
                                 <div key={pair}>
                                     <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem'}}>
@@ -3763,6 +3793,8 @@ return (
                                 </div>
                             ))}
                         </div>
+                            </>
+                        )}
                     </div>
 
                     {/* Calculate Button */}
