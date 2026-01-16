@@ -4114,7 +4114,8 @@ return (
                             borderRadius: '8px',
                             padding: '1rem',
                             marginBottom: '1rem',
-                            marginLeft: '2.5rem'
+                            marginLeft: '2.5rem',
+                            display: window.innerWidth <= 768 ? 'none' : 'block'
                         }}>
                             <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem'}}>
                                 What to count:
@@ -4270,7 +4271,8 @@ return (
                             borderRadius: '8px',
                             padding: '1rem',
                             marginBottom: '1rem',
-                            marginLeft: '2.5rem'
+                            marginLeft: '2.5rem',
+                            display: window.innerWidth <= 768 ? 'none' : 'block'
                         }}>
                             <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem'}}>
                                 What to count:
@@ -6239,22 +6241,100 @@ return (
                                                                                 }}>
                                                                                     {sub.name}
                                                                                 </label>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    className="small-input"
-                                                                                    value={deckData.categories[sub.id] || 0}
-                                                                                    onChange={(e) => {
-                                                                                        const newCategories = {...deckData.categories};
-                                                                                        newCategories[sub.id] = parseInt(e.target.value) || 0;
-                                                                                        setDeckData({...deckData, categories: newCategories});
-                                                                                    }}
-                                                                                    min="0"
-                                                                                    style={{
-                                                                                        width: '60px',
-                                                                                        padding: '0.3rem',
-                                                                                        fontSize: '0.85rem'
-                                                                                    }}
-                                                                                />
+                                                                                {window.innerWidth <= 768 ? (
+                                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            onClick={(e) => {
+                                                                                                e.preventDefault();
+                                                                                                const currentValue = parseInt(deckData.categories[sub.id]) || 0;
+                                                                                                if (currentValue > 0) {
+                                                                                                    const newCategories = {...deckData.categories};
+                                                                                                    newCategories[sub.id] = currentValue - 1;
+                                                                                                    setDeckData({...deckData, categories: newCategories});
+                                                                                                }
+                                                                                            }}
+                                                                                            style={{
+                                                                                                width: '28px',
+                                                                                                height: '28px',
+                                                                                                fontSize: '1rem',
+                                                                                                padding: 0,
+                                                                                                background: 'var(--bg-primary)',
+                                                                                                border: '1px solid var(--border-color)',
+                                                                                                borderRadius: '4px',
+                                                                                                color: 'var(--text-primary)',
+                                                                                                cursor: 'pointer',
+                                                                                                display: 'flex',
+                                                                                                alignItems: 'center',
+                                                                                                justifyContent: 'center',
+                                                                                                fontWeight: 'bold'
+                                                                                            }}
+                                                                                        >
+                                                                                            −
+                                                                                        </button>
+                                                                                        <input
+                                                                                            type="number"
+                                                                                            className="small-input"
+                                                                                            value={deckData.categories[sub.id] || 0}
+                                                                                            onChange={(e) => {
+                                                                                                const newCategories = {...deckData.categories};
+                                                                                                newCategories[sub.id] = parseInt(e.target.value) || 0;
+                                                                                                setDeckData({...deckData, categories: newCategories});
+                                                                                            }}
+                                                                                            min="0"
+                                                                                            style={{
+                                                                                                width: '50px',
+                                                                                                padding: '0.3rem',
+                                                                                                fontSize: '0.85rem',
+                                                                                                textAlign: 'center'
+                                                                                            }}
+                                                                                        />
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            onClick={(e) => {
+                                                                                                e.preventDefault();
+                                                                                                const currentValue = parseInt(deckData.categories[sub.id]) || 0;
+                                                                                                const newCategories = {...deckData.categories};
+                                                                                                newCategories[sub.id] = currentValue + 1;
+                                                                                                setDeckData({...deckData, categories: newCategories});
+                                                                                            }}
+                                                                                            style={{
+                                                                                                width: '28px',
+                                                                                                height: '28px',
+                                                                                                fontSize: '1rem',
+                                                                                                padding: 0,
+                                                                                                background: 'var(--bg-primary)',
+                                                                                                border: '1px solid var(--border-color)',
+                                                                                                borderRadius: '4px',
+                                                                                                color: 'var(--text-primary)',
+                                                                                                cursor: 'pointer',
+                                                                                                display: 'flex',
+                                                                                                alignItems: 'center',
+                                                                                                justifyContent: 'center',
+                                                                                                fontWeight: 'bold'
+                                                                                            }}
+                                                                                        >
+                                                                                            +
+                                                                                        </button>
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        className="small-input"
+                                                                                        value={deckData.categories[sub.id] || 0}
+                                                                                        onChange={(e) => {
+                                                                                            const newCategories = {...deckData.categories};
+                                                                                            newCategories[sub.id] = parseInt(e.target.value) || 0;
+                                                                                            setDeckData({...deckData, categories: newCategories});
+                                                                                        }}
+                                                                                        min="0"
+                                                                                        style={{
+                                                                                            width: '60px',
+                                                                                            padding: '0.3rem',
+                                                                                            fontSize: '0.85rem'
+                                                                                        }}
+                                                                                    />
+                                                                                )}
                                                                             </div>
                                                                         ))}
                                                                     </div>
@@ -7875,22 +7955,100 @@ return (
                                                                                 }}>
                                                                                     {sub.name}
                                                                                 </label>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    className="small-input"
-                                                                                    value={deckData.categories[sub.id] || 0}
-                                                                                    onChange={(e) => {
-                                                                                        const newCategories = {...deckData.categories};
-                                                                                        newCategories[sub.id] = parseInt(e.target.value) || 0;
-                                                                                        setDeckData({...deckData, categories: newCategories});
-                                                                                    }}
-                                                                                    min="0"
-                                                                                    style={{
-                                                                                        width: '60px',
-                                                                                        padding: '0.3rem',
-                                                                                        fontSize: '0.85rem'
-                                                                                    }}
-                                                                                />
+                                                                                {window.innerWidth <= 768 ? (
+                                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            onClick={(e) => {
+                                                                                                e.preventDefault();
+                                                                                                const currentValue = parseInt(deckData.categories[sub.id]) || 0;
+                                                                                                if (currentValue > 0) {
+                                                                                                    const newCategories = {...deckData.categories};
+                                                                                                    newCategories[sub.id] = currentValue - 1;
+                                                                                                    setDeckData({...deckData, categories: newCategories});
+                                                                                                }
+                                                                                            }}
+                                                                                            style={{
+                                                                                                width: '28px',
+                                                                                                height: '28px',
+                                                                                                fontSize: '1rem',
+                                                                                                padding: 0,
+                                                                                                background: 'var(--bg-primary)',
+                                                                                                border: '1px solid var(--border-color)',
+                                                                                                borderRadius: '4px',
+                                                                                                color: 'var(--text-primary)',
+                                                                                                cursor: 'pointer',
+                                                                                                display: 'flex',
+                                                                                                alignItems: 'center',
+                                                                                                justifyContent: 'center',
+                                                                                                fontWeight: 'bold'
+                                                                                            }}
+                                                                                        >
+                                                                                            −
+                                                                                        </button>
+                                                                                        <input
+                                                                                            type="number"
+                                                                                            className="small-input"
+                                                                                            value={deckData.categories[sub.id] || 0}
+                                                                                            onChange={(e) => {
+                                                                                                const newCategories = {...deckData.categories};
+                                                                                                newCategories[sub.id] = parseInt(e.target.value) || 0;
+                                                                                                setDeckData({...deckData, categories: newCategories});
+                                                                                            }}
+                                                                                            min="0"
+                                                                                            style={{
+                                                                                                width: '50px',
+                                                                                                padding: '0.3rem',
+                                                                                                fontSize: '0.85rem',
+                                                                                                textAlign: 'center'
+                                                                                            }}
+                                                                                        />
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            onClick={(e) => {
+                                                                                                e.preventDefault();
+                                                                                                const currentValue = parseInt(deckData.categories[sub.id]) || 0;
+                                                                                                const newCategories = {...deckData.categories};
+                                                                                                newCategories[sub.id] = currentValue + 1;
+                                                                                                setDeckData({...deckData, categories: newCategories});
+                                                                                            }}
+                                                                                            style={{
+                                                                                                width: '28px',
+                                                                                                height: '28px',
+                                                                                                fontSize: '1rem',
+                                                                                                padding: 0,
+                                                                                                background: 'var(--bg-primary)',
+                                                                                                border: '1px solid var(--border-color)',
+                                                                                                borderRadius: '4px',
+                                                                                                color: 'var(--text-primary)',
+                                                                                                cursor: 'pointer',
+                                                                                                display: 'flex',
+                                                                                                alignItems: 'center',
+                                                                                                justifyContent: 'center',
+                                                                                                fontWeight: 'bold'
+                                                                                            }}
+                                                                                        >
+                                                                                            +
+                                                                                        </button>
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        className="small-input"
+                                                                                        value={deckData.categories[sub.id] || 0}
+                                                                                        onChange={(e) => {
+                                                                                            const newCategories = {...deckData.categories};
+                                                                                            newCategories[sub.id] = parseInt(e.target.value) || 0;
+                                                                                            setDeckData({...deckData, categories: newCategories});
+                                                                                        }}
+                                                                                        min="0"
+                                                                                        style={{
+                                                                                            width: '60px',
+                                                                                            padding: '0.3rem',
+                                                                                            fontSize: '0.85rem'
+                                                                                        }}
+                                                                                    />
+                                                                                )}
                                                                             </div>
                                                                         ))}
                                                                     </div>
