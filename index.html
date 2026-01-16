@@ -273,11 +273,12 @@
         }
 
         .modal-title {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cinzel Decorative', serif;
             font-size: 2.5rem;
-            font-weight: 900;
+            font-weight: 700;
             color: var(--gold);
             letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .close-btn {
@@ -377,12 +378,13 @@
         }
 
         .calculator-title {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cinzel Decorative', serif;
             font-size: 2rem;
-            font-weight: 900;
+            font-weight: 700;
             color: var(--gold);
             margin-bottom: 1rem;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .pip-counter {
@@ -1235,6 +1237,8 @@
             const [myDecksSearch, setMyDecksSearch] = useState('');
             const [browseSearch, setBrowseSearch] = useState('');
             const [browseSortBy, setBrowseSortBy] = useState('newest'); // NEW: Sort option
+            const [showInfoExpanded, setShowInfoExpanded] = useState(false);
+            const [showManaCalcInfo, setShowManaCalcInfo] = useState(false);
 
             // Save decks to localStorage whenever they change
             useEffect(() => {
@@ -1609,7 +1613,8 @@ return (
                                     fontFamily: 'Pirata One, cursive',
                                     fontSize: '1.3rem',
                                     color: 'var(--bone)',
-                                    whiteSpace: 'nowrap'
+                                    whiteSpace: 'nowrap',
+                                    fontFamily: 'Pirata One, cursive'
                                 }}>
                                     MTG Deck Skeleton
                                 </span>
@@ -1740,7 +1745,7 @@ return (
     <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
 </svg>
                                 <div>
-                                    <div style={{fontSize: '2.2rem', lineHeight: 1}}>MTG Deck Skeleton</div>
+                                    <div style={{fontSize: '2.2rem', lineHeight: 1, fontFamily: 'Pirata One, cursive', fontWeight: 400, letterSpacing: '2px'}}>MTG Deck Skeleton</div>
                                     <div className="logo-subtitle">+ Mana Calculator</div>
                                 </div>
                             </div>
@@ -1996,7 +2001,15 @@ return (
                                         <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
                                         <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
                                     </svg>
-                                    <h1 style={{fontFamily: 'Pirata One, cursive', fontSize: '3.5rem', letterSpacing: '3px', margin: 0}}>MTG Deck Skeleton</h1>
+                                    <h1 style={{
+                                        fontFamily: 'Cinzel Decorative, serif', 
+                                        fontSize: '3.5rem', 
+                                        fontWeight: 700,
+                                        letterSpacing: '2px', 
+                                        margin: 0,
+                                        color: 'var(--gold)',
+                                        textShadow: '3px 3px 6px rgba(0,0,0,0.7)'
+                                    }}>MTG Deck Skeleton</h1>
                                     <svg width="60" height="60" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
                                         <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
                                         <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
@@ -2014,18 +2027,20 @@ return (
                                     </svg>
                                 </div>
                                 <h2 style={{fontFamily: 'MedievalSharp, cursive', fontSize: '1.5rem', color: 'var(--bone)', marginTop: '0.5rem', marginBottom: '1.5rem'}}>+ Mana Calculator</h2>
-                                <p style={{fontSize: '1.3rem', color: 'var(--text-secondary)', marginBottom: '0.5rem', lineHeight: '1.5'}}>
-                                    Track your deck ratios by <strong style={{color: 'var(--accent-bright)'}}>categories</strong> (Creatures, Spells, Lands) and <strong style={{color: 'var(--accent-bright)'}}>subtypes</strong> (Removal, Ramp, Draw, etc.)
-                                </p>
-                                <p style={{fontSize: '1.05rem', color: 'var(--text-muted)', marginBottom: '2rem'}}>
-                                    No tedious card-by-card entry—just track the <em>counts</em> of each card type. Build optimal mana bases too!
-                                </p>
                                 
+                                {/* Desktop: Simple tagline */}
+                                <div className="desktop-only">
+                                    <p style={{fontSize: '1.15rem', color: 'var(--text-secondary)', marginBottom: '2rem', lineHeight: '1.5'}}>
+                                        Track your Commander deck ratios — no card-by-card entry needed. Store, edit, and optimize your builds with ease.
+                                    </p>
+                                </div>
+                                
+                                {/* Action Buttons - MOVED UP */}
                                 <div style={{
                                     display: 'flex', 
                                     gap: '1.5rem', 
                                     justifyContent: 'center', 
-                                    marginBottom: '1rem',
+                                    marginBottom: '2rem',
                                     flexWrap: 'wrap'
                                 }}>
                                     <button 
@@ -2080,6 +2095,108 @@ return (
                                     </button>
                                 </div>
                                 
+                                {/* Mobile: Expandable info boxes - MOVED DOWN with MORE DETAIL */}
+                                <div className="mobile-only">
+                                    {/* Main Info Button */}
+                                    <button 
+                                        onClick={() => setShowInfoExpanded(!showInfoExpanded)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '1rem',
+                                            marginBottom: '1rem',
+                                            background: 'var(--bg-secondary)',
+                                            border: '2px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)',
+                                            fontSize: '1rem',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <span>📋 What is Deck Skeleton?</span>
+                                        <span>{showInfoExpanded ? '▼' : '▶'}</span>
+                                    </button>
+                                    
+                                    {showInfoExpanded && (
+                                        <div style={{
+                                            padding: '1.2rem',
+                                            marginBottom: '1rem',
+                                            background: 'var(--bg-tertiary)',
+                                            border: '2px solid var(--accent)',
+                                            borderRadius: '8px',
+                                            fontSize: '0.95rem',
+                                            lineHeight: '1.7',
+                                            color: 'var(--text-secondary)'
+                                        }}>
+                                            <p style={{marginBottom: '0.8rem', fontWeight: 600, color: 'var(--accent-bright)'}}>
+                                                Built for 100-card Commander Magic: The Gathering decks
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                Track your deck by <strong>categories</strong> (Creatures, Non-Creature Spells, Lands) and <strong>subtypes</strong> (Removal, Ramp, Draw, Card Advantage, etc.)
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                ✨ <strong>No card-by-card entry!</strong> Just track the counts of each type
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                📊 Store deck ratios for quick editing and referencing
+                                            </p>
+                                            <p style={{marginBottom: 0}}>
+                                                🎯 Deck didn't work? Adjust ratios easily and save with an account!
+                                            </p>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Mana Calc Info Button */}
+                                    <button 
+                                        onClick={() => setShowManaCalcInfo(!showManaCalcInfo)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '1rem',
+                                            marginBottom: '1rem',
+                                            background: 'var(--bg-secondary)',
+                                            border: '2px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)',
+                                            fontSize: '1rem',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <span>⚗️ Mana Calculator Feature</span>
+                                        <span>{showManaCalcInfo ? '▼' : '▶'}</span>
+                                    </button>
+                                    
+                                    {showManaCalcInfo && (
+                                        <div style={{
+                                            padding: '1.2rem',
+                                            marginBottom: '1.5rem',
+                                            background: 'var(--bg-tertiary)',
+                                            border: '2px solid var(--gold)',
+                                            borderRadius: '8px',
+                                            fontSize: '0.95rem',
+                                            lineHeight: '1.7',
+                                            color: 'var(--text-secondary)'
+                                        }}>
+                                            <p style={{marginBottom: '0.8rem', color: 'var(--gold)', fontWeight: 600}}>
+                                                ⚡ Best for decks with 3 colors or less
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                <strong style={{color: 'var(--gold)'}}>Build optimal mana bases with precision!</strong>
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                Enter your deck's mana symbols and let the calculator determine exactly how many lands of each color you need
+                                            </p>
+                                            <p style={{marginBottom: 0}}>
+                                                ⚡ Works with any color combination — mono, dual, tri, or 5-color decks!
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                                
                                 <p style={{fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '0.5rem'}}>
                                     No account needed to use! Create an account to save your decks.
                                 </p>
@@ -2098,7 +2215,7 @@ return (
                                     textAlign: 'left'
                                 }}>
                                     <h2 style={{
-                                        fontFamily: 'Cinzel',
+                                        fontFamily: 'Pirata One, cursive',
                                         fontSize: '2.2rem',
                                         color: 'var(--gold)',
                                         marginBottom: '1.5rem',
@@ -2208,7 +2325,7 @@ return (
                                 }}>
                                     <div style={{textAlign: 'center', marginBottom: '2rem'}}>
                                         <h2 style={{
-                                            fontFamily: 'Cinzel',
+                                            fontFamily: 'Pirata One, cursive',
                                             fontSize: '2.2rem',
                                             color: 'var(--gold)',
                                             marginBottom: '0.5rem'
@@ -2231,7 +2348,7 @@ return (
                                         {/* Deck Header */}
                                         <div style={{marginBottom: '1.5rem'}}>
                                             <h3 style={{
-                                                fontFamily: 'Cinzel',
+                                                fontFamily: 'Pirata One, cursive',
                                                 fontSize: '1.8rem',
                                                 color: 'var(--accent-bright)',
                                                 marginBottom: '0.5rem'
@@ -2380,7 +2497,7 @@ return (
                                         }}>
                                             <span style={{fontSize: '1.8rem'}}>⚗️</span>
                                             <span style={{
-                                                fontFamily: 'Cinzel',
+                                                fontFamily: 'Pirata One, cursive',
                                                 fontSize: '1.5rem',
                                                 color: 'var(--gold)',
                                                 fontWeight: 700
@@ -2395,95 +2512,16 @@ return (
 
                                     <StandaloneManaCalculator />
                                 </div>
-
-                                {/* Featured Decks Section */}
-                                <div id="featured-decks" style={{textAlign: 'center', marginBottom: '2rem'}}>
-                                    <h2 style={{fontFamily: 'Cinzel', fontSize: '2rem', color: 'var(--gold)', marginBottom: '0.5rem'}}>
-                                        Featured Commander Decks
-                                    </h2>
-                                    <p style={{color: 'var(--text-secondary)', fontSize: '1.05rem', marginBottom: '1.5rem'}}>
-                                        See how different strategies use varying ratios • Explore and get inspired
-                                    </p>
-                                    
-                                    {/* Search Bar */}
-                                    <div style={{maxWidth: '500px', margin: '0 auto'}}>
-                                        <input
-                                            type="text"
-                                            placeholder="🔍 Search decks by name, commander, or strategy..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            style={{
-                                                width: '100%',
-                                                padding: '0.8rem 1.2rem',
-                                                fontSize: '1rem',
-                                                borderRadius: '50px',
-                                                border: '2px solid var(--border-color)',
-                                                background: 'var(--bg-secondary)',
-                                                color: 'var(--text-primary)',
-                                                outline: 'none',
-                                                transition: 'border-color 0.2s'
-                                            }}
-                                            onFocus={(e) => e.target.style.borderColor = 'var(--gold)'}
-                                            onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="deck-grid">
-                                {DEMO_DECKS.filter(deck => 
-                                    deck.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                    deck.commander.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                    deck.strategy.toLowerCase().includes(searchQuery.toLowerCase())
-                                ).map(deck => (
-                                    <div 
-                                        key={deck.id} 
-                                        className="deck-card"
-                                        onClick={() => setSelectedDeck(deck)}
-                                        style={{cursor: 'pointer'}}
-                                    >
-                                        <div style={{fontFamily: 'Cinzel', fontSize: '1.4rem', marginBottom: '0.5rem'}}>{deck.name}
-                                            {deck.isExample && <span style={{fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400, marginLeft: '0.5rem'}}>(Example)</span>}</div>
-                                        <div style={{color: 'var(--text-secondary)', marginBottom: '0.3rem', fontSize: '0.9rem'}}>{deck.commander}</div>
-                                        <div style={{
-                                            color: 'var(--accent-bright)', 
-                                            fontSize: '0.85rem', 
-                                            fontWeight: 600,
-                                            marginBottom: '0.8rem',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.5px'
-                                        }}>
-                                            {deck.strategy}
-                                        </div>
-                                        <div style={{display: 'flex', gap: '0.3rem', marginBottom: '1rem'}}>
-                                            {deck.colors.map(color => (
-                                                <div key={color} className={`mana-pip pip-${color}`}></div>
-                                            ))}
-                                        </div>
-                                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem'}}>
-                                            <div style={{background: 'var(--bg-secondary)', padding: '0.6rem', borderRadius: '6px', textAlign: 'center'}}>
-                                                <div style={{fontSize: '1.2rem', fontWeight: 600, color: 'var(--accent-bright)'}}>{deck.lands}</div>
-                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>LANDS</div>
-                                            </div>
-                                            <div style={{background: 'var(--bg-secondary)', padding: '0.6rem', borderRadius: '6px', textAlign: 'center'}}>
-                                                <div style={{fontSize: '1.2rem', fontWeight: 600, color: 'var(--accent-bright)'}}>{deck.creatures}</div>
-                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>CREATURES</div>
-                                            </div>
-                                            <div style={{background: 'var(--bg-secondary)', padding: '0.6rem', borderRadius: '6px', textAlign: 'center'}}>
-                                                <div style={{fontSize: '1.2rem', fontWeight: 600, color: 'var(--accent-bright)'}}>{deck.noncreature}</div>
-                                                <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>SPELLS</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                         {/* End desktop-home-content */}
+                            </div>
                         </div>
                     )}
                     {showCreateModal && (
                         <CreateDeckModal 
                             initialData={deckToCopy}
+                            user={user}
+                            setShowAuthModal={setShowAuthModal}
                             onClose={() => {
                                 setShowCreateModal(false);
                                 setDeckToCopy(null);
@@ -2511,6 +2549,8 @@ return (
                     {showEditModal && deckToEdit && (
                         <EditDeckModal 
                             deck={deckToEdit}
+                            user={user}
+                            setShowAuthModal={setShowAuthModal}
                             onClose={() => {
                                 setShowEditModal(false);
                                 setDeckToEdit(null);
@@ -2646,12 +2686,12 @@ return (
                                             <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
                                         </svg>
                                         <h2 style={{
-                                            fontFamily: 'Cinzel',
+                                            fontFamily: 'Pirata One, cursive',
                                             color: 'var(--gold)',
                                             margin: 0,
                                             fontSize: '1.8rem'
                                         }}>
-                                            Mana Base Calculator
+                                            ⚗️ Mana Base Calculator
                                         </h2>
                                     </div>
                                 </div>
@@ -2980,7 +3020,7 @@ return (
                             <div style={{
                                 maxWidth: '1200px',
                                 margin: '3rem auto',
-                                padding: '2rem'
+                                padding: window.innerWidth <= 768 ? '1rem 0.5rem' : '2rem'
                             }}>
                                 <div style={{
                                     display: 'flex',
@@ -3092,7 +3132,7 @@ return (
                                             borderRadius: '8px',
                                             color: 'var(--text-primary)',
                                             fontSize: '1rem',
-                                            fontFamily: 'Cinzel',
+                                            fontFamily: 'Pirata One, cursive',
                                             cursor: 'pointer',
                                             minWidth: '200px'
                                         }}
@@ -3151,7 +3191,7 @@ return (
                                                     }}
                                                 >
                                                     <h3 style={{
-                                                        fontFamily: 'Cinzel',
+                                                        fontFamily: 'Pirata One, cursive',
                                                         color: 'var(--accent-bright)',
                                                         marginBottom: '0.75rem',
                                                         fontSize: '1.3rem'
@@ -3269,7 +3309,7 @@ return (
                             >
                                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem'}}>
                                     <div>
-                                        <h2 style={{fontFamily: 'Cinzel', fontSize: '2rem', color: 'var(--accent-bright)', marginBottom: '0.5rem'}}>
+                                        <h2 style={{fontFamily: 'Pirata One, cursive', fontSize: '2rem', color: 'var(--accent-bright)', marginBottom: '0.5rem'}}>
                                             {selectedDeck.name}
                                         </h2>
                                         <div style={{color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>
@@ -3476,8 +3516,8 @@ return (
             const [randomQuote, setRandomQuote] = useState('');
             const [showPipsHelp, setShowPipsHelp] = useState(false);
             const [showLandsHelp, setShowLandsHelp] = useState(false);
-            const [showPipsSection, setShowPipsSection] = useState(true);
-            const [showLandsSection, setShowLandsSection] = useState(true);
+            const [showPipsSection, setShowPipsSection] = useState(false);
+            const [showLandsSection, setShowLandsSection] = useState(false);
             const [showTopHelp, setShowTopHelp] = useState(false);
 
             const calculateManaBase = () => {
@@ -3613,7 +3653,7 @@ return (
                             lineHeight: '1.6'
                         }}>
                             <h3 style={{
-                                fontFamily: 'Cinzel',
+                                fontFamily: 'Pirata One, cursive',
                                 color: 'var(--gold)',
                                 marginTop: 0,
                                 marginBottom: '1rem',
@@ -3622,25 +3662,35 @@ return (
                                 📚 How to Use the Mana Calculator
                             </h3>
                             
+                            <div style={{
+                                color: 'var(--gold)', 
+                                marginBottom: '1.5rem',
+                                padding: '0.8rem',
+                                background: 'rgba(212, 175, 55, 0.1)',
+                                borderLeft: '3px solid var(--gold)',
+                                fontWeight: 600
+                            }}>
+                                ⚡ Best for decks with 3 colors or less
+                            </div>
+                            
                             <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
                                 <strong>Step 1: Enter Your Total Lands</strong><br/>
                                 <span style={{color: 'var(--text-secondary)'}}>
-                                    Start with how many lands you want in your deck (usually 36-40 for Commander).
+                                    Start with how many lands you want (usually 36-40). Tri-lands and utility lands will be subtracted from this total.
                                 </span>
                             </div>
                             
                             <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
                                 <strong>Step 2: Count Mana Pips from Spells</strong><br/>
                                 <span style={{color: 'var(--text-secondary)'}}>
-                                    Look at all your spells and count colored mana symbols (W/U/B/R/G). 
-                                    The calculator weights them by importance: {'{W}{W}'} counts more than {'{1}{W}'}.
+                                    Count colored mana symbols in your spells. The calculator weights them: {'{W}{W}'} counts more than {'{1}{W}'}.
                                 </span>
                             </div>
                             
                             <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
                                 <strong>Step 3: Count Your Dual Lands</strong><br/>
                                 <span style={{color: 'var(--text-secondary)'}}>
-                                    Enter how many dual lands (shocklands, fetchlands, etc.) you're already running.
+                                    Enter your dual lands (shocklands, fetchlands, etc.).
                                 </span>
                             </div>
                             
@@ -3655,6 +3705,21 @@ return (
                                 <p style={{margin: '0.5rem 0 0 0', color: 'var(--text-secondary)'}}>
                                     The calculator tells you exactly how many basic lands of each color you need to reliably cast your spells!
                                 </p>
+                            </div>
+                            
+                            <div style={{
+                                background: 'rgba(66, 135, 245, 0.1)',
+                                border: '1px solid rgba(66, 135, 245, 0.3)',
+                                borderRadius: '8px',
+                                padding: '1rem',
+                                marginTop: '1rem'
+                            }}>
+                                <strong style={{color: 'var(--accent-bright)'}}>📝 Important Notes:</strong>
+                                <ul style={{marginLeft: '1.5rem', marginTop: '0.5rem', marginBottom: 0, color: 'var(--text-secondary)', lineHeight: '1.8'}}>
+                                    <li><strong>Tri-lands:</strong> If your deck has exactly 3 colors, enter tri-lands below. They'll be subtracted from your total land count.</li>
+                                    <li><strong>4-5 Color Decks:</strong> This calculator works best for 1-3 color decks. For 4+ colors, results are approximations.</li>
+                                    <li><strong>Utility Lands:</strong> "Remaining Slots" in results are for Command Tower, utility lands, colorless lands, etc.</li>
+                                </ul>
                             </div>
                         </div>
                     )}
@@ -3697,7 +3762,7 @@ return (
 
                     <div style={{marginBottom: '1.5rem'}}>
                         <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
-                            Other Lands
+                            Colorless & Utility Lands
                         </label>
                         <input 
                             type="number"
@@ -3709,7 +3774,7 @@ return (
                             style={{width: '100px'}}
                         />
                         <small style={{color: 'var(--text-muted)', marginLeft: '1rem'}}>
-                            Utility/colorless
+                            Colorless, sac lands, etc.
                         </small>
                     </div>
 
@@ -3944,23 +4009,6 @@ return (
                         </button>
                     </div>
 
-                    <div style={{
-                        background: 'rgba(212, 175, 55, 0.15)', 
-                        border: '1px solid var(--gold)', 
-                        borderRadius: '8px', 
-                        padding: '1rem', 
-                        marginBottom: '1.5rem',
-                        fontSize: '0.9rem'
-                    }}>
-                        <div style={{fontWeight: 600, color: 'var(--gold)', marginBottom: '0.5rem'}}>
-                            💡 Calculator Notes
-                        </div>
-                        <ul style={{marginLeft: '1.5rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
-                            <li><strong>Tri-lands:</strong> Enter the number you're running above. They'll be subtracted from your total land count.</li>
-                            <li><strong>4-5 Color Decks:</strong> This calculator works best for 1-3 color decks. For 4+ colors, results are approximations.</li>
-                            <li><strong>Utility Lands:</strong> "Remaining Slots" in results are for Command Tower, utility lands, colorless lands, etc.</li>
-                        </ul>
-                    </div>
 
                     {showResults && manaCalculation && (
                         <div className="mana-results">
@@ -4062,19 +4110,6 @@ return (
                                     "{randomQuote}"
                                 </div>
                             )}
-                        </div>
-                    )}
-
-                    {!showResults && (
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '1.5rem 1rem',
-                            color: 'var(--text-muted)',
-                            background: 'var(--bg-secondary)',
-                            borderRadius: '8px',
-                            fontSize: '0.95rem'
-                        }}>
-                            👆 Fill in your requirements above, then calculate!
                         </div>
                     )}
                 </div>
@@ -4460,7 +4495,7 @@ return (
                     </button>
 
                     <h2 style={{
-                        fontFamily: 'Cinzel',
+                        fontFamily: 'Pirata One, cursive',
                         color: 'var(--gold)',
                         marginBottom: '1.5rem',
                         textAlign: 'center'
@@ -4857,17 +4892,21 @@ return (
         );
     }
 
-        function CreateDeckModal({ onClose, onSave, initialData = null }) {
+        function CreateDeckModal({ onClose, onSave, initialData = null, user = null, setShowAuthModal = null }) {
             
             const [deckData, setDeckData] = useState({
                 name: '',
                 commander: '',
+                secondCommander: '',
+                hasSecondCommander: false,
                 colors: [],
                 categories: {},
                 isPublic: true
             });
             const [commanderCard, setCommanderCard] = useState(null);
+            const [secondCommanderCard, setSecondCommanderCard] = useState(null);
             const [loadingCommander, setLoadingCommander] = useState(false);
+            const [loadingSecondCommander, setLoadingSecondCommander] = useState(false);
             const [notableCards, setNotableCards] = useState([]);
             const [cardInput, setCardInput] = useState('');
             const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -5012,10 +5051,13 @@ return (
                 const noncreature = noncreatureQuick + noncreatureGroupQuick + noncreatureDetailed;
                 
                 const nonLandCards = creatures + noncreature;
-                const total = lands + nonLandCards;
+                
+                // Add commander count (1 or 2)
+                const commanderCount = deckData.commander ? (deckData.hasSecondCommander && deckData.secondCommander ? 2 : 1) : 0;
+                const total = lands + nonLandCards + commanderCount;
 
-                return { lands, creatures, noncreature, nonLandCards, total };
-            }, [deckData.categories]);
+                return { lands, creatures, noncreature, nonLandCards, total, commanderCount };
+            }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander]);
 
             // Sideboard totals calculation
             const sideboardTotals = useMemo(() => {
@@ -5179,8 +5221,20 @@ return (
             // Handle close with unsaved changes warning
             const handleClose = () => {
                 if (hasUnsavedChanges) {
-                    if (window.confirm('You have unsaved changes. Are you sure you want to leave without saving your deck?')) {
-                        onClose();
+                    if (!user) {
+                        // Not logged in - offer to login/create account
+                        const wantsToSave = window.confirm('Your deck might be lost! Would you like to login or create an account to save it?');
+                        if (wantsToSave && setShowAuthModal) {
+                            setShowAuthModal(true);
+                            // Don't close the modal so they can save after logging in
+                        } else {
+                            onClose();
+                        }
+                    } else {
+                        // Logged in - just confirm
+                        if (window.confirm('Your deck might be lost! Are you sure you want to leave without saving?')) {
+                            onClose();
+                        }
                     }
                 } else {
                     onClose();
@@ -5331,6 +5385,71 @@ return (
                                     )}
                                 </div>
 
+                                {/* Second Commander Checkbox */}
+                                <div style={{marginBottom: '1rem'}}>
+                                    <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)'}}>
+                                        <input 
+                                            type="checkbox"
+                                            checked={deckData.hasSecondCommander}
+                                            onChange={(e) => {
+                                                setDeckData({
+                                                    ...deckData, 
+                                                    hasSecondCommander: e.target.checked,
+                                                    secondCommander: e.target.checked ? deckData.secondCommander : ''
+                                                });
+                                                if (!e.target.checked) {
+                                                    setSecondCommanderCard(null);
+                                                }
+                                            }}
+                                            style={{width: '18px', height: '18px', cursor: 'pointer'}}
+                                        />
+                                        <span>Add Second Commander (Partner/Background/Companion)</span>
+                                    </label>
+                                </div>
+
+                                {/* Second Commander Input */}
+                                {deckData.hasSecondCommander && (
+                                    <div style={{marginBottom: '1.5rem'}}>
+                                        <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
+                                            Second Commander
+                                        </label>
+                                        <div style={{display: 'flex', gap: '0.5rem'}}>
+                                            <CardAutocomplete
+                                                value={deckData.secondCommander}
+                                                onChange={(val) => setDeckData({...deckData, secondCommander: val})}
+                                                placeholder="e.g., Partner commander or Background"
+                                            />
+                                            <button 
+                                                className="btn btn-secondary" 
+                                                onClick={async () => {
+                                                    if (deckData.secondCommander.length > 3) {
+                                                        setLoadingSecondCommander(true);
+                                                        const card = await fetchCardFromScryfall(deckData.secondCommander);
+                                                        setSecondCommanderCard(card);
+                                                        setLoadingSecondCommander(false);
+                                                    }
+                                                }}
+                                            >
+                                                Add
+                                            </button>
+                                        </div>
+                                        {loadingSecondCommander && (
+                                            <div style={{textAlign: 'center', marginTop: '1rem', color: 'var(--text-muted)'}}>
+                                                Loading second commander...
+                                            </div>
+                                        )}
+                                        {secondCommanderCard && (
+                                            <div className="commander-preview">
+                                                <img 
+                                                    src={secondCommanderCard.image_uris?.normal || secondCommanderCard.image_uris?.large}
+                                                    alt={secondCommanderCard.name}
+                                                    className="commander-card-image"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div style={{marginBottom: '1.5rem'}}>
                                     <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
                                         Color Identity
@@ -5535,7 +5654,7 @@ return (
                                                                     </div>
                                                                     <div style={{
                                                                         display: 'grid',
-                                                                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                                                                        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
                                                                         gap: '0.5rem'
                                                                     }}>
                                                                         {category.subcategories.map(sub => (
@@ -5548,7 +5667,7 @@ return (
                                                                                 borderRadius: '4px'
                                                                             }}>
                                                                                 <label style={{
-                                                                                    fontSize: '0.65rem',
+                                                                                    fontSize: '0.8rem',
                                                                                     color: 'var(--text-secondary)',
                                                                                     flex: 1
                                                                                 }}>
@@ -5754,7 +5873,7 @@ return (
                                                             </div>
                                                             <div style={{
                                                                 display: 'grid',
-                                                                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                                                                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
                                                                 gap: '0.5rem'
                                                             }}>
                                                                 {category.subcategories.map(sub => (
@@ -6081,23 +6200,6 @@ return (
                                             </button>
                                         </div>
 
-                                        <div style={{
-                                            background: 'rgba(212, 175, 55, 0.15)', 
-                                            border: '1px solid var(--gold)', 
-                                            borderRadius: '8px', 
-                                            padding: '1rem', 
-                                            marginTop: '1rem',
-                                            fontSize: '0.85rem'
-                                        }}>
-                                            <div style={{fontWeight: 600, color: 'var(--gold)', marginBottom: '0.5rem'}}>
-                                                💡 Calculator Notes
-                                            </div>
-                                            <ul style={{marginLeft: '1.5rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
-                                                <li><strong>Tri-lands:</strong> Enter the number you're running above. They'll be subtracted from your total land count.</li>
-                                                <li><strong>4-5 Colors:</strong> Best for 1-3 color decks. Results for 4+ colors are approximations.</li>
-                                                <li><strong>Utility Lands:</strong> "Remaining Slots" = Command Tower, utility, colorless, etc.</li>
-                                            </ul>
-                                        </div>
 
                                         {showResults && manaCalculation && (
                                             <div className="mana-results">
@@ -6233,7 +6335,7 @@ return (
                             </div>
 
                             <div className="stats-panel">
-                                <h3 style={{fontFamily: 'Cinzel', color: 'var(--gold)', marginBottom: '1.5rem'}}>Live Deck Stats</h3>
+                                <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', marginBottom: '1.5rem'}}>Live Deck Stats</h3>
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
@@ -6249,27 +6351,6 @@ return (
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>⚡ Non-Creature</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.noncreature}</div>
                                 </div>
-
-                                {/* Sideboard Totals */}
-                                {sideboardTotals.total > 0 && (
-                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
-                                        <div style={{fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '1rem'}}>📦 Sideboard (Total: {sideboardTotals.total})</div>
-                                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem'}}>
-                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                                                <span>🧟 Creatures:</span>
-                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.creatures}</span>
-                                            </div>
-                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                                                <span>⚡ Non-Creature:</span>
-                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.noncreature}</span>
-                                            </div>
-                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                                                <span>🌍 Lands:</span>
-                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.lands}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
 
                                 {/* Quick Totals (Category-level) */}
                                 <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid rgba(212, 175, 55, 0.5)'}}>
@@ -6393,6 +6474,26 @@ return (
                                     )}
                                 </div>
 
+                                {/* Sideboard Totals */}
+                                {sideboardTotals.total > 0 && (
+                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
+                                        <div style={{fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '1rem'}}>📦 Sideboard (Total: {sideboardTotals.total})</div>
+                                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem'}}>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>🧟 Creatures:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.creatures}</span>
+                                            </div>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>⚡ Non-Creature:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.noncreature}</span>
+                                            </div>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>🌍 Lands:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.lands}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 <div style={{
                                     background: 'var(--gradient-card)', 
                                     border: `2px solid ${totals.total === 100 ? 'var(--green-mana)' : totals.total > 100 ? 'var(--red-mana)' : 'var(--border-color)'}`,
@@ -6428,18 +6529,22 @@ return (
             );
         }
 
-        function EditDeckModal({ deck, onClose, onSave }) {
+        function EditDeckModal({ deck, onClose, onSave, user = null, setShowAuthModal = null }) {
             
             const [deckData, setDeckData] = useState({
                 id: deck?.id,  // CRITICAL: Preserve the deck ID for updates!
                 name: deck?.name || '',
                 commander: deck?.commander || '',
+                secondCommander: deck?.secondCommander || '',
+                hasSecondCommander: deck?.hasSecondCommander || false,
                 colors: deck?.colors || [],
                 categories: deck?.categories || {},
                 isPublic: deck?.isPublic !== undefined ? deck.isPublic : true
             });
             const [commanderCard, setCommanderCard] = useState(null);
             const [loadingCommander, setLoadingCommander] = useState(false);
+            const [secondCommanderCard, setSecondCommanderCard] = useState(null);
+            const [loadingSecondCommander, setLoadingSecondCommander] = useState(false);
             const [notableCards, setNotableCards] = useState(deck?.notableCards || []);
             const [cardInput, setCardInput] = useState('');
             const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -6584,10 +6689,13 @@ return (
                 const noncreature = noncreatureQuick + noncreatureGroupQuick + noncreatureDetailed;
                 
                 const nonLandCards = creatures + noncreature;
-                const total = lands + nonLandCards;
+                
+                // Add commander count (1 or 2)
+                const commanderCount = deckData.commander ? (deckData.hasSecondCommander && deckData.secondCommander ? 2 : 1) : 0;
+                const total = lands + nonLandCards + commanderCount;
 
-                return { lands, creatures, noncreature, nonLandCards, total };
-            }, [deckData.categories]);
+                return { lands, creatures, noncreature, nonLandCards, total, commanderCount };
+            }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander]);
 
             // Mana base calculator
             const calculateManaBase = () => {
@@ -6728,8 +6836,20 @@ return (
             // Handle close with unsaved changes warning
             const handleClose = () => {
                 if (hasUnsavedChanges) {
-                    if (window.confirm('You have unsaved changes. Are you sure you want to leave without saving your deck?')) {
-                        onClose();
+                    if (!user) {
+                        // Not logged in - offer to login/create account
+                        const wantsToSave = window.confirm('Your deck might be lost! Would you like to login or create an account to save it?');
+                        if (wantsToSave && setShowAuthModal) {
+                            setShowAuthModal(true);
+                            // Don't close the modal so they can save after logging in
+                        } else {
+                            onClose();
+                        }
+                    } else {
+                        // Logged in - just confirm
+                        if (window.confirm('Your deck might be lost! Are you sure you want to leave without saving?')) {
+                            onClose();
+                        }
                     }
                 } else {
                     onClose();
@@ -6880,6 +7000,71 @@ return (
                                     )}
                                 </div>
 
+                                {/* Second Commander Checkbox */}
+                                <div style={{marginBottom: '1rem'}}>
+                                    <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)'}}>
+                                        <input 
+                                            type="checkbox"
+                                            checked={deckData.hasSecondCommander}
+                                            onChange={(e) => {
+                                                setDeckData({
+                                                    ...deckData, 
+                                                    hasSecondCommander: e.target.checked,
+                                                    secondCommander: e.target.checked ? deckData.secondCommander : ''
+                                                });
+                                                if (!e.target.checked) {
+                                                    setSecondCommanderCard(null);
+                                                }
+                                            }}
+                                            style={{width: '18px', height: '18px', cursor: 'pointer'}}
+                                        />
+                                        <span>Add Second Commander (Partner/Background/Companion)</span>
+                                    </label>
+                                </div>
+
+                                {/* Second Commander Input */}
+                                {deckData.hasSecondCommander && (
+                                    <div style={{marginBottom: '1.5rem'}}>
+                                        <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
+                                            Second Commander
+                                        </label>
+                                        <div style={{display: 'flex', gap: '0.5rem'}}>
+                                            <CardAutocomplete
+                                                value={deckData.secondCommander}
+                                                onChange={(val) => setDeckData({...deckData, secondCommander: val})}
+                                                placeholder="e.g., Partner commander or Background"
+                                            />
+                                            <button 
+                                                className="btn btn-secondary" 
+                                                onClick={async () => {
+                                                    if (deckData.secondCommander.length > 3) {
+                                                        setLoadingSecondCommander(true);
+                                                        const card = await fetchCardFromScryfall(deckData.secondCommander);
+                                                        setSecondCommanderCard(card);
+                                                        setLoadingSecondCommander(false);
+                                                    }
+                                                }}
+                                            >
+                                                Add
+                                            </button>
+                                        </div>
+                                        {loadingSecondCommander && (
+                                            <div style={{textAlign: 'center', marginTop: '1rem', color: 'var(--text-muted)'}}>
+                                                Loading second commander...
+                                            </div>
+                                        )}
+                                        {secondCommanderCard && (
+                                            <div className="commander-preview">
+                                                <img 
+                                                    src={secondCommanderCard.image_uris?.normal || secondCommanderCard.image_uris?.large}
+                                                    alt={secondCommanderCard.name}
+                                                    className="commander-card-image"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div style={{marginBottom: '1.5rem'}}>
                                     <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
                                         Color Identity
@@ -7084,7 +7269,7 @@ return (
                                                                     </div>
                                                                     <div style={{
                                                                         display: 'grid',
-                                                                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                                                                        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
                                                                         gap: '0.5rem'
                                                                     }}>
                                                                         {category.subcategories.map(sub => (
@@ -7097,7 +7282,7 @@ return (
                                                                                 borderRadius: '4px'
                                                                             }}>
                                                                                 <label style={{
-                                                                                    fontSize: '0.65rem',
+                                                                                    fontSize: '0.8rem',
                                                                                     color: 'var(--text-secondary)',
                                                                                     flex: 1
                                                                                 }}>
@@ -7303,7 +7488,7 @@ return (
                                                             </div>
                                                             <div style={{
                                                                 display: 'grid',
-                                                                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                                                                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
                                                                 gap: '0.5rem'
                                                             }}>
                                                                 {category.subcategories.map(sub => (
@@ -7630,23 +7815,6 @@ return (
                                             </button>
                                         </div>
 
-                                        <div style={{
-                                            background: 'rgba(212, 175, 55, 0.15)', 
-                                            border: '1px solid var(--gold)', 
-                                            borderRadius: '8px', 
-                                            padding: '1rem', 
-                                            marginTop: '1rem',
-                                            fontSize: '0.85rem'
-                                        }}>
-                                            <div style={{fontWeight: 600, color: 'var(--gold)', marginBottom: '0.5rem'}}>
-                                                💡 Calculator Notes
-                                            </div>
-                                            <ul style={{marginLeft: '1.5rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
-                                                <li><strong>Tri-lands:</strong> Enter the number you're running above. They'll be subtracted from your total land count.</li>
-                                                <li><strong>4-5 Colors:</strong> Best for 1-3 color decks. Results for 4+ colors are approximations.</li>
-                                                <li><strong>Utility Lands:</strong> "Remaining Slots" = Command Tower, utility, colorless, etc.</li>
-                                            </ul>
-                                        </div>
 
                                         {showResults && manaCalculation && (
                                             <div className="mana-results">
@@ -7782,7 +7950,7 @@ return (
                             </div>
 
                             <div className="stats-panel">
-                                <h3 style={{fontFamily: 'Cinzel', color: 'var(--gold)', marginBottom: '1.5rem'}}>Live Deck Stats</h3>
+                                <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', marginBottom: '1.5rem'}}>Live Deck Stats</h3>
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
@@ -7798,27 +7966,6 @@ return (
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>⚡ Non-Creature</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.noncreature}</div>
                                 </div>
-
-                                {/* Sideboard Totals */}
-                                {sideboardTotals.total > 0 && (
-                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
-                                        <div style={{fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '1rem'}}>📦 Sideboard (Total: {sideboardTotals.total})</div>
-                                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem'}}>
-                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                                                <span>🧟 Creatures:</span>
-                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.creatures}</span>
-                                            </div>
-                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                                                <span>⚡ Non-Creature:</span>
-                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.noncreature}</span>
-                                            </div>
-                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                                                <span>🌍 Lands:</span>
-                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.lands}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
 
                                 {/* Quick Totals (Category-level) */}
                                 <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid rgba(212, 175, 55, 0.5)'}}>
@@ -7942,6 +8089,26 @@ return (
                                     )}
                                 </div>
 
+                                {/* Sideboard Totals */}
+                                {sideboardTotals.total > 0 && (
+                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
+                                        <div style={{fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '1rem'}}>📦 Sideboard (Total: {sideboardTotals.total})</div>
+                                        <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem'}}>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>🧟 Creatures:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.creatures}</span>
+                                            </div>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>⚡ Non-Creature:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.noncreature}</span>
+                                            </div>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                <span>🌍 Lands:</span>
+                                                <span style={{fontWeight: 600, color: 'var(--accent-bright)'}}>{sideboardTotals.lands}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 <div style={{
                                     background: 'var(--gradient-card)', 
                                     border: `2px solid ${totals.total === 100 ? 'var(--green-mana)' : totals.total > 100 ? 'var(--red-mana)' : 'var(--border-color)'}`,
