@@ -1632,6 +1632,24 @@ return (
                             
                             {/* Mana Calc + Login/Settings Buttons */}
                             <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                                {/* Home Button */}
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => setView('home')}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: '45px',
+                                        height: '45px',
+                                        padding: '0.5rem',
+                                        fontSize: '1.5rem',
+                                        borderRadius: '8px'
+                                    }}
+                                >
+                                    🏠
+                                </button>
+                                
                                 {/* Mana Calc Button - Always visible */}
                                 <button 
                                     className="btn btn-secondary"
@@ -1722,11 +1740,26 @@ return (
     <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
 </svg>
                                 <div>
-                                    <div style={{fontSize: '2.2rem', lineHeight: 1}}>Deck Skeleton</div>
+                                    <div style={{fontSize: '2.2rem', lineHeight: 1}}>MTG Deck Skeleton</div>
                                     <div className="logo-subtitle">+ Mana Calculator</div>
                                 </div>
                             </div>
                             <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => setView('home')}
+                                    style={{
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: '0.75rem',
+                                        padding: '0.75rem 1.5rem',
+                                        whiteSpace: 'nowrap',
+                                        fontSize: '1.1rem'
+                                    }}
+                                >
+                                    <span style={{fontSize: '1.8rem'}}>🏠</span>
+                                    <span>Home</span>
+                                </button>
                                 <button 
                                     className="btn btn-secondary"
                                     onClick={() => setShowCreateModal(true)}
@@ -2567,21 +2600,61 @@ return (
                                 maxWidth: '100%',
                                 margin: '0 auto'
                             }}>
-                                <button 
-                                    className="btn btn-secondary"
-                                    onClick={() => setView('home')}
-                                    style={{
+                                {/* Header with Back Button and Title */}
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '1rem',
+                                    marginBottom: '1.5rem',
+                                    paddingBottom: '1rem',
+                                    borderBottom: '2px solid var(--border-color)'
+                                }}>
+                                    <button 
+                                        className="btn btn-secondary"
+                                        onClick={() => setView('home')}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+                                            fontSize: '0.9rem',
+                                            padding: '0.5rem 1rem'
+                                        }}
+                                    >
+                                        <span>🏠</span>
+                                        <span>Back</span>
+                                    </button>
+                                    
+                                    <div style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '0.5rem',
-                                        fontSize: '0.9rem',
-                                        padding: '0.5rem 1rem',
-                                        marginBottom: '1rem'
-                                    }}
-                                >
-                                    <span>🏠</span>
-                                    <span>Back</span>
-                                </button>
+                                        gap: '0.8rem',
+                                        flex: 1
+                                    }}>
+                                        <svg width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
+                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
+                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
+                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
+                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
+                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
+                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
+                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                        </svg>
+                                        <h2 style={{
+                                            fontFamily: 'Cinzel',
+                                            color: 'var(--gold)',
+                                            margin: 0,
+                                            fontSize: '1.8rem'
+                                        }}>
+                                            Mana Base Calculator
+                                        </h2>
+                                    </div>
+                                </div>
                                 
                                 <StandaloneManaCalculator />
                             </div>
@@ -3993,8 +4066,15 @@ return (
                     )}
 
                     {!showResults && (
-                        <div style={{textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', background: 'var(--bg-secondary)', borderRadius: '8px'}}>
-                            👆 Fill in your mana requirements above, then click "Calculate My Mana Base" to see results!
+                        <div style={{
+                            textAlign: 'center',
+                            padding: '1.5rem 1rem',
+                            color: 'var(--text-muted)',
+                            background: 'var(--bg-secondary)',
+                            borderRadius: '8px',
+                            fontSize: '0.95rem'
+                        }}>
+                            👆 Fill in your requirements above, then calculate!
                         </div>
                     )}
                 </div>
