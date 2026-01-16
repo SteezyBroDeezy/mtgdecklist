@@ -1239,6 +1239,7 @@
             const [browseSortBy, setBrowseSortBy] = useState('newest'); // NEW: Sort option
             const [showInfoExpanded, setShowInfoExpanded] = useState(false);
             const [showManaCalcInfo, setShowManaCalcInfo] = useState(false);
+            const [showMobileAbout, setShowMobileAbout] = useState(false);
 
             // Save decks to localStorage whenever they change
             useEffect(() => {
@@ -1899,7 +1900,7 @@ return (
                                             <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
                                             <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
                                         </svg>
-                                        <h1 style={{fontFamily: 'Pirata One, cursive', fontSize: '2.5rem', color: 'var(--bone)', margin: 0}}>
+                                        <h1 style={{fontFamily: 'Cinzel Decorative, serif', fontSize: '2.5rem', fontWeight: 700, color: 'var(--gold)', margin: 0, textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
                                             MTG Deck Skeleton
                                         </h1>
                                         <svg width="50" height="50" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
@@ -1953,9 +1954,36 @@ return (
                                     <button 
                                         className="mobile-action-button btn btn-secondary"
                                         onClick={() => setView('calculator')}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '0.75rem'
+                                        }}
                                     >
-                                        <span>⚗️</span>
-                                        <span>Mana Calculator</span>
+                                        <svg width="24" height="24" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.5))'}}>
+                                            {/* Potion Flask */}
+                                            <path d="M 24 8 L 24 22 L 20 32 Q 18 38 18 44 Q 18 52 22 56 Q 26 60 32 60 Q 38 60 42 56 Q 46 52 46 44 Q 46 38 44 32 L 40 22 L 40 8 Z" 
+                                                  fill="rgba(66, 135, 245, 0.3)" 
+                                                  stroke="var(--blue-mana)" 
+                                                  strokeWidth="2.5"/>
+                                            {/* Liquid inside */}
+                                            <path d="M 21 36 Q 20 40 20 44 Q 20 50 23 54 Q 27 58 32 58 Q 37 58 41 54 Q 44 50 44 44 Q 44 40 43 36 Z" 
+                                                  fill="rgba(136, 106, 234, 0.5)"/>
+                                            {/* Cork/Stopper */}
+                                            <rect x="26" y="4" width="12" height="6" rx="2" 
+                                                  fill="var(--bone)" 
+                                                  stroke="var(--border-color)" 
+                                                  strokeWidth="1.5"/>
+                                            {/* Highlights */}
+                                            <ellipse cx="28" cy="30" rx="4" ry="8" 
+                                                     fill="rgba(255, 255, 255, 0.3)"/>
+                                            {/* Bubbles */}
+                                            <circle cx="30" cy="48" r="2" fill="rgba(255, 255, 255, 0.4)"/>
+                                            <circle cx="35" cy="45" r="1.5" fill="rgba(255, 255, 255, 0.4)"/>
+                                            <circle cx="34" cy="52" r="1" fill="rgba(255, 255, 255, 0.4)"/>
+                                        </svg>
+                                        <span>⚗️ Mana Calculator</span>
                                     </button>
 
                                     {user ? (
@@ -1980,6 +2008,57 @@ return (
                                         No account needed to use the calculator!
                                     </p>
                                 </div>
+
+                                    {/* About Deck Skeleton - Expandable at bottom */}
+                                    <button 
+                                        onClick={() => setShowMobileAbout(!showMobileAbout)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '1rem',
+                                            marginTop: '1.5rem',
+                                            background: 'var(--bg-secondary)',
+                                            border: '2px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)',
+                                            fontSize: '1rem',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <span>📋 About Deck Skeleton</span>
+                                        <span>{showMobileAbout ? '▼' : '▶'}</span>
+                                    </button>
+                                    
+                                    {showMobileAbout && (
+                                        <div style={{
+                                            padding: '1.2rem',
+                                            marginTop: '1rem',
+                                            background: 'var(--bg-tertiary)',
+                                            border: '2px solid var(--accent)',
+                                            borderRadius: '8px',
+                                            fontSize: '0.95rem',
+                                            lineHeight: '1.7',
+                                            color: 'var(--text-secondary)'
+                                        }}>
+                                            <p style={{marginBottom: '0.8rem', fontWeight: 600, color: 'var(--accent-bright)'}}>
+                                                Built for 100-card Commander Magic: The Gathering decks
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                Track your deck by <strong>categories</strong> (Creatures, Non-Creature Spells, Lands) and <strong>subtypes</strong> (Removal, Ramp, Draw, Card Advantage, etc.)
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                ✨ <strong>No card-by-card entry!</strong> Just track the counts of each type
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                📊 Store deck ratios for quick editing and referencing
+                                            </p>
+                                            <p style={{marginBottom: 0}}>
+                                                🎯 Deck didn't work? Adjust ratios easily and save with an account!
+                                            </p>
+                                        </div>
+                                    )}
                             </div>
 
                             {/* DESKTOP: Full detailed homepage */}
@@ -2250,7 +2329,7 @@ return (
                                             ❌ "Sol Ring, Arcane Signet, Talisman of Hierarchy, Phyrexian Arena, Necropotence..."<br/>
                                             <br/>
                                             <strong>Track your ratios:</strong><br/>
-                                            ✅ 36 Lands • 38 Creatures • 25 Spells<br/>
+                                            ✅ 36 Lands • 38 Creatures • 25 Non-Creature Spells<br/>
                                             ✅ 12 Ramp Sources • 10 Removal Spells • 8 Card Draw<br/>
                                             ✅ 30 Vampires • 8 Support Creatures
                                         </div>
@@ -3728,16 +3807,84 @@ return (
                         <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
                             Total Lands in Your Deck
                         </label>
-                        <input 
-                            type="number"
-                            className="small-input"
-                            value={totalLands}
-                            onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
-                            min="0"
-                            max="99"
-                            style={{width: '100px'}}
-                        />
-                        <small style={{color: 'var(--text-muted)', marginLeft: '1rem'}}>
+                        {window.innerWidth <= 768 ? (
+                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        const currentValue = parseInt(totalLands) || 0;
+                                        if (currentValue > 0) {
+                                            setTotalLands(currentValue - 1);
+                                        }
+                                    }}
+                                    style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        fontSize: '1.2rem',
+                                        padding: 0,
+                                        background: 'var(--bg-secondary)',
+                                        border: '2px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    −
+                                </button>
+                                <input 
+                                    type="number"
+                                    className="small-input"
+                                    value={totalLands}
+                                    onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
+                                    min="0"
+                                    max="99"
+                                    style={{flex: 1, textAlign: 'center', minWidth: '80px'}}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        const currentValue = parseInt(totalLands) || 0;
+                                        if (currentValue < 99) {
+                                            setTotalLands(currentValue + 1);
+                                        }
+                                    }}
+                                    style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        fontSize: '1.2rem',
+                                        padding: 0,
+                                        background: 'var(--bg-secondary)',
+                                        border: '2px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    +
+                                </button>
+                            </div>
+                        ) : (
+                            <input 
+                                type="number"
+                                className="small-input"
+                                value={totalLands}
+                                onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
+                                min="0"
+                                max="99"
+                                style={{width: '100px'}}
+                            />
+                        )}
+                        <small style={{color: 'var(--text-muted)', marginLeft: window.innerWidth <= 768 ? '0' : '1rem', display: 'block', marginTop: window.innerWidth <= 768 ? '0.3rem' : '0'}}>
                             Recommended: 36-40 lands
                         </small>
                     </div>
@@ -3746,16 +3893,84 @@ return (
                         <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
                             Tri-Lands
                         </label>
-                        <input 
-                            type="number"
-                            className="small-input"
-                            value={triLands}
-                            onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
-                            min="0"
-                            max="20"
-                            style={{width: '100px'}}
-                        />
-                        <small style={{color: 'var(--text-muted)', marginLeft: '1rem'}}>
+                        {window.innerWidth <= 768 ? (
+                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        const currentValue = parseInt(triLands) || 0;
+                                        if (currentValue > 0) {
+                                            setTriLands(currentValue - 1);
+                                        }
+                                    }}
+                                    style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        fontSize: '1.2rem',
+                                        padding: 0,
+                                        background: 'var(--bg-secondary)',
+                                        border: '2px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    −
+                                </button>
+                                <input 
+                                    type="number"
+                                    className="small-input"
+                                    value={triLands}
+                                    onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
+                                    min="0"
+                                    max="20"
+                                    style={{flex: 1, textAlign: 'center', minWidth: '80px'}}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        const currentValue = parseInt(triLands) || 0;
+                                        if (currentValue < 20) {
+                                            setTriLands(currentValue + 1);
+                                        }
+                                    }}
+                                    style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        fontSize: '1.2rem',
+                                        padding: 0,
+                                        background: 'var(--bg-secondary)',
+                                        border: '2px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    +
+                                </button>
+                            </div>
+                        ) : (
+                            <input 
+                                type="number"
+                                className="small-input"
+                                value={triLands}
+                                onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
+                                min="0"
+                                max="20"
+                                style={{width: '100px'}}
+                            />
+                        )}
+                        <small style={{color: 'var(--text-muted)', marginLeft: window.innerWidth <= 768 ? '0' : '1rem', display: 'block', marginTop: window.innerWidth <= 768 ? '0.3rem' : '0'}}>
                             3+ color lands
                         </small>
                     </div>
@@ -3764,21 +3979,245 @@ return (
                         <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
                             Colorless & Utility Lands
                         </label>
-                        <input 
-                            type="number"
-                            className="small-input"
-                            value={otherLands}
-                            onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
-                            min="0"
-                            max="20"
-                            style={{width: '100px'}}
-                        />
-                        <small style={{color: 'var(--text-muted)', marginLeft: '1rem'}}>
+                        {window.innerWidth <= 768 ? (
+                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        const currentValue = parseInt(otherLands) || 0;
+                                        if (currentValue > 0) {
+                                            setOtherLands(currentValue - 1);
+                                        }
+                                    }}
+                                    style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        fontSize: '1.2rem',
+                                        padding: 0,
+                                        background: 'var(--bg-secondary)',
+                                        border: '2px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    −
+                                </button>
+                                <input 
+                                    type="number"
+                                    className="small-input"
+                                    value={otherLands}
+                                    onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
+                                    min="0"
+                                    max="20"
+                                    style={{flex: 1, textAlign: 'center', minWidth: '80px'}}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        const currentValue = parseInt(otherLands) || 0;
+                                        if (currentValue < 20) {
+                                            setOtherLands(currentValue + 1);
+                                        }
+                                    }}
+                                    style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        fontSize: '1.2rem',
+                                        padding: 0,
+                                        background: 'var(--bg-secondary)',
+                                        border: '2px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    +
+                                </button>
+                            </div>
+                        ) : (
+                            <input 
+                                type="number"
+                                className="small-input"
+                                value={otherLands}
+                                onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
+                                min="0"
+                                max="20"
+                                style={{width: '100px'}}
+                            />
+                        )}
+                        <small style={{color: 'var(--text-muted)', marginLeft: window.innerWidth <= 768 ? '0' : '1rem', display: 'block', marginTop: window.innerWidth <= 768 ? '0.3rem' : '0'}}>
                             Colorless, sac lands, etc.
                         </small>
                     </div>
 
-                    {/* STEP 1: Count Mana Pips */}
+                    {/* STEP 1: Dual Lands */}
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
+                        border: '3px solid rgba(0, 115, 62, 0.4)',
+                        borderRadius: '12px',
+                        padding: '1rem',
+                        marginBottom: '2rem'
+                    }}>
+                        {/* Clickable Header */}
+                        <div 
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                                marginBottom: showLandsSection ? '1rem' : '0',
+                                padding: '0.5rem'
+                            }}
+                            onClick={() => setShowLandsSection(!showLandsSection)}
+                        >
+                            <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
+                                    color: 'white',
+                                    width: '38px',
+                                    height: '38px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: '1.2rem'
+                                }}>
+                                    2
+                                </div>
+                                <label style={{fontWeight: 700, fontSize: '1.3rem', color: 'var(--text-primary)', margin: 0, cursor: 'pointer'}}>
+                                    🏔️ Count Your DUAL LANDS
+                                </label>
+                            </div>
+                            <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
+                                {showLandsSection ? '▼' : '▶'}
+                            </div>
+                        </div>
+
+                        {/* Collapsible Content */}
+                        {showLandsSection && (
+                            <>
+                        <div style={{
+                            background: 'rgba(0, 115, 62, 0.15)',
+                            border: '1px solid rgba(0, 115, 62, 0.3)',
+                            borderRadius: '8px',
+                            padding: '1rem',
+                            marginBottom: '1rem',
+                            marginLeft: '2.5rem'
+                        }}>
+                            <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem'}}>
+                                What to count:
+                            </div>
+                            <div style={{color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.6'}}>
+                                How many <strong>dual lands</strong> (lands that produce or fetch 2 colors) are you actually running in your deck? This is completely separate from Step 1.
+                                <br/><br/>
+                                <strong>Include:</strong> Shocklands (Temple Garden), Fetchlands (Flooded Strand), Pain lands (Adarkar Wastes), Check lands, etc.
+                                <br/>
+                                <strong>Example:</strong> If you have 4 Temple Gardens and 3 Windswept Heaths in your deck, enter 7 for Selesnya below.
+                            </div>
+                        </div>
+                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', paddingLeft: '2.5rem'}}>
+                            {colorPairs.map(({pair, colors, name}) => (
+                                <div key={pair}>
+                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem'}}>
+                                        <div className={`pip-icon pip-${colors[0]}`} style={{width: '16px', height: '16px'}}></div>
+                                        <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
+                                        <span style={{fontSize: '0.85rem'}}>{name}</span>
+                                    </div>
+                                    {/* Mobile: Plus/Minus Buttons */}
+                                    {window.innerWidth <= 768 ? (
+                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    const currentValue = parseInt(dualLands[pair]) || 0;
+                                                    if (currentValue > 0) {
+                                                        updateDualLands(pair, (currentValue - 1).toString());
+                                                    }
+                                                }}
+                                                style={{
+                                                    width: '36px',
+                                                    height: '36px',
+                                                    fontSize: '1.2rem',
+                                                    padding: 0,
+                                                    background: 'var(--bg-secondary)',
+                                                    border: '2px solid var(--border-color)',
+                                                    borderRadius: '6px',
+                                                    color: 'var(--text-primary)',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                −
+                                            </button>
+                                            <input 
+                                                type="number"
+                                                className="small-input"
+                                                style={{flex: 1, textAlign: 'center', minWidth: '60px'}}
+                                                value={dualLands[pair]}
+                                                onChange={(e) => updateDualLands(pair, e.target.value)}
+                                                min="0"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    const currentValue = parseInt(dualLands[pair]) || 0;
+                                                    updateDualLands(pair, (currentValue + 1).toString());
+                                                }}
+                                                style={{
+                                                    width: '36px',
+                                                    height: '36px',
+                                                    fontSize: '1.2rem',
+                                                    padding: 0,
+                                                    background: 'var(--bg-secondary)',
+                                                    border: '2px solid var(--border-color)',
+                                                    borderRadius: '6px',
+                                                    color: 'var(--text-primary)',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        /* Desktop: Regular Input */
+                                        <input 
+                                            type="number"
+                                            className="small-input"
+                                            style={{width: '100%'}}
+                                            value={dualLands[pair]}
+                                            onChange={(e) => updateDualLands(pair, e.target.value)}
+                                            min="0"
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                            </>
+                        )}
+                    </div>
+
+                    {/* STEP 2: Count Mana Pips */}
                     <div style={{
                         background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
                         border: '3px solid rgba(66, 135, 245, 0.4)',
@@ -3863,36 +4302,231 @@ return (
                                     <div style={{display: 'flex', gap: '0.3rem', marginTop: '0.5rem', flexWrap: 'wrap'}}>
                                         <div style={{flex: '1 1 50px', minWidth: '50px'}}>
                                             <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Single</div>
-                                            <input 
-                                                type="number"
-                                                className="small-input"
-                                                style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                value={pipCounts[color].single}
-                                                onChange={(e) => updatePipCount(color, 'single', e.target.value)}
-                                                min="0"
-                                            />
+                                            {window.innerWidth <= 768 ? (
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(pipCounts[color].single) || 0;
+                                                            if (currentValue > 0) {
+                                                                updatePipCount(color, 'single', (currentValue - 1).toString());
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            fontSize: '1rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '4px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input 
+                                                        type="number"
+                                                        className="small-input"
+                                                        style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                        value={pipCounts[color].single}
+                                                        onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                        min="0"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(pipCounts[color].single) || 0;
+                                                            updatePipCount(color, 'single', (currentValue + 1).toString());
+                                                        }}
+                                                        style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            fontSize: '1rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '4px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                    value={pipCounts[color].single}
+                                                    onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                    min="0"
+                                                />
+                                            )}
                                         </div>
                                         <div style={{flex: '1 1 50px', minWidth: '50px'}}>
                                             <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Double</div>
-                                            <input 
-                                                type="number"
-                                                className="small-input"
-                                                style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                value={pipCounts[color].double}
-                                                onChange={(e) => updatePipCount(color, 'double', e.target.value)}
-                                                min="0"
-                                            />
+                                            {window.innerWidth <= 768 ? (
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(pipCounts[color].double) || 0;
+                                                            if (currentValue > 0) {
+                                                                updatePipCount(color, 'double', (currentValue - 1).toString());
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            fontSize: '1rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '4px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input 
+                                                        type="number"
+                                                        className="small-input"
+                                                        style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                        value={pipCounts[color].double}
+                                                        onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                        min="0"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(pipCounts[color].double) || 0;
+                                                            updatePipCount(color, 'double', (currentValue + 1).toString());
+                                                        }}
+                                                        style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            fontSize: '1rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '4px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                    value={pipCounts[color].double}
+                                                    onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                    min="0"
+                                                />
+                                            )}
                                         </div>
                                         <div style={{flex: '1 1 50px', minWidth: '50px'}}>
                                             <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Triple+</div>
-                                            <input 
-                                                type="number"
-                                                className="small-input"
-                                                style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                value={pipCounts[color].triple}
-                                                onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
-                                                min="0"
-                                            />
+                                            {window.innerWidth <= 768 ? (
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(pipCounts[color].triple) || 0;
+                                                            if (currentValue > 0) {
+                                                                updatePipCount(color, 'triple', (currentValue - 1).toString());
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            fontSize: '1rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '4px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input 
+                                                        type="number"
+                                                        className="small-input"
+                                                        style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                        value={pipCounts[color].triple}
+                                                        onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
+                                                        min="0"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(pipCounts[color].triple) || 0;
+                                                            updatePipCount(color, 'triple', (currentValue + 1).toString());
+                                                        }}
+                                                        style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            fontSize: '1rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '4px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                    value={pipCounts[color].triple}
+                                                    onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
+                                                    min="0"
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -3901,96 +4535,6 @@ return (
                             </>
                         )}
                     </div>
-
-                    {/* STEP 2: Dual Lands */}
-                    <div style={{
-                        background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
-                        border: '3px solid rgba(0, 115, 62, 0.4)',
-                        borderRadius: '12px',
-                        padding: '1rem',
-                        marginBottom: '2rem'
-                    }}>
-                        {/* Clickable Header */}
-                        <div 
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                cursor: 'pointer',
-                                marginBottom: showLandsSection ? '1rem' : '0',
-                                padding: '0.5rem'
-                            }}
-                            onClick={() => setShowLandsSection(!showLandsSection)}
-                        >
-                            <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
-                                <div style={{
-                                    background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
-                                    color: 'white',
-                                    width: '38px',
-                                    height: '38px',
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontWeight: 700,
-                                    fontSize: '1.2rem'
-                                }}>
-                                    2
-                                </div>
-                                <label style={{fontWeight: 700, fontSize: '1.3rem', color: 'var(--text-primary)', margin: 0, cursor: 'pointer'}}>
-                                    🏔️ Count Actual LANDS in Your Deck
-                                </label>
-                            </div>
-                            <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
-                                {showLandsSection ? '▼' : '▶'}
-                            </div>
-                        </div>
-
-                        {/* Collapsible Content */}
-                        {showLandsSection && (
-                            <>
-                        <div style={{
-                            background: 'rgba(0, 115, 62, 0.15)',
-                            border: '1px solid rgba(0, 115, 62, 0.3)',
-                            borderRadius: '8px',
-                            padding: '1rem',
-                            marginBottom: '1rem',
-                            marginLeft: '2.5rem'
-                        }}>
-                            <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem'}}>
-                                What to count:
-                            </div>
-                            <div style={{color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.6'}}>
-                                How many <strong>dual lands</strong> (lands that produce or fetch 2 colors) are you actually running in your deck? This is completely separate from Step 1.
-                                <br/><br/>
-                                <strong>Include:</strong> Shocklands (Temple Garden), Fetchlands (Flooded Strand), Pain lands (Adarkar Wastes), Check lands, etc.
-                                <br/>
-                                <strong>Example:</strong> If you have 4 Temple Gardens and 3 Windswept Heaths in your deck, enter 7 for Selesnya below.
-                            </div>
-                        </div>
-                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', paddingLeft: '2.5rem'}}>
-                            {colorPairs.map(({pair, colors, name}) => (
-                                <div key={pair}>
-                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem'}}>
-                                        <div className={`pip-icon pip-${colors[0]}`} style={{width: '16px', height: '16px'}}></div>
-                                        <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
-                                        <span style={{fontSize: '0.85rem'}}>{name}</span>
-                                    </div>
-                                    <input 
-                                        type="number"
-                                        className="small-input"
-                                        style={{width: '100%'}}
-                                        value={dualLands[pair]}
-                                        onChange={(e) => updateDualLands(pair, e.target.value)}
-                                        min="0"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                            </>
-                        )}
-                    </div>
-
                     {/* Calculate Button */}
                     <div style={{textAlign: 'center', marginBottom: '1.5rem', marginTop: '2rem'}}>
                         <button 
@@ -5476,6 +6020,28 @@ return (
 
                                 <div style={{marginBottom: '1.5rem'}}>
                                     <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
+                                        Game Plan <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 400}}>(Optional)</span>
+                                    </label>
+                                    <textarea 
+                                        className="form-input" 
+                                        placeholder="e.g., Ramp early, play big creatures, draw cards, control the board..."
+                                        value={deckData.gamePlan || ''}
+                                        onChange={(e) => setDeckData({...deckData, gamePlan: e.target.value})}
+                                        rows="3"
+                                        style={{
+                                            width: '100%',
+                                            resize: 'vertical',
+                                            minHeight: '80px',
+                                            fontFamily: 'inherit'
+                                        }}
+                                    />
+                                    <small style={{color: 'var(--text-muted)', fontSize: '0.8rem', display: 'block', marginTop: '0.3rem'}}>
+                                        A brief summary of what this deck is trying to do
+                                    </small>
+                                </div>
+
+                                <div style={{marginBottom: '1.5rem'}}>
+                                    <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
                                         Notable Cards / Win Conditions
                                     </label>
                                     <div style={{display: 'flex', gap: '0.5rem', marginTop: '1rem'}}>
@@ -6008,7 +6574,78 @@ return (
                                             </div>
                                         </div>
 
-                                        {/* STEP 1: Count Mana Pips */}
+                                        {/* STEP 1: Dual Lands */}
+                                        <div style={{
+                                            background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
+                                            border: '3px solid rgba(0, 115, 62, 0.4)',
+                                            borderRadius: '12px',
+                                            padding: '1.5rem',
+                                            marginBottom: '1.5rem'
+                                        }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.8rem',
+                                                marginBottom: '0.5rem'
+                                            }}>
+                                                <div style={{
+                                                    background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
+                                                    color: 'white',
+                                                    width: '36px',
+                                                    height: '36px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontWeight: 700,
+                                                    fontSize: '1.15rem'
+                                                }}>
+                                                    2
+                                                </div>
+                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                    🏔️ Count Actual LANDS in Your Deck
+                                                </label>
+                                            </div>
+                                            <div style={{
+                                                background: 'rgba(0, 115, 62, 0.15)',
+                                                border: '1px solid rgba(0, 115, 62, 0.3)',
+                                                borderRadius: '8px',
+                                                padding: '1rem',
+                                                marginBottom: '1rem',
+                                                marginLeft: '2.5rem'
+                                            }}>
+                                                <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '0.9rem'}}>
+                                                    What to count:
+                                                </div>
+                                                <div style={{color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.6'}}>
+                                                    How many <strong>dual lands</strong> (produce or fetch 2 colors) are you running? This is separate from Step 1.
+                                                    <br/>
+                                                    <strong>Include:</strong> Shocklands, Fetchlands, Pain lands, etc. Example: 4 Temple Gardens + 3 Windswept Heaths = 7 for Selesnya.
+                                                </div>
+                                            </div>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', paddingLeft: '2.5rem'}}>
+                                                {colorPairs.map(({pair, colors, name}) => (
+                                                    <div key={pair}>
+                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem'}}>
+                                                            <div className={`pip-icon pip-${colors[0]}`} style={{width: '16px', height: '16px'}}></div>
+                                                            <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
+                                                            <span style={{fontSize: '0.85rem'}}>{name}</span>
+                                                        </div>
+                                                        <input 
+                                                            type="number"
+                                                            className="small-input"
+                                                            style={{width: '100%'}}
+                                                            value={dualLands[pair]}
+                                                            onChange={(e) => updateDualLands(pair, e.target.value)}
+                                                            min="0"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Calculate Button */}
+                                        {/* STEP 2: Count Mana Pips */}
                                         <div style={{
                                             background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
                                             border: '3px solid rgba(66, 135, 245, 0.4)',
@@ -6111,78 +6748,6 @@ return (
                                                 ))}
                                             </div>
                                         </div>
-
-                                        {/* STEP 2: Dual Lands */}
-                                        <div style={{
-                                            background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
-                                            border: '3px solid rgba(0, 115, 62, 0.4)',
-                                            borderRadius: '12px',
-                                            padding: '1.5rem',
-                                            marginBottom: '1.5rem'
-                                        }}>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '0.8rem',
-                                                marginBottom: '0.5rem'
-                                            }}>
-                                                <div style={{
-                                                    background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
-                                                    color: 'white',
-                                                    width: '36px',
-                                                    height: '36px',
-                                                    borderRadius: '50%',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    fontWeight: 700,
-                                                    fontSize: '1.15rem'
-                                                }}>
-                                                    2
-                                                </div>
-                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
-                                                    🏔️ Count Actual LANDS in Your Deck
-                                                </label>
-                                            </div>
-                                            <div style={{
-                                                background: 'rgba(0, 115, 62, 0.15)',
-                                                border: '1px solid rgba(0, 115, 62, 0.3)',
-                                                borderRadius: '8px',
-                                                padding: '1rem',
-                                                marginBottom: '1rem',
-                                                marginLeft: '2.5rem'
-                                            }}>
-                                                <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '0.9rem'}}>
-                                                    What to count:
-                                                </div>
-                                                <div style={{color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.6'}}>
-                                                    How many <strong>dual lands</strong> (produce or fetch 2 colors) are you running? This is separate from Step 1.
-                                                    <br/>
-                                                    <strong>Include:</strong> Shocklands, Fetchlands, Pain lands, etc. Example: 4 Temple Gardens + 3 Windswept Heaths = 7 for Selesnya.
-                                                </div>
-                                            </div>
-                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', paddingLeft: '2.5rem'}}>
-                                                {colorPairs.map(({pair, colors, name}) => (
-                                                    <div key={pair}>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem'}}>
-                                                            <div className={`pip-icon pip-${colors[0]}`} style={{width: '16px', height: '16px'}}></div>
-                                                            <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
-                                                            <span style={{fontSize: '0.85rem'}}>{name}</span>
-                                                        </div>
-                                                        <input 
-                                                            type="number"
-                                                            className="small-input"
-                                                            style={{width: '100%'}}
-                                                            value={dualLands[pair]}
-                                                            onChange={(e) => updateDualLands(pair, e.target.value)}
-                                                            min="0"
-                                                        />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Calculate Button */}
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
                                             <button 
                                                 className="btn btn-primary"
@@ -7087,6 +7652,28 @@ return (
                                             ></div>
                                         ))}
                                     </div>
+
+                                <div style={{marginBottom: '1.5rem'}}>
+                                    <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
+                                        Game Plan <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 400}}>(Optional)</span>
+                                    </label>
+                                    <textarea 
+                                        className="form-input" 
+                                        placeholder="e.g., Ramp early, play big creatures, draw cards, control the board..."
+                                        value={deckData.gamePlan || ''}
+                                        onChange={(e) => setDeckData({...deckData, gamePlan: e.target.value})}
+                                        rows="3"
+                                        style={{
+                                            width: '100%',
+                                            resize: 'vertical',
+                                            minHeight: '80px',
+                                            fontFamily: 'inherit'
+                                        }}
+                                    />
+                                    <small style={{color: 'var(--text-muted)', fontSize: '0.8rem', display: 'block', marginTop: '0.3rem'}}>
+                                        A brief summary of what this deck is trying to do
+                                    </small>
+                                </div>
                                 </div>
 
                                 <div style={{marginBottom: '1.5rem'}}>
@@ -7623,7 +8210,78 @@ return (
                                             </div>
                                         </div>
 
-                                        {/* STEP 1: Count Mana Pips */}
+                                        {/* STEP 1: Dual Lands */}
+                                        <div style={{
+                                            background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
+                                            border: '3px solid rgba(0, 115, 62, 0.4)',
+                                            borderRadius: '12px',
+                                            padding: '1.5rem',
+                                            marginBottom: '1.5rem'
+                                        }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.8rem',
+                                                marginBottom: '0.5rem'
+                                            }}>
+                                                <div style={{
+                                                    background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
+                                                    color: 'white',
+                                                    width: '36px',
+                                                    height: '36px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontWeight: 700,
+                                                    fontSize: '1.15rem'
+                                                }}>
+                                                    2
+                                                </div>
+                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                    🏔️ Count Actual LANDS in Your Deck
+                                                </label>
+                                            </div>
+                                            <div style={{
+                                                background: 'rgba(0, 115, 62, 0.15)',
+                                                border: '1px solid rgba(0, 115, 62, 0.3)',
+                                                borderRadius: '8px',
+                                                padding: '1rem',
+                                                marginBottom: '1rem',
+                                                marginLeft: '2.5rem'
+                                            }}>
+                                                <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '0.9rem'}}>
+                                                    What to count:
+                                                </div>
+                                                <div style={{color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.6'}}>
+                                                    How many <strong>dual lands</strong> (produce or fetch 2 colors) are you running? This is separate from Step 1.
+                                                    <br/>
+                                                    <strong>Include:</strong> Shocklands, Fetchlands, Pain lands, etc. Example: 4 Temple Gardens + 3 Windswept Heaths = 7 for Selesnya.
+                                                </div>
+                                            </div>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', paddingLeft: '2.5rem'}}>
+                                                {colorPairs.map(({pair, colors, name}) => (
+                                                    <div key={pair}>
+                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem'}}>
+                                                            <div className={`pip-icon pip-${colors[0]}`} style={{width: '16px', height: '16px'}}></div>
+                                                            <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
+                                                            <span style={{fontSize: '0.85rem'}}>{name}</span>
+                                                        </div>
+                                                        <input 
+                                                            type="number"
+                                                            className="small-input"
+                                                            style={{width: '100%'}}
+                                                            value={dualLands[pair]}
+                                                            onChange={(e) => updateDualLands(pair, e.target.value)}
+                                                            min="0"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Calculate Button */}
+                                        {/* STEP 2: Count Mana Pips */}
                                         <div style={{
                                             background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
                                             border: '3px solid rgba(66, 135, 245, 0.4)',
@@ -7726,78 +8384,6 @@ return (
                                                 ))}
                                             </div>
                                         </div>
-
-                                        {/* STEP 2: Dual Lands */}
-                                        <div style={{
-                                            background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
-                                            border: '3px solid rgba(0, 115, 62, 0.4)',
-                                            borderRadius: '12px',
-                                            padding: '1.5rem',
-                                            marginBottom: '1.5rem'
-                                        }}>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '0.8rem',
-                                                marginBottom: '0.5rem'
-                                            }}>
-                                                <div style={{
-                                                    background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
-                                                    color: 'white',
-                                                    width: '36px',
-                                                    height: '36px',
-                                                    borderRadius: '50%',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    fontWeight: 700,
-                                                    fontSize: '1.15rem'
-                                                }}>
-                                                    2
-                                                </div>
-                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
-                                                    🏔️ Count Actual LANDS in Your Deck
-                                                </label>
-                                            </div>
-                                            <div style={{
-                                                background: 'rgba(0, 115, 62, 0.15)',
-                                                border: '1px solid rgba(0, 115, 62, 0.3)',
-                                                borderRadius: '8px',
-                                                padding: '1rem',
-                                                marginBottom: '1rem',
-                                                marginLeft: '2.5rem'
-                                            }}>
-                                                <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '0.9rem'}}>
-                                                    What to count:
-                                                </div>
-                                                <div style={{color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.6'}}>
-                                                    How many <strong>dual lands</strong> (produce or fetch 2 colors) are you running? This is separate from Step 1.
-                                                    <br/>
-                                                    <strong>Include:</strong> Shocklands, Fetchlands, Pain lands, etc. Example: 4 Temple Gardens + 3 Windswept Heaths = 7 for Selesnya.
-                                                </div>
-                                            </div>
-                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', paddingLeft: '2.5rem'}}>
-                                                {colorPairs.map(({pair, colors, name}) => (
-                                                    <div key={pair}>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem'}}>
-                                                            <div className={`pip-icon pip-${colors[0]}`} style={{width: '16px', height: '16px'}}></div>
-                                                            <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
-                                                            <span style={{fontSize: '0.85rem'}}>{name}</span>
-                                                        </div>
-                                                        <input 
-                                                            type="number"
-                                                            className="small-input"
-                                                            style={{width: '100%'}}
-                                                            value={dualLands[pair]}
-                                                            onChange={(e) => updateDualLands(pair, e.target.value)}
-                                                            min="0"
-                                                        />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Calculate Button */}
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
                                             <button 
                                                 className="btn btn-primary"
