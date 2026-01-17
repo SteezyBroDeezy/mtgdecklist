@@ -1417,6 +1417,40 @@ const saveDeckToFirebase = async (deck) => {
     }
     
     try {
+        // Check if user document exists, create if not
+        const userDocRef = db.collection('users').doc(user.uid);
+        const userDoc = await userDocRef.get();
+        
+        let currentCount = 0;
+        
+        if (!userDoc.exists) {
+            // User document doesn't exist - create it
+            console.log("User document not found, creating...");
+            
+            // Count existing decks for this user
+            const existingDecks = await db.collection('decks')
+                .where('userId', '==', user.uid)
+                .get();
+            currentCount = existingDecks.size;
+            
+            // Create user document with current deck count
+            await userDocRef.set({
+                email: user.email,
+                deckCount: currentCount,
+                createdAt: new Date()
+            });
+            console.log(`✅ User document created with ${currentCount} existing decks`);
+        } else {
+            // User document exists - get current count
+            currentCount = userDoc.data()?.deckCount || 0;
+        }
+
+        // Enforce 100 deck limit
+        if (currentCount >= 100) {
+            alert('⚠️ Maximum 100 Decks Reached!\n\nYou have reached the maximum limit of 100 decks per account.\n\nPlease delete some existing decks before creating new ones.\n\nCurrent count: ' + currentCount + '/100');
+            return false;
+        }
+
         const deckWithUser = {
             ...deck,
             userId: user.uid,
@@ -1426,6 +1460,11 @@ const saveDeckToFirebase = async (deck) => {
         
         const docRef = await db.collection("decks").add(deckWithUser);
         console.log("Deck saved to Firebase!");
+
+        // Increment deck count in Firestore
+        await userDocRef.update({
+            deckCount: currentCount + 1
+        });
         
         // If deck is public, add to public collection
         if (deck.isPublic) {
@@ -1433,6 +1472,9 @@ const saveDeckToFirebase = async (deck) => {
             // Refresh public decks list
             await loadPublicDecks();
         }
+        
+        // Show success with count
+        alert(`✅ Deck saved successfully!\n\nYou now have ${currentCount + 1}/100 decks.`);
         
         return true;
     } catch (error) {
@@ -1488,16 +1530,40 @@ const saveDeckToFirebase = async (deck) => {
             }, []);
 
             // Authentication functions
-                const handleSignUp = (email, password) => {
-                    auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-            alert("Account created successfully!");
-            setShowAuthModal(false);
-        })
-        .catch((error) => {
-            alert("Error: " + error.message);
-        });
-};
+            const handleSignUp = async (email, password) => {
+                try {
+                    // Validate email format
+                    if (!email.includes('@')) {
+                        alert('❌ Please enter a valid email address.');
+                        return;
+                    }
+
+                    // Create the account (Firebase auth will check for duplicate email)
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    // Store user data in Firestore
+                    await db.collection('users').doc(user.uid).set({
+                        email: email,
+                        createdAt: new Date(),
+                        deckCount: 0
+                    });
+
+                    alert("✅ Account created successfully!");
+                    setShowAuthModal(false);
+                } catch (error) {
+                    // Handle specific errors
+                    if (error.code === 'auth/email-already-in-use') {
+                        alert('❌ This email is already registered.\n\nPlease log in or use a different email.');
+                    } else if (error.code === 'auth/invalid-email') {
+                        alert('❌ Invalid email format.\n\nPlease check your email address.');
+                    } else if (error.code === 'auth/weak-password') {
+                        alert('❌ Password should be at least 6 characters long.');
+                    } else {
+                        alert('❌ Error creating account: ' + error.message);
+                    }
+                }
+            };
 
             const handleLogin = (email, password) => {
                 auth.signInWithEmailAndPassword(email, password)
@@ -1539,8 +1605,41 @@ const saveDeckToFirebase = async (deck) => {
                     );
                     
                     await Promise.all(deletePromises);
+
+                    // Check if user document exists, create if not
+                    const userDocRef = db.collection('users').doc(user.uid);
+                    const userDoc = await userDocRef.get();
                     
-                    alert(`✅ Successfully deleted ${selectedDecksToDelete.length} deck(s)!`);
+                    let currentCount = 0;
+                    
+                    if (!userDoc.exists) {
+                        // User document doesn't exist - create it
+                        console.log("User document not found, creating...");
+                        
+                        // Count remaining decks for this user
+                        const remainingDecks = await db.collection('decks')
+                            .where('userId', '==', user.uid)
+                            .get();
+                        currentCount = remainingDecks.size;
+                        
+                        // Create user document with current deck count
+                        await userDocRef.set({
+                            email: user.email,
+                            deckCount: currentCount,
+                            createdAt: new Date()
+                        });
+                        console.log(`✅ User document created with ${currentCount} remaining decks`);
+                    } else {
+                        // User document exists - decrement count
+                        currentCount = userDoc.data()?.deckCount || 0;
+                        const newCount = Math.max(0, currentCount - selectedDecksToDelete.length);
+                        await userDocRef.update({
+                            deckCount: newCount
+                        });
+                        currentCount = newCount;
+                    }
+                    
+                    alert(`✅ Successfully deleted ${selectedDecksToDelete.length} deck(s)!\n\nYou now have ${currentCount}/100 decks.`);
                     
                     // Reload decks
                     await loadDecksFromFirebase(user.uid);
@@ -2859,9 +2958,25 @@ return (
                                             fontFamily: 'Pirata One, cursive',
                                             fontSize: '2.5rem',
                                             color: 'var(--bone)',
-                                            margin: 0
+                                            margin: 0,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '1rem',
+                                            flexWrap: 'wrap'
                                         }}>
                                             My Decks
+                                            <span style={{
+                                                padding: '0.5rem 1rem',
+                                                background: 'rgba(212, 175, 55, 0.15)',
+                                                border: '2px solid var(--gold)',
+                                                borderRadius: '8px',
+                                                color: 'var(--gold)',
+                                                fontSize: '1rem',
+                                                fontWeight: 600,
+                                                fontFamily: 'Cinzel, serif'
+                                            }}>
+                                                {decks.filter(d => !d.isExample).length}/100
+                                            </span>
                                         </h1>
                                         <svg width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
                                             <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
@@ -3471,21 +3586,23 @@ return (
                                 <div style={{
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(3, 1fr)',
-                                    gap: '1rem',
+                                    gap: window.innerWidth <= 768 ? '0.5rem' : '1rem',
                                     marginBottom: '2rem'
                                 }}>
-                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', textAlign: 'center'}}>
+                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center'}}>
                                         <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.lands}</div>
                                         <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>LANDS</div>
                                     </div>
-                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', textAlign: 'center'}}>
+                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center'}}>
                                         <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.creatures}</div>
-                                        <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>CREATURES</div>
+                                        <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
+                                            {window.innerWidth <= 768 ? 'CREAT.' : 'CREATURES'}
+                                        </div>
                                     </div>
-                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', textAlign: 'center'}}>
+                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center'}}>
                                         <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.noncreature}</div>
-                                        <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>
-                                            {window.innerWidth <= 768 ? 'NON-CREATURES' : 'NON-CREATURE SPELLS'}
+                                        <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
+                                            {window.innerWidth <= 768 ? 'NON-CREAT.' : 'NON-CREATURE SPELLS'}
                                         </div>
                                     </div>
                                 </div>
