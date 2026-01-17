@@ -1231,6 +1231,7 @@
             const [user, setUser] = useState(null);
             const [showAuthModal, setShowAuthModal] = useState(false);
             const [showSettings, setShowSettings] = useState(false);
+            const [showBugReportModal, setShowBugReportModal] = useState(false);
             const [selectedDecksToDelete, setSelectedDecksToDelete] = useState([]);
             const [deleteMode, setDeleteMode] = useState(false);
             const [publicDecks, setPublicDecks] = useState([]);
@@ -1240,6 +1241,76 @@
             const [showInfoExpanded, setShowInfoExpanded] = useState(false);
             const [showManaCalcInfo, setShowManaCalcInfo] = useState(false);
             const [showMobileAbout, setShowMobileAbout] = useState(false);
+
+            // Rate Limiting - Simple client-side protection
+            const rateLimits = {
+                deckCreation: { max: 10, window: 3600000 }, // 10 decks per hour
+                auth: { max: 5, window: 300000 } // 5 auth attempts per 5 minutes
+            };
+
+            const checkRateLimit = (action) => {
+                const now = Date.now();
+                const key = `rateLimit_${action}`;
+                const stored = localStorage.getItem(key);
+                const attempts = stored ? JSON.parse(stored) : [];
+                
+                // Remove old attempts outside the window
+                const windowStart = now - rateLimits[action].window;
+                const recentAttempts = attempts.filter(time => time > windowStart);
+                
+                // Check if limit exceeded
+                if (recentAttempts.length >= rateLimits[action].max) {
+                    const oldestAttempt = Math.min(...recentAttempts);
+                    const timeUntilReset = Math.ceil((oldestAttempt + rateLimits[action].window - now) / 60000);
+                    return { allowed: false, resetIn: timeUntilReset };
+                }
+                
+                // Add current attempt
+                recentAttempts.push(now);
+                localStorage.setItem(key, JSON.stringify(recentAttempts));
+                
+                return { allowed: true };
+            };
+
+            // Bug Report Submission
+            const submitBugReport = async (description, email) => {
+                if (!description || description.trim().length < 10) {
+                    alert('❌ Please provide a detailed description (at least 10 characters).');
+                    return false;
+                }
+
+                try {
+                    await db.collection('bug-reports').add({
+                        description: description.trim(),
+                        email: email?.trim() || 'anonymous',
+                        userAgent: navigator.userAgent,
+                        timestamp: new Date(),
+                        userId: user?.uid || 'anonymous',
+                        url: window.location.href
+                    });
+
+                    return true;
+                } catch (error) {
+                    console.error('Error submitting bug report:', error);
+                    alert('❌ Error submitting report. Please try again.');
+                    return false;
+                }
+            };
+
+            // Tri-Lands Auto-Calculation Helper
+            const calculateTriLandPips = (triLandCount, deckColors) => {
+                if (triLandCount === 0 || !deckColors || deckColors.length !== 3) {
+                    return { W: 0, U: 0, B: 0, R: 0, G: 0 };
+                }
+
+                // Each tri-land adds 1 pip to each of the 3 colors
+                const pips = { W: 0, U: 0, B: 0, R: 0, G: 0 };
+                deckColors.forEach(color => {
+                    pips[color] = triLandCount;
+                });
+
+                return pips;
+            };
 
             // Save decks to localStorage whenever they change
             useEffect(() => {
@@ -1416,6 +1487,13 @@ const saveDeckToFirebase = async (deck) => {
         return;
     }
     
+    // Rate limiting check
+    const rateCheck = checkRateLimit('deckCreation');
+    if (!rateCheck.allowed) {
+        alert(`⚠️ Rate Limit Reached!\n\nYou've created too many decks recently.\n\nPlease wait ${rateCheck.resetIn} minute(s) before creating more decks.\n\nThis helps protect our servers from abuse.`);
+        return false;
+    }
+    
     try {
         // Check if user document exists, create if not
         const userDocRef = db.collection('users').doc(user.uid);
@@ -1531,6 +1609,13 @@ const saveDeckToFirebase = async (deck) => {
 
             // Authentication functions
             const handleSignUp = async (email, password) => {
+                // Rate limiting check
+                const rateCheck = checkRateLimit('auth');
+                if (!rateCheck.allowed) {
+                    alert(`⚠️ Too Many Attempts!\n\nPlease wait ${rateCheck.resetIn} minute(s) before trying again.\n\nThis helps protect against automated attacks.`);
+                    return;
+                }
+
                 try {
                     // Validate email format
                     if (!email.includes('@')) {
@@ -1566,6 +1651,13 @@ const saveDeckToFirebase = async (deck) => {
             };
 
             const handleLogin = (email, password) => {
+                // Rate limiting check
+                const rateCheck = checkRateLimit('auth');
+                if (!rateCheck.allowed) {
+                    alert(`⚠️ Too Many Attempts!\n\nPlease wait ${rateCheck.resetIn} minute(s) before trying again.\n\nThis helps protect against automated attacks.`);
+                    return;
+                }
+
                 auth.signInWithEmailAndPassword(email, password)
                     .then((userCredential) => {
             alert("Logged in successfully!");
@@ -2785,21 +2877,49 @@ return (
                                 // Use deck.id (from props) as the source of truth
                                 const deckId = deckToEdit.id;
                                 
-                                console.log("Saving deck with ID:", deckId);
+                                console.log("=== SAVE DECK DEBUG ===");
+                                console.log("Deck ID:", deckId);
+                                console.log("User UID:", user.uid);
+                                console.log("Deck userId:", deckToEdit.userId);
                                 console.log("UpdatedDeck data:", updatedDeck);
+                                console.log("=====================");
+
+                                // Verify ownership
+                                if (deckToEdit.userId && deckToEdit.userId !== user.uid) {
+                                    alert('⚠️ Permission Denied\n\nYou can only edit your own decks.\n\nThis deck belongs to another user.');
+                                    return;
+                                }
 
                                 try {
-                                    // Update in Firebase - save ALL fields
-                                    await db.collection("decks").doc(String(deckId)).update({
+                                    // First, check if document exists and verify ownership
+                                    const deckRef = db.collection("decks").doc(String(deckId));
+                                    const deckDoc = await deckRef.get();
+                                    
+                                    if (deckDoc.exists) {
+                                        const existingData = deckDoc.data();
+                                        if (existingData.userId && existingData.userId !== user.uid) {
+                                            alert('⚠️ Permission Denied\n\nThis deck belongs to another user.\n\nUse "Build Similar Deck" to create your own copy!');
+                                            return;
+                                        }
+                                    }
+                                    
+                                    // Use set with merge instead of update - handles both create and update cases
+                                    await db.collection("decks").doc(String(deckId)).set({
                                         name: updatedDeck.name,
                                         commander: updatedDeck.commander,
                                         colors: updatedDeck.colors,
                                         categories: updatedDeck.categories,
-                                        sideboard: updatedDeck.sideboard || {},  // Save sideboard!
+                                        sideboard: updatedDeck.sideboard || {},
                                         notableCards: updatedDeck.notableCards || [],
                                         isPublic: updatedDeck.isPublic,
-                                        updatedAt: new Date()
-                                    });
+                                        userId: user.uid,
+                                        lands: updatedDeck.lands || 0,
+                                        creatures: updatedDeck.creatures || 0,
+                                        noncreature: updatedDeck.noncreature || 0,
+                                        updatedAt: new Date(),
+                                        // Keep createdAt if it exists, otherwise set it
+                                        createdAt: deckToEdit.createdAt || new Date()
+                                    }, { merge: true });
 
                                     // Handle public collection syncing
                                     if (updatedDeck.isPublic) {
@@ -2824,7 +2944,25 @@ return (
                                     alert('✅ Deck updated successfully!');
                                 } catch (error) {
                                     console.error('Error updating deck:', error);
-                                    alert('Error updating deck: ' + error.message);
+                                    
+                                    let errorMessage = 'Error updating deck:\n\n';
+                                    
+                                    if (error.code === 'permission-denied') {
+                                        errorMessage += '❌ Permission Denied\n\n';
+                                        errorMessage += 'Possible causes:\n';
+                                        errorMessage += '1. Firestore security rules need to be updated\n';
+                                        errorMessage += '2. This deck belongs to another user\n';
+                                        errorMessage += '3. The document doesn\'t exist in your decks collection\n\n';
+                                        errorMessage += `Debug info:\n`;
+                                        errorMessage += `- Deck ID: ${deckId}\n`;
+                                        errorMessage += `- Your UID: ${user.uid}\n`;
+                                        errorMessage += `- Deck owner: ${deckToEdit.userId || 'unknown'}\n\n`;
+                                        errorMessage += 'Try using "Build Similar Deck" instead to create your own copy!';
+                                    } else {
+                                        errorMessage += error.message;
+                                    }
+                                    
+                                    alert(errorMessage);
                                 }
                             }}
                         />
@@ -2847,6 +2985,14 @@ return (
                             addToPublicDecks={addToPublicDecks}
                             removeFromPublicDecks={removeFromPublicDecks}
                             loadPublicDecks={loadPublicDecks}
+                        />
+                    )}
+
+                    {/* Bug Report Modal */}
+                    {showBugReportModal && (
+                        <BugReportModal
+                            onClose={() => setShowBugReportModal(false)}
+                            onSubmit={submitBugReport}
                         />
                     )}
 
@@ -3676,13 +3822,73 @@ return (
                                             <button
                                                 className="btn btn-secondary"
                                                 style={{flex: 1}}
-                                                onClick={() => {
+                                                onClick={async () => {
+                                                    // If this is the user's own deck from Browse, find and open the personal version
+                                                    if (view === 'browse' && user && selectedDeck.userId === user.uid) {
+                                                        try {
+                                                            console.log("Finding personal version of deck:", selectedDeck.name);
+                                                            
+                                                            // Try to find by ID first
+                                                            let personalDeck = decks.find(d => d.id === selectedDeck.id);
+                                                            
+                                                            // If not found by ID, search by name and commander
+                                                            if (!personalDeck) {
+                                                                console.log("Not found by ID, searching by name and commander...");
+                                                                personalDeck = decks.find(d => 
+                                                                    d.name === selectedDeck.name && 
+                                                                    d.commander === selectedDeck.commander &&
+                                                                    d.userId === user.uid
+                                                                );
+                                                            }
+                                                            
+                                                            if (personalDeck) {
+                                                                console.log("✅ Found personal deck!", personalDeck.id);
+                                                                // Close preview
+                                                                setSelectedDeck(null);
+                                                                // Open edit modal with personal deck
+                                                                setDeckToEdit(personalDeck);
+                                                                setShowEditModal(true);
+                                                            } else {
+                                                                // Not found in loaded decks - try fetching from Firestore
+                                                                console.log("Not in loaded decks, querying Firestore...");
+                                                                
+                                                                const querySnapshot = await db.collection("decks")
+                                                                    .where("userId", "==", user.uid)
+                                                                    .where("name", "==", selectedDeck.name)
+                                                                    .where("commander", "==", selectedDeck.commander)
+                                                                    .limit(1)
+                                                                    .get();
+                                                                
+                                                                if (!querySnapshot.empty) {
+                                                                    const doc = querySnapshot.docs[0];
+                                                                    console.log("✅ Found in Firestore!", doc.id);
+                                                                    setSelectedDeck(null);
+                                                                    setDeckToEdit({ ...doc.data(), id: doc.id });
+                                                                    setShowEditModal(true);
+                                                                } else {
+                                                                    console.log("⚠️ Deck not found anywhere");
+                                                                    alert('⚠️ Deck Not Found in Personal Collection\n\nThis deck exists in Browse but not in your My Decks.\n\nUse "Build Similar Deck" to create your own copy!');
+                                                                }
+                                                            }
+                                                        } catch (error) {
+                                                            console.error("Error finding deck:", error);
+                                                            alert('Error loading deck: ' + error.message + '\n\nTry using "Build Similar Deck" instead!');
+                                                        }
+                                                        
+                                                        return;
+                                                    }
+                                                    
+                                                    // Not the owner, or viewing from My Decks - just view it
                                                     setDeckToEdit(selectedDeck);
-                                                    setSelectedDeck(null);  // Close deck summary
+                                                    setSelectedDeck(null);
                                                     setShowEditModal(true);
                                                 }}
                                             >
-                                                📋 See Full Deck
+                                                {view === 'browse' && user && selectedDeck.userId === user.uid ? (
+                                                    '✏️ Edit in My Decks'
+                                                ) : (
+                                                    '📋 See Full Deck'
+                                                )}
                                             </button>
                                         )}
                                         <button
@@ -3768,11 +3974,22 @@ return (
                 const totalPips = {};
                 let grandTotal = 0;
                 
+                // Calculate pips from commander/cards
                 colors.forEach(color => {
                     const pips = pipCounts[color];
                     const total = pips.single + (pips.double * 2) + (pips.triple * 3);
                     totalPips[color] = total;
                     grandTotal += total;
+                });
+
+                // Determine deck colors based on which colors have pips
+                const deckColors = colors.filter(color => totalPips[color] > 0);
+
+                // Add tri-lands auto-calculation for 3-color decks
+                const triLandPips = calculateTriLandPips(triLands, deckColors);
+                colors.forEach(color => {
+                    totalPips[color] += triLandPips[color];
+                    grandTotal += triLandPips[color];
                 });
 
                 if (grandTotal === 0) {
@@ -3797,13 +4014,21 @@ return (
                         }
                     });
 
-                    const neededBasics = Math.max(0, Math.round(rawSources - dualContribution));
+                    // Add tri-lands contribution for 3-color decks
+                    let triContribution = 0;
+                    if (deckColors.length === 3 && deckColors.includes(color)) {
+                        triContribution = triLands;
+                    }
+
+                    const totalMultiContribution = dualContribution + triContribution;
+                    const neededBasics = Math.max(0, Math.round(rawSources - totalMultiContribution));
                     
                     recommendations[color] = {
                         pips: totalPips[color],
                         percentage: percentage.toFixed(1),
                         totalSources: Math.round(rawSources),
                         fromDuals: dualContribution,
+                        fromTri: triContribution,
                         basicsNeeded: neededBasics,
                         name: colorNames[color]
                     };
@@ -4135,6 +4360,25 @@ return (
                         <small style={{color: 'var(--text-muted)', marginLeft: window.innerWidth <= 768 ? '0' : '1rem', display: 'block', marginTop: window.innerWidth <= 768 ? '0.3rem' : '0'}}>
                             3+ color lands
                         </small>
+                        {(() => {
+                            // Calculate deck colors from current pip counts
+                            const colors = ['W', 'U', 'B', 'R', 'G'];
+                            const activeDeckColors = colors.filter(color => {
+                                const pips = pipCounts[color];
+                                return (pips.single + pips.double + pips.triple) > 0;
+                            });
+                            return activeDeckColors.length === 3 && triLands > 0;
+                        })() && (
+                            <small style={{
+                                color: 'var(--accent-bright)',
+                                marginLeft: window.innerWidth <= 768 ? '0' : '1rem',
+                                display: 'block',
+                                marginTop: '0.3rem',
+                                fontStyle: 'italic'
+                            }}>
+                                💡 Auto-calculated: +{triLands} pip{triLands !== 1 ? 's' : ''} to each of your 3 colors
+                            </small>
+                        )}
                     </div>
 
                     <div style={{marginBottom: '1.5rem'}}>
@@ -5115,6 +5359,47 @@ return (
                                 </p>
                             </div>
                         )}
+
+                        {/* Bug Report Button */}
+                        <div style={{
+                            background: 'var(--bg-tertiary)',
+                            borderRadius: '12px',
+                            padding: '1.5rem',
+                            marginTop: '2rem',
+                            textAlign: 'center'
+                        }}>
+                            <h3 style={{
+                                color: 'var(--bone)',
+                                marginBottom: '1rem',
+                                fontSize: '1.2rem',
+                                fontFamily: 'MedievalSharp, cursive'
+                            }}>
+                                Help & Feedback
+                            </h3>
+                            <p style={{
+                                color: 'var(--text-secondary)',
+                                marginBottom: '1rem',
+                                fontSize: '0.9rem'
+                            }}>
+                                Found a bug or have a suggestion? Let us know!
+                            </p>
+                            <button
+                                onClick={() => {
+                                    onClose();
+                                    setTimeout(() => setShowBugReportModal(true), 100);
+                                }}
+                                className="btn btn-secondary"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    margin: '0 auto'
+                                }}
+                            >
+                                <span>🐛</span>
+                                <span>Report a Bug</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             );
@@ -5502,6 +5787,178 @@ return (
     }
 
     // ↑ AUTHMODAL COMPONENT ENDS HERE ↑
+
+    // Bug Report Modal Component
+    function BugReportModal({ onClose, onSubmit }) {
+        const [description, setDescription] = useState('');
+        const [email, setEmail] = useState('');
+        const [submitting, setSubmitting] = useState(false);
+
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            
+            if (description.trim().length < 10) {
+                alert('❌ Please provide a detailed description (at least 10 characters).');
+                return;
+            }
+
+            setSubmitting(true);
+            const success = await onSubmit(description, email);
+            setSubmitting(false);
+
+            if (success) {
+                alert('✅ Thank you! Your bug report has been submitted.\n\nWe\'ll look into it as soon as possible!');
+                onClose();
+            }
+        };
+
+        return (
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0, 0, 0, 0.85)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1001,
+                padding: '1rem'
+            }}>
+                <div style={{
+                    background: 'var(--bg-secondary)',
+                    border: '2px solid var(--gold)',
+                    borderRadius: '16px',
+                    padding: '2rem',
+                    maxWidth: '500px',
+                    width: '100%',
+                    position: 'relative'
+                }}>
+                    <button 
+                        onClick={onClose}
+                        style={{
+                            position: 'absolute',
+                            top: '1rem',
+                            right: '1rem',
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--text-muted)',
+                            fontSize: '1.5rem',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        ×
+                    </button>
+
+                    <h2 style={{
+                        fontFamily: 'Pirata One, cursive',
+                        color: 'var(--gold)',
+                        marginBottom: '0.5rem',
+                        fontSize: '2rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                    }}>
+                        <span>🐛</span>
+                        <span>Report a Bug</span>
+                    </h2>
+
+                    <p style={{
+                        color: 'var(--text-secondary)',
+                        marginBottom: '1.5rem',
+                        fontSize: '0.9rem',
+                        lineHeight: '1.5'
+                    }}>
+                        Found something wrong? Help us improve by reporting bugs or suggesting features!
+                    </p>
+
+                    <form onSubmit={handleSubmit}>
+                        <div style={{marginBottom: '1.5rem'}}>
+                            <label style={{
+                                display: 'block',
+                                marginBottom: '0.5rem',
+                                color: 'var(--text-secondary)',
+                                fontWeight: 600
+                            }}>
+                                Description *
+                            </label>
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                required
+                                rows={5}
+                                placeholder="Describe the bug or your suggestion in detail..."
+                                style={{
+                                    width: '100%',
+                                    padding: '0.75rem',
+                                    background: 'var(--bg-tertiary)',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '8px',
+                                    color: 'var(--text-primary)',
+                                    fontSize: '1rem',
+                                    fontFamily: 'Cinzel, serif',
+                                    resize: 'vertical'
+                                }}
+                            />
+                        </div>
+
+                        <div style={{marginBottom: '1.5rem'}}>
+                            <label style={{
+                                display: 'block',
+                                marginBottom: '0.5rem',
+                                color: 'var(--text-secondary)',
+                                fontWeight: 600
+                            }}>
+                                Email (optional)
+                            </label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="your@email.com (optional for follow-up)"
+                                style={{
+                                    width: '100%',
+                                    padding: '0.75rem',
+                                    background: 'var(--bg-tertiary)',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '8px',
+                                    color: 'var(--text-primary)',
+                                    fontSize: '1rem'
+                                }}
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="btn btn-primary"
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                opacity: submitting ? 0.6 : 1,
+                                cursor: submitting ? 'not-allowed' : 'pointer'
+                            }}
+                        >
+                            {submitting ? 'Submitting...' : 'Submit Report'}
+                        </button>
+
+                        <p style={{
+                            marginTop: '1rem',
+                            fontSize: '0.75rem',
+                            color: 'var(--text-muted)',
+                            textAlign: 'center',
+                            lineHeight: '1.4'
+                        }}>
+                            📧 All reports are reviewed. Thank you for helping us improve!
+                        </p>
+                    </form>
+                </div>
+            </div>
+        );
+    }
 
     // CardAutocomplete Component - Scryfall card name suggestions
     function CardAutocomplete({ value, onChange, placeholder, onSelect }) {
@@ -6252,11 +6709,16 @@ return (
                                         const majorGroup = DECK_CATEGORIES[majorGroupId];
                                         if (!majorGroup) return null;
                                         
-                                        const groupTotal = majorGroup.categories.reduce((sum, category) => {
+                                        // Calculate total from subcategories
+                                        const subtypeTotal = majorGroup.categories.reduce((sum, category) => {
                                             return sum + category.subcategories.reduce((catSum, sub) => {
                                                 return catSum + (deckData.categories[sub.id] || 0);
                                             }, 0);
                                         }, 0);
+                                        
+                                        // Add quick total
+                                        const quickTotal = deckData.categories[`${majorGroupId}-quick`] || 0;
+                                        const groupTotal = subtypeTotal + quickTotal;
 
                                         return (
                                             <div key={majorGroupId} style={{marginBottom: '1rem'}}>
@@ -8360,13 +8822,16 @@ return (
                 <div className="modal-overlay" >
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h2 className="modal-title">Edit Deck</h2>
+                            <h2 className="modal-title">
+                                {user && deck && user.uid === deck.userId ? '✏️ Edit Deck' : '👁️ View Deck'}
+                            </h2>
                             <button className="close-btn" onClick={handleClose}>×</button>
                         </div>
 
                         <div className="modal-content-wrapper">
                             <div className="modal-body">
-                                {/* Privacy Toggle Section */}
+                                {/* Privacy Toggle Section - only show if user owns this deck */}
+                                {user && deck && user.uid === deck.userId && (
                                 <div style={{
                                     background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(139, 111, 71, 0.1) 100%)',
                                     border: '2px solid var(--gold)',
@@ -8446,7 +8911,7 @@ return (
                                         )}
                                     </div>
                                 </div>
-
+                                )}
                                 <div style={{marginBottom: '1.5rem'}}>
                                     <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: 500}}>
                                         Deck Name
@@ -8659,11 +9124,16 @@ return (
                                         const majorGroup = DECK_CATEGORIES[majorGroupId];
                                         if (!majorGroup) return null;
                                         
-                                        const groupTotal = majorGroup.categories.reduce((sum, category) => {
+                                        // Calculate total from subcategories
+                                        const subtypeTotal = majorGroup.categories.reduce((sum, category) => {
                                             return sum + category.subcategories.reduce((catSum, sub) => {
                                                 return catSum + (deckData.categories[sub.id] || 0);
                                             }, 0);
                                         }, 0);
+                                        
+                                        // Add quick total
+                                        const quickTotal = deckData.categories[`${majorGroupId}-quick`] || 0;
+                                        const groupTotal = subtypeTotal + quickTotal;
 
                                         return (
                                             <div key={majorGroupId} style={{marginBottom: '1rem'}}>
@@ -10220,24 +10690,38 @@ return (
                                     )}
                                 </div>
 
+                                {/* Save button - only show if user owns this deck */}
                                 <div style={{textAlign: 'center', marginTop: '2rem'}}>
-                                    <button 
-                                        className="btn btn-primary" 
-                                        style={{padding: '1rem 3rem', fontSize: '1.1rem'}}
-                                        onClick={() => {
-                                            setHasUnsavedChanges(false);
-                                            onSave({
-                                                ...deckData, 
-                                                notableCards,
-                                                sideboard: sideboardCategories,  // Include sideboard!
-                                                lands: totals.lands,
-                                                creatures: totals.creatures,
-                                                noncreature: totals.noncreature
-                                            });
-                                        }}
-                                    >
-                                        💾 Save Changes
-                                    </button>
+                                    {user && deck && user.uid === deck.userId ? (
+                                        <button 
+                                            className="btn btn-primary" 
+                                            style={{padding: '1rem 3rem', fontSize: '1.1rem'}}
+                                            onClick={() => {
+                                                setHasUnsavedChanges(false);
+                                                onSave({
+                                                    ...deckData, 
+                                                    notableCards,
+                                                    sideboard: sideboardCategories,  // Include sideboard!
+                                                    lands: totals.lands,
+                                                    creatures: totals.creatures,
+                                                    noncreature: totals.noncreature
+                                                });
+                                            }}
+                                        >
+                                            💾 Save Changes
+                                        </button>
+                                    ) : (
+                                        <div style={{
+                                            padding: '1rem',
+                                            background: 'rgba(66, 135, 245, 0.1)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-secondary)',
+                                            fontSize: '0.95rem',
+                                            fontStyle: 'italic'
+                                        }}>
+                                            👤 This is {deck?.userId ? 'another user\'s' : 'an example'} deck. Use "Build Similar Deck" to create your own version!
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
