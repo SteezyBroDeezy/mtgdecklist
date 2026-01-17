@@ -6871,14 +6871,82 @@ return (
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
                                                 Total Lands in Deck
                                             </label>
-                                            <input 
-                                                type="number"
-                                                className="small-input"
-                                                value={totalLands}
-                                                onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
-                                                min="0"
-                                                max="99"
-                                            />
+                                            {window.innerWidth <= 768 ? (
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(totalLands) || 0;
+                                                            if (currentValue > 0) {
+                                                                setTotalLands(currentValue - 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input 
+                                                        type="number"
+                                                        className="small-input"
+                                                        value={totalLands}
+                                                        onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
+                                                        min="0"
+                                                        max="99"
+                                                        style={{flex: 1, textAlign: 'center', minWidth: '80px'}}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(totalLands) || 0;
+                                                            if (currentValue < 99) {
+                                                                setTotalLands(currentValue + 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    value={totalLands}
+                                                    onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
+                                                    min="0"
+                                                    max="99"
+                                                />
+                                            )}
                                             <small style={{color: 'var(--text-muted)', marginLeft: '1rem'}}>
                                                 Recommended: 36-38 lands
                                             </small>
@@ -6888,14 +6956,82 @@ return (
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
                                                 Tri-Lands (Triomes & 3+ color lands)
                                             </label>
-                                            <input 
-                                                type="number"
-                                                className="small-input"
-                                                value={triLands}
-                                                onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
-                                                min="0"
-                                                max="20"
-                                            />
+                                            {window.innerWidth <= 768 ? (
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(triLands) || 0;
+                                                            if (currentValue > 0) {
+                                                                setTriLands(currentValue - 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input 
+                                                        type="number"
+                                                        className="small-input"
+                                                        value={triLands}
+                                                        onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
+                                                        min="0"
+                                                        max="20"
+                                                        style={{flex: 1, textAlign: 'center', minWidth: '80px'}}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(triLands) || 0;
+                                                            if (currentValue < 20) {
+                                                                setTriLands(currentValue + 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    value={triLands}
+                                                    onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
+                                                    min="0"
+                                                    max="20"
+                                                />
+                                            )}
                                             <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
                                                 <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
                                                     <strong>Include:</strong> Triomes (Ketria, Savai, etc.), Panoramas, sac lands that search for 3+ basic types
@@ -6910,14 +7046,82 @@ return (
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
                                                 Other Lands (Colorless & Utility)
                                             </label>
-                                            <input 
-                                                type="number"
-                                                className="small-input"
-                                                value={otherLands}
-                                                onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
-                                                min="0"
-                                                max="20"
-                                            />
+                                            {window.innerWidth <= 768 ? (
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(otherLands) || 0;
+                                                            if (currentValue > 0) {
+                                                                setOtherLands(currentValue - 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input 
+                                                        type="number"
+                                                        className="small-input"
+                                                        value={otherLands}
+                                                        onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
+                                                        min="0"
+                                                        max="20"
+                                                        style={{flex: 1, textAlign: 'center', minWidth: '80px'}}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(otherLands) || 0;
+                                                            if (currentValue < 20) {
+                                                                setOtherLands(currentValue + 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    value={otherLands}
+                                                    onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
+                                                    min="0"
+                                                    max="20"
+                                                />
+                                            )}
                                             <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
                                                 <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
                                                     <strong>Include:</strong> Command Tower, Reliquary Tower, Wastes, utility lands
@@ -6985,14 +7189,79 @@ return (
                                                             <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
                                                             <span style={{fontSize: '0.85rem'}}>{name}</span>
                                                         </div>
-                                                        <input 
-                                                            type="number"
-                                                            className="small-input"
-                                                            style={{width: '100%'}}
-                                                            value={dualLands[pair]}
-                                                            onChange={(e) => updateDualLands(pair, e.target.value)}
-                                                            min="0"
-                                                        />
+                                                        {window.innerWidth <= 768 ? (
+                                                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        const currentValue = parseInt(dualLands[pair]) || 0;
+                                                                        if (currentValue > 0) {
+                                                                            updateDualLands(pair, (currentValue - 1).toString());
+                                                                        }
+                                                                    }}
+                                                                    style={{
+                                                                        width: '36px',
+                                                                        height: '36px',
+                                                                        fontSize: '1.2rem',
+                                                                        padding: 0,
+                                                                        background: 'var(--bg-secondary)',
+                                                                        border: '2px solid var(--border-color)',
+                                                                        borderRadius: '6px',
+                                                                        color: 'var(--text-primary)',
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        fontWeight: 'bold'
+                                                                    }}
+                                                                >
+                                                                    −
+                                                                </button>
+                                                                <input 
+                                                                    type="number"
+                                                                    className="small-input"
+                                                                    style={{flex: 1, textAlign: 'center'}}
+                                                                    value={dualLands[pair]}
+                                                                    onChange={(e) => updateDualLands(pair, e.target.value)}
+                                                                    min="0"
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        const currentValue = parseInt(dualLands[pair]) || 0;
+                                                                        updateDualLands(pair, (currentValue + 1).toString());
+                                                                    }}
+                                                                    style={{
+                                                                        width: '36px',
+                                                                        height: '36px',
+                                                                        fontSize: '1.2rem',
+                                                                        padding: 0,
+                                                                        background: 'var(--bg-secondary)',
+                                                                        border: '2px solid var(--border-color)',
+                                                                        borderRadius: '6px',
+                                                                        color: 'var(--text-primary)',
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        fontWeight: 'bold'
+                                                                    }}
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <input 
+                                                                type="number"
+                                                                className="small-input"
+                                                                style={{width: '100%'}}
+                                                                value={dualLands[pair]}
+                                                                onChange={(e) => updateDualLands(pair, e.target.value)}
+                                                                min="0"
+                                                            />
+                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
@@ -7066,36 +7335,231 @@ return (
                                                         <div style={{display: 'flex', gap: '0.3rem', marginTop: '0.5rem', flexWrap: 'wrap'}}>
                                                             <div style={{flex: '1 1 50px', minWidth: '50px'}}>
                                                                 <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Single</div>
-                                                                <input 
-                                                                    type="number"
-                                                                    className="small-input"
-                                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                                    value={pipCounts[color].single}
-                                                                    onChange={(e) => updatePipCount(color, 'single', e.target.value)}
-                                                                    min="0"
-                                                                />
+                                                                {window.innerWidth <= 768 ? (
+                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].single) || 0;
+                                                                                if (currentValue > 0) {
+                                                                                    updatePipCount(color, 'single', (currentValue - 1).toString());
+                                                                                }
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            −
+                                                                        </button>
+                                                                        <input 
+                                                                            type="number"
+                                                                            className="small-input"
+                                                                            style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                                            value={pipCounts[color].single}
+                                                                            onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                                            min="0"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].single) || 0;
+                                                                                updatePipCount(color, 'single', (currentValue + 1).toString());
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <input 
+                                                                        type="number"
+                                                                        className="small-input"
+                                                                        style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                                        value={pipCounts[color].single}
+                                                                        onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                                        min="0"
+                                                                    />
+                                                                )}
                                                             </div>
                                                             <div style={{flex: '1 1 50px', minWidth: '50px'}}>
                                                                 <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Double</div>
-                                                                <input 
-                                                                    type="number"
-                                                                    className="small-input"
-                                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                                    value={pipCounts[color].double}
-                                                                    onChange={(e) => updatePipCount(color, 'double', e.target.value)}
-                                                                    min="0"
-                                                                />
+                                                                {window.innerWidth <= 768 ? (
+                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].double) || 0;
+                                                                                if (currentValue > 0) {
+                                                                                    updatePipCount(color, 'double', (currentValue - 1).toString());
+                                                                                }
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            −
+                                                                        </button>
+                                                                        <input 
+                                                                            type="number"
+                                                                            className="small-input"
+                                                                            style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                                            value={pipCounts[color].double}
+                                                                            onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                                            min="0"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].double) || 0;
+                                                                                updatePipCount(color, 'double', (currentValue + 1).toString());
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <input 
+                                                                        type="number"
+                                                                        className="small-input"
+                                                                        style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                                        value={pipCounts[color].double}
+                                                                        onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                                        min="0"
+                                                                    />
+                                                                )}
                                                             </div>
                                                             <div style={{flex: '1 1 50px', minWidth: '50px'}}>
                                                                 <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Triple+</div>
-                                                                <input 
-                                                                    type="number"
-                                                                    className="small-input"
-                                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                                    value={pipCounts[color].triple}
-                                                                    onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
-                                                                    min="0"
-                                                                />
+                                                                {window.innerWidth <= 768 ? (
+                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].triple) || 0;
+                                                                                if (currentValue > 0) {
+                                                                                    updatePipCount(color, 'triple', (currentValue - 1).toString());
+                                                                                }
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            −
+                                                                        </button>
+                                                                        <input 
+                                                                            type="number"
+                                                                            className="small-input"
+                                                                            style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                                            value={pipCounts[color].triple}
+                                                                            onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
+                                                                            min="0"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].triple) || 0;
+                                                                                updatePipCount(color, 'triple', (currentValue + 1).toString());
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <input 
+                                                                        type="number"
+                                                                        className="small-input"
+                                                                        style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                                        value={pipCounts[color].triple}
+                                                                        onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
+                                                                        min="0"
+                                                                    />
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -8814,14 +9278,82 @@ return (
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
                                                 Total Lands in Deck
                                             </label>
-                                            <input 
-                                                type="number"
-                                                className="small-input"
-                                                value={totalLands}
-                                                onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
-                                                min="0"
-                                                max="99"
-                                            />
+                                            {window.innerWidth <= 768 ? (
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(totalLands) || 0;
+                                                            if (currentValue > 0) {
+                                                                setTotalLands(currentValue - 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input 
+                                                        type="number"
+                                                        className="small-input"
+                                                        value={totalLands}
+                                                        onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
+                                                        min="0"
+                                                        max="99"
+                                                        style={{flex: 1, textAlign: 'center', minWidth: '80px'}}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(totalLands) || 0;
+                                                            if (currentValue < 99) {
+                                                                setTotalLands(currentValue + 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    value={totalLands}
+                                                    onChange={(e) => setTotalLands(parseInt(e.target.value) || 38)}
+                                                    min="0"
+                                                    max="99"
+                                                />
+                                            )}
                                             <small style={{color: 'var(--text-muted)', marginLeft: '1rem'}}>
                                                 Recommended: 36-38 lands
                                             </small>
@@ -8831,14 +9363,82 @@ return (
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
                                                 Tri-Lands (Triomes & 3+ color lands)
                                             </label>
-                                            <input 
-                                                type="number"
-                                                className="small-input"
-                                                value={triLands}
-                                                onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
-                                                min="0"
-                                                max="20"
-                                            />
+                                            {window.innerWidth <= 768 ? (
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(triLands) || 0;
+                                                            if (currentValue > 0) {
+                                                                setTriLands(currentValue - 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input 
+                                                        type="number"
+                                                        className="small-input"
+                                                        value={triLands}
+                                                        onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
+                                                        min="0"
+                                                        max="20"
+                                                        style={{flex: 1, textAlign: 'center', minWidth: '80px'}}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(triLands) || 0;
+                                                            if (currentValue < 20) {
+                                                                setTriLands(currentValue + 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    value={triLands}
+                                                    onChange={(e) => setTriLands(parseInt(e.target.value) || 0)}
+                                                    min="0"
+                                                    max="20"
+                                                />
+                                            )}
                                             <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
                                                 <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
                                                     <strong>Include:</strong> Triomes (Ketria, Savai, etc.), Panoramas, sac lands that search for 3+ basic types
@@ -8853,14 +9453,82 @@ return (
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
                                                 Other Lands (Colorless & Utility)
                                             </label>
-                                            <input 
-                                                type="number"
-                                                className="small-input"
-                                                value={otherLands}
-                                                onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
-                                                min="0"
-                                                max="20"
-                                            />
+                                            {window.innerWidth <= 768 ? (
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(otherLands) || 0;
+                                                            if (currentValue > 0) {
+                                                                setOtherLands(currentValue - 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input 
+                                                        type="number"
+                                                        className="small-input"
+                                                        value={otherLands}
+                                                        onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
+                                                        min="0"
+                                                        max="20"
+                                                        style={{flex: 1, textAlign: 'center', minWidth: '80px'}}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const currentValue = parseInt(otherLands) || 0;
+                                                            if (currentValue < 20) {
+                                                                setOtherLands(currentValue + 1);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                            fontSize: '1.2rem',
+                                                            padding: 0,
+                                                            background: 'var(--bg-secondary)',
+                                                            border: '2px solid var(--border-color)',
+                                                            borderRadius: '6px',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    value={otherLands}
+                                                    onChange={(e) => setOtherLands(parseInt(e.target.value) || 0)}
+                                                    min="0"
+                                                    max="20"
+                                                />
+                                            )}
                                             <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
                                                 <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
                                                     <strong>Include:</strong> Command Tower, Reliquary Tower, Wastes, utility lands
@@ -8928,14 +9596,79 @@ return (
                                                             <div className={`pip-icon pip-${colors[1]}`} style={{width: '16px', height: '16px'}}></div>
                                                             <span style={{fontSize: '0.85rem'}}>{name}</span>
                                                         </div>
-                                                        <input 
-                                                            type="number"
-                                                            className="small-input"
-                                                            style={{width: '100%'}}
-                                                            value={dualLands[pair]}
-                                                            onChange={(e) => updateDualLands(pair, e.target.value)}
-                                                            min="0"
-                                                        />
+                                                        {window.innerWidth <= 768 ? (
+                                                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        const currentValue = parseInt(dualLands[pair]) || 0;
+                                                                        if (currentValue > 0) {
+                                                                            updateDualLands(pair, (currentValue - 1).toString());
+                                                                        }
+                                                                    }}
+                                                                    style={{
+                                                                        width: '36px',
+                                                                        height: '36px',
+                                                                        fontSize: '1.2rem',
+                                                                        padding: 0,
+                                                                        background: 'var(--bg-secondary)',
+                                                                        border: '2px solid var(--border-color)',
+                                                                        borderRadius: '6px',
+                                                                        color: 'var(--text-primary)',
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        fontWeight: 'bold'
+                                                                    }}
+                                                                >
+                                                                    −
+                                                                </button>
+                                                                <input 
+                                                                    type="number"
+                                                                    className="small-input"
+                                                                    style={{flex: 1, textAlign: 'center'}}
+                                                                    value={dualLands[pair]}
+                                                                    onChange={(e) => updateDualLands(pair, e.target.value)}
+                                                                    min="0"
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        const currentValue = parseInt(dualLands[pair]) || 0;
+                                                                        updateDualLands(pair, (currentValue + 1).toString());
+                                                                    }}
+                                                                    style={{
+                                                                        width: '36px',
+                                                                        height: '36px',
+                                                                        fontSize: '1.2rem',
+                                                                        padding: 0,
+                                                                        background: 'var(--bg-secondary)',
+                                                                        border: '2px solid var(--border-color)',
+                                                                        borderRadius: '6px',
+                                                                        color: 'var(--text-primary)',
+                                                                        cursor: 'pointer',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        fontWeight: 'bold'
+                                                                    }}
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <input 
+                                                                type="number"
+                                                                className="small-input"
+                                                                style={{width: '100%'}}
+                                                                value={dualLands[pair]}
+                                                                onChange={(e) => updateDualLands(pair, e.target.value)}
+                                                                min="0"
+                                                            />
+                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
@@ -9009,36 +9742,231 @@ return (
                                                         <div style={{display: 'flex', gap: '0.3rem', marginTop: '0.5rem', flexWrap: 'wrap'}}>
                                                             <div style={{flex: '1 1 50px', minWidth: '50px'}}>
                                                                 <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Single</div>
-                                                                <input 
-                                                                    type="number"
-                                                                    className="small-input"
-                                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                                    value={pipCounts[color].single}
-                                                                    onChange={(e) => updatePipCount(color, 'single', e.target.value)}
-                                                                    min="0"
-                                                                />
+                                                                {window.innerWidth <= 768 ? (
+                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].single) || 0;
+                                                                                if (currentValue > 0) {
+                                                                                    updatePipCount(color, 'single', (currentValue - 1).toString());
+                                                                                }
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            −
+                                                                        </button>
+                                                                        <input 
+                                                                            type="number"
+                                                                            className="small-input"
+                                                                            style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                                            value={pipCounts[color].single}
+                                                                            onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                                            min="0"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].single) || 0;
+                                                                                updatePipCount(color, 'single', (currentValue + 1).toString());
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <input 
+                                                                        type="number"
+                                                                        className="small-input"
+                                                                        style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                                        value={pipCounts[color].single}
+                                                                        onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                                        min="0"
+                                                                    />
+                                                                )}
                                                             </div>
                                                             <div style={{flex: '1 1 50px', minWidth: '50px'}}>
                                                                 <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Double</div>
-                                                                <input 
-                                                                    type="number"
-                                                                    className="small-input"
-                                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                                    value={pipCounts[color].double}
-                                                                    onChange={(e) => updatePipCount(color, 'double', e.target.value)}
-                                                                    min="0"
-                                                                />
+                                                                {window.innerWidth <= 768 ? (
+                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].double) || 0;
+                                                                                if (currentValue > 0) {
+                                                                                    updatePipCount(color, 'double', (currentValue - 1).toString());
+                                                                                }
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            −
+                                                                        </button>
+                                                                        <input 
+                                                                            type="number"
+                                                                            className="small-input"
+                                                                            style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                                            value={pipCounts[color].double}
+                                                                            onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                                            min="0"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].double) || 0;
+                                                                                updatePipCount(color, 'double', (currentValue + 1).toString());
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <input 
+                                                                        type="number"
+                                                                        className="small-input"
+                                                                        style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                                        value={pipCounts[color].double}
+                                                                        onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                                        min="0"
+                                                                    />
+                                                                )}
                                                             </div>
                                                             <div style={{flex: '1 1 50px', minWidth: '50px'}}>
                                                                 <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Triple+</div>
-                                                                <input 
-                                                                    type="number"
-                                                                    className="small-input"
-                                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                                    value={pipCounts[color].triple}
-                                                                    onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
-                                                                    min="0"
-                                                                />
+                                                                {window.innerWidth <= 768 ? (
+                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].triple) || 0;
+                                                                                if (currentValue > 0) {
+                                                                                    updatePipCount(color, 'triple', (currentValue - 1).toString());
+                                                                                }
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            −
+                                                                        </button>
+                                                                        <input 
+                                                                            type="number"
+                                                                            className="small-input"
+                                                                            style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                                            value={pipCounts[color].triple}
+                                                                            onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
+                                                                            min="0"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                const currentValue = parseInt(pipCounts[color].triple) || 0;
+                                                                                updatePipCount(color, 'triple', (currentValue + 1).toString());
+                                                                            }}
+                                                                            style={{
+                                                                                width: '28px',
+                                                                                height: '28px',
+                                                                                fontSize: '1rem',
+                                                                                padding: 0,
+                                                                                background: 'var(--bg-secondary)',
+                                                                                border: '2px solid var(--border-color)',
+                                                                                borderRadius: '4px',
+                                                                                color: 'var(--text-primary)',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontWeight: 'bold'
+                                                                            }}
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <input 
+                                                                        type="number"
+                                                                        className="small-input"
+                                                                        style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                                        value={pipCounts[color].triple}
+                                                                        onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
+                                                                        min="0"
+                                                                    />
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>
