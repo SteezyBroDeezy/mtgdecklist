@@ -4702,167 +4702,149 @@ return (
                         </div>
                         <div className="pip-counter" style={{overflowX: 'auto'}}>
                             {['W', 'U', 'B', 'R', 'G'].map(color => (
-                                <div key={color} className="pip-input-group" style={{minWidth: '160px'}}>
+                                <div key={color} className="pip-input-group" style={{minWidth: '180px'}}>
                                     <div className="pip-label">
                                         <div className={`pip-icon pip-${color}`}></div>
                                         <span>{color}</span>
                                     </div>
-                                    <div style={{display: 'flex', gap: '0.3rem', marginTop: '0.5rem', flexWrap: 'wrap'}}>
-                                        <div style={{flex: '1 1 50px', minWidth: '50px'}}>
-                                            <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Single</div>
-                                            {window.innerWidth <= 768 ? (
-                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            const currentValue = parseInt(pipCounts[color].single) || 0;
-                                                            if (currentValue > 0) {
-                                                                updatePipCount(color, 'single', (currentValue - 1).toString());
-                                                            }
-                                                        }}
-                                                        style={{
-                                                            width: '28px',
-                                                            height: '28px',
-                                                            fontSize: '1rem',
-                                                            padding: 0,
-                                                            background: 'var(--bg-secondary)',
-                                                            border: '2px solid var(--border-color)',
-                                                            borderRadius: '4px',
-                                                            color: 'var(--text-primary)',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            fontWeight: 'bold'
-                                                        }}
-                                                    >
-                                                        −
-                                                    </button>
-                                                    <input 
-                                                        type="number"
-                                                        className="small-input"
-                                                        style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
-                                                        value={pipCounts[color].single}
-                                                        onChange={(e) => updatePipCount(color, 'single', e.target.value)}
-                                                        min="0"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            const currentValue = parseInt(pipCounts[color].single) || 0;
-                                                            updatePipCount(color, 'single', (currentValue + 1).toString());
-                                                        }}
-                                                        style={{
-                                                            width: '28px',
-                                                            height: '28px',
-                                                            fontSize: '1rem',
-                                                            padding: 0,
-                                                            background: 'var(--bg-secondary)',
-                                                            border: '2px solid var(--border-color)',
-                                                            borderRadius: '4px',
-                                                            color: 'var(--text-primary)',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            fontWeight: 'bold'
-                                                        }}
-                                                    >
-                                                        +
-                                                    </button>
+                                    {window.innerWidth <= 768 ? (
+                                        <div style={{marginTop: '0.5rem'}}>
+                                            {/* Single and Double in a row */}
+                                            <div style={{display: 'flex', gap: '0.5rem', marginBottom: '0.5rem'}}>
+                                                <div style={{flex: 1}}>
+                                                    <div style={{fontSize: '0.7rem', marginBottom: '0.3rem', textAlign: 'center'}}>Single</div>
+                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                const currentValue = parseInt(pipCounts[color].single) || 0;
+                                                                if (currentValue > 0) {
+                                                                    updatePipCount(color, 'single', (currentValue - 1).toString());
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                width: '44px',
+                                                                height: '44px',
+                                                                fontSize: '1.2rem',
+                                                                padding: 0,
+                                                                background: 'var(--bg-secondary)',
+                                                                border: '2px solid var(--border-color)',
+                                                                borderRadius: '6px',
+                                                                color: 'var(--text-primary)',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        >
+                                                            −
+                                                        </button>
+                                                        <input 
+                                                            type="number"
+                                                            className="small-input"
+                                                            style={{flex: 1, padding: '0.5rem', fontSize: '1rem', textAlign: 'center', minWidth: '45px', height: '44px'}}
+                                                            value={pipCounts[color].single}
+                                                            onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                            min="0"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                const currentValue = parseInt(pipCounts[color].single) || 0;
+                                                                updatePipCount(color, 'single', (currentValue + 1).toString());
+                                                            }}
+                                                            style={{
+                                                                width: '44px',
+                                                                height: '44px',
+                                                                fontSize: '1.2rem',
+                                                                padding: 0,
+                                                                background: 'var(--bg-secondary)',
+                                                                border: '2px solid var(--border-color)',
+                                                                borderRadius: '6px',
+                                                                color: 'var(--text-primary)',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            ) : (
-                                                <input 
-                                                    type="number"
-                                                    className="small-input"
-                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                    value={pipCounts[color].single}
-                                                    onChange={(e) => updatePipCount(color, 'single', e.target.value)}
-                                                    min="0"
-                                                />
-                                            )}
-                                        </div>
-                                        <div style={{flex: '1 1 50px', minWidth: '50px'}}>
-                                            <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Double</div>
-                                            {window.innerWidth <= 768 ? (
-                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            const currentValue = parseInt(pipCounts[color].double) || 0;
-                                                            if (currentValue > 0) {
-                                                                updatePipCount(color, 'double', (currentValue - 1).toString());
-                                                            }
-                                                        }}
-                                                        style={{
-                                                            width: '28px',
-                                                            height: '28px',
-                                                            fontSize: '1rem',
-                                                            padding: 0,
-                                                            background: 'var(--bg-secondary)',
-                                                            border: '2px solid var(--border-color)',
-                                                            borderRadius: '4px',
-                                                            color: 'var(--text-primary)',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            fontWeight: 'bold'
-                                                        }}
-                                                    >
-                                                        −
-                                                    </button>
-                                                    <input 
-                                                        type="number"
-                                                        className="small-input"
-                                                        style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
-                                                        value={pipCounts[color].double}
-                                                        onChange={(e) => updatePipCount(color, 'double', e.target.value)}
-                                                        min="0"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            const currentValue = parseInt(pipCounts[color].double) || 0;
-                                                            updatePipCount(color, 'double', (currentValue + 1).toString());
-                                                        }}
-                                                        style={{
-                                                            width: '28px',
-                                                            height: '28px',
-                                                            fontSize: '1rem',
-                                                            padding: 0,
-                                                            background: 'var(--bg-secondary)',
-                                                            border: '2px solid var(--border-color)',
-                                                            borderRadius: '4px',
-                                                            color: 'var(--text-primary)',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            fontWeight: 'bold'
-                                                        }}
-                                                    >
-                                                        +
-                                                    </button>
+                                                <div style={{flex: 1}}>
+                                                    <div style={{fontSize: '0.7rem', marginBottom: '0.3rem', textAlign: 'center'}}>Double</div>
+                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                const currentValue = parseInt(pipCounts[color].double) || 0;
+                                                                if (currentValue > 0) {
+                                                                    updatePipCount(color, 'double', (currentValue - 1).toString());
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                width: '44px',
+                                                                height: '44px',
+                                                                fontSize: '1.2rem',
+                                                                padding: 0,
+                                                                background: 'var(--bg-secondary)',
+                                                                border: '2px solid var(--border-color)',
+                                                                borderRadius: '6px',
+                                                                color: 'var(--text-primary)',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        >
+                                                            −
+                                                        </button>
+                                                        <input 
+                                                            type="number"
+                                                            className="small-input"
+                                                            style={{flex: 1, padding: '0.5rem', fontSize: '1rem', textAlign: 'center', minWidth: '45px', height: '44px'}}
+                                                            value={pipCounts[color].double}
+                                                            onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                            min="0"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                const currentValue = parseInt(pipCounts[color].double) || 0;
+                                                                updatePipCount(color, 'double', (currentValue + 1).toString());
+                                                            }}
+                                                            style={{
+                                                                width: '44px',
+                                                                height: '44px',
+                                                                fontSize: '1.2rem',
+                                                                padding: 0,
+                                                                background: 'var(--bg-secondary)',
+                                                                border: '2px solid var(--border-color)',
+                                                                borderRadius: '6px',
+                                                                color: 'var(--text-primary)',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            ) : (
-                                                <input 
-                                                    type="number"
-                                                    className="small-input"
-                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
-                                                    value={pipCounts[color].double}
-                                                    onChange={(e) => updatePipCount(color, 'double', e.target.value)}
-                                                    min="0"
-                                                />
-                                            )}
-                                        </div>
-                                        <div style={{flex: '1 1 50px', minWidth: '50px'}}>
-                                            <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Triple+</div>
-                                            {window.innerWidth <= 768 ? (
+                                            </div>
+                                            {/* Triple underneath */}
+                                            <div>
+                                                <div style={{fontSize: '0.7rem', marginBottom: '0.3rem', textAlign: 'center'}}>Triple+</div>
                                                 <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
                                                     <button
                                                         type="button"
@@ -4874,13 +4856,13 @@ return (
                                                             }
                                                         }}
                                                         style={{
-                                                            width: '28px',
-                                                            height: '28px',
-                                                            fontSize: '1rem',
+                                                            width: '44px',
+                                                            height: '44px',
+                                                            fontSize: '1.2rem',
                                                             padding: 0,
                                                             background: 'var(--bg-secondary)',
                                                             border: '2px solid var(--border-color)',
-                                                            borderRadius: '4px',
+                                                            borderRadius: '6px',
                                                             color: 'var(--text-primary)',
                                                             cursor: 'pointer',
                                                             display: 'flex',
@@ -4894,7 +4876,7 @@ return (
                                                     <input 
                                                         type="number"
                                                         className="small-input"
-                                                        style={{flex: 1, padding: '0.4rem', fontSize: '0.85rem', textAlign: 'center', minWidth: '40px'}}
+                                                        style={{flex: 1, padding: '0.5rem', fontSize: '1rem', textAlign: 'center', height: '44px'}}
                                                         value={pipCounts[color].triple}
                                                         onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
                                                         min="0"
@@ -4907,13 +4889,13 @@ return (
                                                             updatePipCount(color, 'triple', (currentValue + 1).toString());
                                                         }}
                                                         style={{
-                                                            width: '28px',
-                                                            height: '28px',
-                                                            fontSize: '1rem',
+                                                            width: '44px',
+                                                            height: '44px',
+                                                            fontSize: '1.2rem',
                                                             padding: 0,
                                                             background: 'var(--bg-secondary)',
                                                             border: '2px solid var(--border-color)',
-                                                            borderRadius: '4px',
+                                                            borderRadius: '6px',
                                                             color: 'var(--text-primary)',
                                                             cursor: 'pointer',
                                                             display: 'flex',
@@ -4925,7 +4907,34 @@ return (
                                                         +
                                                     </button>
                                                 </div>
-                                            ) : (
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div style={{display: 'flex', gap: '0.3rem', marginTop: '0.5rem', flexWrap: 'wrap'}}>
+                                            <div style={{flex: '1 1 50px', minWidth: '50px'}}>
+                                                <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Single</div>
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                    value={pipCounts[color].single}
+                                                    onChange={(e) => updatePipCount(color, 'single', e.target.value)}
+                                                    min="0"
+                                                />
+                                            </div>
+                                            <div style={{flex: '1 1 50px', minWidth: '50px'}}>
+                                                <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Double</div>
+                                                <input 
+                                                    type="number"
+                                                    className="small-input"
+                                                    style={{width: '100%', padding: '0.4rem', fontSize: '0.85rem'}}
+                                                    value={pipCounts[color].double}
+                                                    onChange={(e) => updatePipCount(color, 'double', e.target.value)}
+                                                    min="0"
+                                                />
+                                            </div>
+                                            <div style={{flex: '1 1 50px', minWidth: '50px'}}>
+                                                <div style={{fontSize: '0.7rem', marginBottom: '0.3rem'}}>Triple+</div>
                                                 <input 
                                                     type="number"
                                                     className="small-input"
@@ -4934,9 +4943,9 @@ return (
                                                     onChange={(e) => updatePipCount(color, 'triple', e.target.value)}
                                                     min="0"
                                                 />
-                                            )}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -6130,6 +6139,7 @@ return (
                 noncreature: false,
                 lands: false
             });
+            const [statsExpanded, setStatsExpanded] = useState(true);
 
             useEffect(() => {
                 const initialCategories = {};
@@ -8297,7 +8307,13 @@ return (
                             </div>
 
                             <div className="stats-panel">
-                                <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', marginBottom: '1.5rem'}}>Live Deck Stats</h3>
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', cursor: window.innerWidth <= 768 ? 'pointer' : 'default', padding: window.innerWidth <= 768 ? '0.5rem' : '0', background: window.innerWidth <= 768 ? 'rgba(212, 175, 55, 0.1)' : 'transparent', borderRadius: '8px'}} onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}>
+                                <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0}}>Live Deck Stats {window.innerWidth <= 768 && `(${statsExpanded ? 'Tap to collapse' : 'Tap to expand'})`}</h3>
+                                {window.innerWidth <= 768 && (
+                                    <span style={{fontSize: '1.3rem', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▼</span>
+                                )}
+                            </div>
+                            {(window.innerWidth > 768 || statsExpanded) && (<>
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
@@ -8484,7 +8500,7 @@ return (
                                         <div style={{marginTop: '0.5rem', color: 'var(--text-muted)'}}>{100 - totals.total} remaining</div>
                                     )}
                                 </div>
-                            </div>
+                            </>)}</div>
                         </div>
                     </div>
                 </div>
@@ -8547,6 +8563,7 @@ return (
                 noncreature: false,
                 lands: false
             });
+            const [statsExpanded, setStatsExpanded] = useState(true);
 
             useEffect(() => {
                 const initialCategories = {};
@@ -10726,7 +10743,13 @@ return (
                             </div>
 
                             <div className="stats-panel">
-                                <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', marginBottom: '1.5rem'}}>Live Deck Stats</h3>
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', cursor: window.innerWidth <= 768 ? 'pointer' : 'default', padding: window.innerWidth <= 768 ? '0.5rem' : '0', background: window.innerWidth <= 768 ? 'rgba(212, 175, 55, 0.1)' : 'transparent', borderRadius: '8px'}} onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}>
+                                <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0}}>Live Deck Stats {window.innerWidth <= 768 && `(${statsExpanded ? 'Tap to collapse' : 'Tap to expand'})`}</h3>
+                                {window.innerWidth <= 768 && (
+                                    <span style={{fontSize: '1.3rem', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▼</span>
+                                )}
+                            </div>
+                            {(window.innerWidth > 768 || statsExpanded) && (<>
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
@@ -10913,7 +10936,7 @@ return (
                                         <div style={{marginTop: '0.5rem', color: 'var(--text-muted)'}}>{100 - totals.total} remaining</div>
                                     )}
                                 </div>
-                            </div>
+                            </>)}</div>
                         </div>
                     </div>
                 </div>
