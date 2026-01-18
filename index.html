@@ -2497,17 +2497,26 @@ return (
                                             lineHeight: '1.7',
                                             color: 'var(--text-secondary)'
                                         }}>
-                                            <p style={{marginBottom: '0.8rem', color: 'var(--gold)', fontWeight: 600}}>
-                                                ⚡ Best for decks with 3 colors or less
+                                            <p style={{marginBottom: '0.8rem', color: 'var(--gold)', fontWeight: 600, fontSize: '1.1rem'}}>
+                                                ⚡ Build optimal mana bases with precision!
                                             </p>
                                             <p style={{marginBottom: '0.8rem'}}>
-                                                <strong style={{color: 'var(--gold)'}}>Build optimal mana bases with precision!</strong>
+                                                Enter your deck's mana symbols and let the calculator determine exactly how many lands of each color you need.
                                             </p>
-                                            <p style={{marginBottom: '0.8rem'}}>
-                                                Enter your deck's mana symbols and let the calculator determine exactly how many lands of each color you need
-                                            </p>
-                                            <p style={{marginBottom: 0}}>
-                                                ⚡ Works best for 1-3 color decks (mono, dual, or tri-color)!
+                                            
+                                            <div style={{background: 'var(--bg-primary)', padding: '1rem', borderRadius: '6px', marginTop: '1rem'}}>
+                                                <p style={{marginBottom: '0.5rem', color: 'var(--gold)', fontWeight: 600}}>🎯 How It Works:</p>
+                                                <ul style={{marginLeft: '1.2rem', marginBottom: 0, lineHeight: '1.8'}}>
+                                                    <li><strong>Pip Counting:</strong> Counts all colored mana symbols (⚪⚫🔴🔵🟢) in your deck. Double/triple pips like {'{W}{W}'} count as 2 pips.</li>
+                                                    <li><strong>Percentage Distribution:</strong> Calculates what % of your colored mana comes from each color.</li>
+                                                    <li><strong>Land Allocation:</strong> Distributes your total lands proportionally based on pip percentages.</li>
+                                                    <li><strong>Dual Land Credit:</strong> Subtracts dual lands from basic land needs (e.g., if you need 12 white sources and have 4 W/U duals, you only need 8 basic Plains).</li>
+                                                    <li><strong>Tri-Land Magic:</strong> In 3-color decks, each tri-land counts as 1 source for all 3 colors!</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <p style={{marginTop: '1rem', marginBottom: 0, color: 'var(--gold)', fontSize: '0.9rem'}}>
+                                                ✨ Best for 1-3 color decks (mono, dual, or tri-color)
                                             </p>
                                         </div>
                                     )}
@@ -4139,7 +4148,7 @@ return (
                                 borderLeft: '3px solid var(--gold)',
                                 fontWeight: 600
                             }}>
-                                ⚡ Best for decks with 3 colors or less
+                                ⚡ Quick Start Guide
                             </div>
                             
                             <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
@@ -4984,14 +4993,27 @@ return (
                                     borderRadius: '8px',
                                     border: '1px solid var(--border-color)'
                                 }}>
-                                    <h4 style={{color: 'var(--gold)', marginBottom: '0.5rem'}}>📖 About This Calculator</h4>
-                                    <ul style={{paddingLeft: '1.2rem', lineHeight: '1.6', fontSize: '0.9rem'}}>
-                                        <li><strong>Designed for 1-3 Colors:</strong> This calculator works best for mono-color, 2-color, and 3-color decks.</li>
-                                        <li><strong>4-5 Color Decks:</strong> This calculator is designed for 1-3 color decks only. Results for 4+ color decks will be inaccurate and are not supported.</li>
-                                        <li><strong>Tri-Lands (Triomes):</strong> Automatically counted for each of their three colors in 3-color decks.</li>
-                                        <li><strong>Recommendations:</strong> Based on pip distribution, dual lands, and total land count.</li>
-                                        <li><strong>Not Perfect:</strong> Use these as guidelines and adjust based on your deck's needs!</li>
+                                    <h4 style={{color: 'var(--gold)', marginBottom: '0.5rem'}}>📖 How This Calculator Works</h4>
+                                    
+                                    <div style={{marginBottom: '1rem'}}>
+                                        <p style={{marginBottom: '0.5rem', fontSize: '0.85rem', lineHeight: '1.6'}}>
+                                            This calculator uses <strong style={{color: 'var(--gold)'}}>pip distribution</strong> to determine your optimal mana base:
+                                        </p>
+                                    </div>
+                                    
+                                    <ul style={{paddingLeft: '1.2rem', lineHeight: '1.7', fontSize: '0.85rem', marginBottom: '1rem'}}>
+                                        <li><strong>Step 1:</strong> Counts all colored mana symbols (pips) in your deck. {'{W}{W}'} = 2 pips, {'{2}{R}'} = 1 pip.</li>
+                                        <li><strong>Step 2:</strong> Calculates the percentage each color represents. (e.g., 20 white pips out of 50 total = 40%)</li>
+                                        <li><strong>Step 3:</strong> Distributes your total lands proportionally. (40% of 36 lands = 14-15 white sources needed)</li>
+                                        <li><strong>Step 4:</strong> Subtracts dual/tri-lands from basic land requirements. (If you have 4 W/U duals, you need 4 fewer Plains)</li>
+                                        <li><strong>Tri-Lands:</strong> In 3-color decks, each tri-land counts as 1 source for all 3 colors automatically!</li>
                                     </ul>
+                                    
+                                    <div style={{background: 'rgba(212, 175, 55, 0.1)', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--gold)'}}>
+                                        <p style={{margin: 0, fontSize: '0.85rem', lineHeight: '1.5'}}>
+                                            <strong style={{color: 'var(--gold)'}}>⚠️ Important:</strong> Designed for 1-3 color decks. Results for 4+ color decks will be inaccurate and are not supported.
+                                        </p>
+                                    </div>
                                 </div>
                             )}
                         </div>
