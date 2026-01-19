@@ -3979,7 +3979,25 @@ return (
             const [showLandsSection, setShowLandsSection] = useState(false);
             const [showTopHelp, setShowTopHelp] = useState(false);
 
+            // Tri-Lands Auto-Calculation Helper
+            const calculateTriLandPips = (triLandCount, deckColors) => {
+                if (triLandCount === 0 || !deckColors || deckColors.length !== 3) {
+                    return { W: 0, U: 0, B: 0, R: 0, G: 0 };
+                }
+
+                // Each tri-land adds 1 pip to each of the 3 colors
+                const pips = { W: 0, U: 0, B: 0, R: 0, G: 0 };
+                deckColors.forEach(color => {
+                    pips[color] = triLandCount;
+                });
+
+                return pips;
+            };
+
             const calculateManaBase = () => {
+                console.log('🎯 calculateManaBase called!');
+                console.log('State values:', { pipCounts, dualLands, totalLands, triLands, otherLands });
+                
                 const colors = ['W', 'U', 'B', 'R', 'G'];
                 const colorNames = {W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green'};
                 
@@ -4066,8 +4084,10 @@ return (
                 const randomIndex = Math.floor(Math.random() * FUNNY_MANA_QUOTES.length);
                 setRandomQuote(FUNNY_MANA_QUOTES[randomIndex]);
 
+                console.log('✅ About to set results:', result);
                 setManaCalculation(result);
                 setShowResults(true);
+                console.log('✅ Results set! showResults should be true now');
             };
 
             const updatePipCount = (color, type, value) => {
@@ -6377,8 +6397,10 @@ return (
                 const randomIndex = Math.floor(Math.random() * FUNNY_MANA_QUOTES.length);
                 setRandomQuote(FUNNY_MANA_QUOTES[randomIndex]);
 
+                console.log('✅ About to set results:', result);
                 setManaCalculation(result);
                 setShowResults(true);
+                console.log('✅ Results set! showResults should be true now');
             };
 
             const updatePipCount = (color, type, value) => {
@@ -8900,8 +8922,10 @@ return (
                 const randomIndex = Math.floor(Math.random() * FUNNY_MANA_QUOTES.length);
                 setRandomQuote(FUNNY_MANA_QUOTES[randomIndex]);
 
+                console.log('✅ About to set results:', result);
                 setManaCalculation(result);
                 setShowResults(true);
+                console.log('✅ Results set! showResults should be true now');
             };
 
             const updatePipCount = (color, type, value) => {
