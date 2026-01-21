@@ -786,6 +786,18 @@
                         ]
                     },
                     {
+                        id: 'utility-mono',
+                        name: 'Mono-Color Utility Lands',
+                        subcategories: [
+                            { id: 'utility-white', name: 'White Utility', defaultValue: 0, description: 'White utility lands (Eiganjo Castle, Emeria the Sky Ruin, etc.)' },
+                            { id: 'utility-blue', name: 'Blue Utility', defaultValue: 0, description: 'Blue utility lands (Minamo School at Water\'s Edge, Academy Ruins, etc.)' },
+                            { id: 'utility-black', name: 'Black Utility', defaultValue: 0, description: 'Black utility lands (Cabal Coffers, Urborg Tomb of Yawgmoth, Bojuka Bog, etc.)' },
+                            { id: 'utility-red', name: 'Red Utility', defaultValue: 0, description: 'Red utility lands (Valakut the Molten Pinnacle, Shinka the Bloodsoaked Keep, etc.)' },
+                            { id: 'utility-green', name: 'Green Utility', defaultValue: 0, description: 'Green utility lands (Gaea\'s Cradle, Nykthos Shrine to Nyx, Yavimaya Cradle, etc.)' },
+                            { id: 'utility-colorless', name: 'Colorless Utility', defaultValue: 0, description: 'Colorless utility lands (Reliquary Tower, Rogue\'s Passage, Command Tower, etc.)' }
+                        ]
+                    },
+                    {
                         id: 'nonbasics',
                         name: 'Non-Basic Lands',
                         subcategories: [
@@ -943,7 +955,7 @@
                             { id: 'lifelink', name: 'Lifelink', defaultValue: 0, description: 'Gain life equal to damage' },
                             { id: 'vigilance', name: 'Vigilance', defaultValue: 0, description: 'Doesn\'t tap to attack' },
                             { id: 'haste', name: 'Haste', defaultValue: 0, description: 'Can attack immediately' },
-                            { id: 'hexproof', name: 'Hexproof/Shroud', defaultValue: 0, description: 'Can\'t be targeted' },
+                            { id: 'hexproof', name: 'Hexproof', defaultValue: 0, description: 'Can\'t be targeted' },
                             { id: 'indestructible', name: 'Indestructible', defaultValue: 0, description: 'Cannot be destroyed' },
                             { id: 'other-evasion', name: 'Other Evasion', defaultValue: 0, description: 'Shadow, horsemanship, fear, etc.' }
                         ]
@@ -1088,7 +1100,7 @@
                             { id: 'evasion-equipment-flying', name: 'Flying Equipment', defaultValue: 0, description: 'Equipment granting flying (Fleetfeather Sandals, Wings of Hubris)' },
                             { id: 'evasion-equipment-unblockable', name: 'Unblockable Equipment', defaultValue: 0, description: 'Makes creature unblockable (Whispersilk Cloak, Trailblazer\'s Boots)' },
                             { id: 'evasion-equipment-other', name: 'Other Evasion', defaultValue: 0, description: 'Menace, intimidate, or other evasion (Shadowspear, etc.)' },
-                            { id: 'protection-equipment-hexproof', name: 'Hexproof/Shroud', defaultValue: 0, description: 'Protects from targeting (Swiftfoot Boots, Lightning Greaves)' },
+                            { id: 'protection-equipment-hexproof', name: 'Hexproof', defaultValue: 0, description: 'Protects from targeting (Swiftfoot Boots, Lightning Greaves)' },
                             { id: 'protection-equipment-indestructible', name: 'Indestructible', defaultValue: 0, description: 'Grants indestructible (Darksteel Plate, Shield of Kaldra)' },
                             { id: 'utility-equipment-draw', name: 'Card Draw Equipment', defaultValue: 0, description: 'Equipment that draws cards (Skullclamp, Mask of Memory, Sword of Fire and Ice)' },
                             { id: 'utility-equipment-other', name: 'Other Utility', defaultValue: 0, description: 'Miscellaneous equipment effects' }
@@ -6282,6 +6294,7 @@ return (
                 commander: '',
                 secondCommander: '',
                 hasSecondCommander: false,
+                secondCommanderIsCreature: false,
                 colors: [],
                 categories: {},
                 isPublic: true
@@ -6451,14 +6464,25 @@ return (
                 
                 // Total = quick major + quick groups + detailed (with adjustments for multi-function cards)
                 const lands = landsQuick + landsGroupQuick + landsDetailed;
-                const creatures = creaturesQuick + creaturesGroupQuick + (creaturesDetailed - creaturesMultiAdj);
-                const noncreature = noncreatureQuick + noncreatureGroupQuick + (noncreatureDetailed - noncreatureMultiAdj);
+                
+                // Calculate commander counts
+                const commanderCount = deckData.commander ? (deckData.hasSecondCommander && deckData.secondCommander ? 2 : 1) : 0;
+                
+                // Calculate which commanders are creatures
+                // First commander is always a creature (standard Magic rule)
+                // Second commander's type is determined by the checkbox
+                const creatureCommanderCount = deckData.commander ? 
+                    (deckData.hasSecondCommander && deckData.secondCommander ? 
+                        (deckData.secondCommanderIsCreature ? 2 : 1) : 
+                        1) : 
+                    0;
+                const noncreatureCommanderCount = commanderCount - creatureCommanderCount;
+                
+                const creatures = creaturesQuick + creaturesGroupQuick + (creaturesDetailed - creaturesMultiAdj) + creatureCommanderCount;
+                const noncreature = noncreatureQuick + noncreatureGroupQuick + (noncreatureDetailed - noncreatureMultiAdj) + noncreatureCommanderCount;
                 
                 const nonLandCards = creatures + noncreature;
-                
-                // Add commander count (1 or 2)
-                const commanderCount = deckData.commander ? (deckData.hasSecondCommander && deckData.secondCommander ? 2 : 1) : 0;
-                const total = lands + nonLandCards + commanderCount;
+                const total = lands + nonLandCards;
 
                 return { 
                     lands, 
@@ -6472,7 +6496,7 @@ return (
                     creaturesMultiAdj,
                     noncreatureMultiAdj
                 };
-            }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander, multiFunctionCreatures, multiFunctionNoncreature]);
+            }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander, deckData.secondCommanderIsCreature, multiFunctionCreatures, multiFunctionNoncreature]);
 
                 const analytics = {
                     removal: { quick: [], slow: [] },
@@ -7054,6 +7078,27 @@ return (
                                                 />
                                             </div>
                                         )}
+
+                                        {/* Second Commander Type Checkbox */}
+                                        <div style={{marginTop: '1rem'}}>
+                                            <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer'}}>
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={deckData.secondCommanderIsCreature}
+                                                    onChange={(e) => {
+                                                        setDeckData({
+                                                            ...deckData, 
+                                                            secondCommanderIsCreature: e.target.checked
+                                                        });
+                                                    }}
+                                                    style={{width: '18px', height: '18px', cursor: 'pointer'}}
+                                                />
+                                                <span>Second Commander is a Creature</span>
+                                            </label>
+                                            <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.3rem', marginLeft: '1.5rem'}}>
+                                                (Check this if your second commander should count toward your creature total)
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
@@ -9585,6 +9630,7 @@ return (
                 commander: deck?.commander || '',
                 secondCommander: deck?.secondCommander || '',
                 hasSecondCommander: deck?.hasSecondCommander || false,
+                secondCommanderIsCreature: deck?.secondCommanderIsCreature || false,
                 colors: deck?.colors || [],
                 categories: deck?.categories || {},
                 isPublic: deck?.isPublic !== undefined ? deck.isPublic : true
@@ -9754,14 +9800,25 @@ return (
                 
                 // Total = quick major + quick groups + detailed (with adjustments for multi-function cards)
                 const lands = landsQuick + landsGroupQuick + landsDetailed;
-                const creatures = creaturesQuick + creaturesGroupQuick + (creaturesDetailed - creaturesMultiAdj);
-                const noncreature = noncreatureQuick + noncreatureGroupQuick + (noncreatureDetailed - noncreatureMultiAdj);
+                
+                // Calculate commander counts
+                const commanderCount = deckData.commander ? (deckData.hasSecondCommander && deckData.secondCommander ? 2 : 1) : 0;
+                
+                // Calculate which commanders are creatures
+                // First commander is always a creature (standard Magic rule)
+                // Second commander's type is determined by the checkbox
+                const creatureCommanderCount = deckData.commander ? 
+                    (deckData.hasSecondCommander && deckData.secondCommander ? 
+                        (deckData.secondCommanderIsCreature ? 2 : 1) : 
+                        1) : 
+                    0;
+                const noncreatureCommanderCount = commanderCount - creatureCommanderCount;
+                
+                const creatures = creaturesQuick + creaturesGroupQuick + (creaturesDetailed - creaturesMultiAdj) + creatureCommanderCount;
+                const noncreature = noncreatureQuick + noncreatureGroupQuick + (noncreatureDetailed - noncreatureMultiAdj) + noncreatureCommanderCount;
                 
                 const nonLandCards = creatures + noncreature;
-                
-                // Add commander count (1 or 2)
-                const commanderCount = deckData.commander ? (deckData.hasSecondCommander && deckData.secondCommander ? 2 : 1) : 0;
-                const total = lands + nonLandCards + commanderCount;
+                const total = lands + nonLandCards;
 
                 return { 
                     lands, 
@@ -9775,7 +9832,7 @@ return (
                     creaturesMultiAdj,
                     noncreatureMultiAdj
                 };
-            }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander, multiFunctionCreatures, multiFunctionNoncreature]);
+            }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander, deckData.secondCommanderIsCreature, multiFunctionCreatures, multiFunctionNoncreature]);
 
                 const analytics = {
                     removal: { quick: [], slow: [] },
@@ -10337,6 +10394,27 @@ return (
                                                 />
                                             </div>
                                         )}
+
+                                        {/* Second Commander Type Checkbox */}
+                                        <div style={{marginTop: '1rem'}}>
+                                            <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer'}}>
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={deckData.secondCommanderIsCreature}
+                                                    onChange={(e) => {
+                                                        setDeckData({
+                                                            ...deckData, 
+                                                            secondCommanderIsCreature: e.target.checked
+                                                        });
+                                                    }}
+                                                    style={{width: '18px', height: '18px', cursor: 'pointer'}}
+                                                />
+                                                <span>Second Commander is a Creature</span>
+                                            </label>
+                                            <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.3rem', marginLeft: '1.5rem'}}>
+                                                (Check this if your second commander should count toward your creature total)
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
