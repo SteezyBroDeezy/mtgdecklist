@@ -818,728 +818,6 @@
         } else {
             console.log("✅ Firebase auth and db ready!");
         }
-        // Enhanced category structure with exile wipes
-        const DECK_CATEGORIES = {
-            lands: {
-                name: '🏞 Lands',
-                icon: '🏞',
-                categories: [
-                    {
-                        id: 'basics',
-                        name: 'Basic Lands',
-                        subcategories: [
-                            { id: 'plains', name: 'Plains', defaultValue: 0, description: 'Basic land that taps for white mana' },
-                            { id: 'islands', name: 'Islands', defaultValue: 0, description: 'Basic land that taps for blue mana' },
-                            { id: 'swamps', name: 'Swamps', defaultValue: 0, description: 'Basic land that taps for black mana' },
-                            { id: 'mountains', name: 'Mountains', defaultValue: 0, description: 'Basic land that taps for red mana' },
-                            { id: 'forests', name: 'Forests', defaultValue: 0, description: 'Basic land that taps for green mana' },
-                            { id: 'wastes', name: 'Wastes', defaultValue: 0, description: 'Basic land that taps for colorless mana' }
-                        ]
-                    },
-                    {
-                        id: 'utility-mono',
-                        name: 'Mono-Color Utility Lands',
-                        subcategories: [
-                            { id: 'utility-white', name: 'White Utility', defaultValue: 0, description: 'White utility lands (Eiganjo Castle, Emeria the Sky Ruin, etc.)' },
-                            { id: 'utility-blue', name: 'Blue Utility', defaultValue: 0, description: 'Blue utility lands (Minamo School at Water\'s Edge, Academy Ruins, etc.)' },
-                            { id: 'utility-black', name: 'Black Utility', defaultValue: 0, description: 'Black utility lands (Cabal Coffers, Urborg Tomb of Yawgmoth, Bojuka Bog, etc.)' },
-                            { id: 'utility-red', name: 'Red Utility', defaultValue: 0, description: 'Red utility lands (Valakut the Molten Pinnacle, Shinka the Bloodsoaked Keep, etc.)' },
-                            { id: 'utility-green', name: 'Green Utility', defaultValue: 0, description: 'Green utility lands (Gaea\'s Cradle, Nykthos Shrine to Nyx, Yavimaya Cradle, etc.)' },
-                            { id: 'utility-colorless', name: 'Colorless Utility', defaultValue: 0, description: 'Colorless utility lands (Reliquary Tower, Rogue\'s Passage, Command Tower, etc.)' }
-                        ]
-                    },
-                    {
-                        id: 'nonbasics',
-                        name: 'Non-Basic Lands',
-                        subcategories: [
-                            { id: 'duals', name: 'Dual Lands', defaultValue: 0, description: 'Lands that produce two colors (Check lands, Pain lands, Tango lands, etc.)' },
-                            { id: 'trilands', name: 'Tri-Lands', defaultValue: 0, description: 'Lands that produce three colors (Triomes, Arcane Sanctum, etc.)' },
-                            { id: 'fetches', name: 'Fetch Lands', defaultValue: 0, description: 'Search for other lands (Evolving Wilds, Terramorphic Expanse, Prismatic Vista)' },
-                            { id: 'shocks', name: 'Shock Lands', defaultValue: 0, description: 'Dual lands that can enter untapped for 2 life (Temple Garden, Watery Grave, etc.)' },
-                            { id: 'utility', name: 'Utility Lands', defaultValue: 0, description: 'Lands with special abilities (Reliquary Tower, Rogue\'s Passage, Yavimaya Cradle)' },
-                            { id: 'creature-lands', name: 'Creature Lands', defaultValue: 0, description: 'Lands that become creatures (Mutavault, Celestial Colonnade, manlands)' },
-                            { id: 'mdfc-lands', name: 'MDFC Lands', defaultValue: 0, description: 'Modal double-faced cards with land on back (Pathway lands, Zendikar MDFCs)' }
-                        ]
-                    }
-                ]
-            },
-            creatures: {
-                name: '🧟 Creatures',
-                icon: '🧟',
-                categories: [
-                    {
-                        id: 'mana-creatures',
-                        name: 'Ramp Creatures',
-                        subcategories: [
-                            { id: 'dorks', name: 'Mana Dorks', defaultValue: 0, description: 'Creatures that tap for mana (Birds of Paradise, Llanowar Elves, Faeburrow Elder)' },
-                            { id: 'land-creatures', name: 'Land Fetch Creatures', defaultValue: 0, description: 'Creatures that search for lands (Wood Elves, Farhaven Elf, Solemn Simulacrum)' },
-                            { id: 'treasure-creatures', name: 'Treasure Makers', defaultValue: 0, description: 'Creatures that create treasure tokens (Dockside Extortionist, Pitiless Plunderer)' }
-                        ]
-                    },
-                    {
-                        id: 'draw-creatures',
-                        name: 'Card Draw Creatures',
-                        subcategories: [
-                            { id: 'draw-etb', name: 'Draw on ETB', defaultValue: 0, description: 'Draw cards when creature enters (Mulldrifter, Wall of Omens, Elvish Visionary)' },
-                            { id: 'draw-death', name: 'Draw on Death', defaultValue: 0, description: 'Draw when creature or others die (Grim Haruspex, Midnight Reaper, Skullclamp targets)' },
-                            { id: 'draw-attack', name: 'Draw on Attack/Damage', defaultValue: 0, description: 'Draw when attacking or dealing damage (Tymna, Edric, Bident of Thassa creatures)' },
-                            { id: 'tutor-creatures', name: 'Tutor Creatures', defaultValue: 0, description: 'Search your library for specific cards (Recruiter of the Guard, Imperial Recruiter)' },
-                            { id: 'looting-creatures', name: 'Looting Creatures', defaultValue: 0, description: 'Draw then discard (Merfolk Looter, Looter il-Kor, rummaging effects)' }
-                        ]
-                    },
-                    {
-                        id: 'removal-creatures',
-                        name: 'Removal Creatures',
-                        subcategories: [
-                            { id: 'etb-removal', name: 'ETB Removal', defaultValue: 0, description: 'Remove permanents when entering (Ravenous Chupacabra, Reclamation Sage)' },
-                            { id: 'fight-creatures', name: 'Fight Creatures', defaultValue: 0, description: 'Creatures that fight or use power-based removal (Kogla, Apex Devastator triggers)' },
-                            { id: 'exile-creatures', name: 'Exile Effects', defaultValue: 0, description: 'Exile instead of destroy (Containment Priest, Angel of Serenity)' },
-                            { id: 'bounce-creatures', name: 'Bounce Creatures', defaultValue: 0, description: 'Return permanents to hand (Man-o\'-War, Venser Shaper Savant)' }
-                        ]
-                    },
-                    {
-                        id: 'sac-creatures',
-                        name: 'Sacrifice Outlets',
-                        subcategories: [
-                            { id: 'free-sac', name: 'Free Sac Outlets', defaultValue: 0, description: 'Sacrifice without mana cost (Viscera Seer, Carrion Feeder, Goblin Bombardment)' },
-                            { id: 'paid-sac', name: 'Paid Sac Outlets', defaultValue: 0, description: 'Sacrifice requiring mana (Yawgmoth, Birthing Pod, High Market)' },
-                        ]
-                    },
-                    {
-                        id: 'utility-creatures',
-                        name: 'Utility Creatures',
-                        subcategories: [
-                            { id: 'hatebears', name: 'Hatebears', defaultValue: 0, description: 'Disrupt opponents strategies (Thalia, Drannith Magistrate, Opposition Agent)' },
-                            { id: 'protection-creatures', name: 'Protection Creatures', defaultValue: 0, description: 'Protect your board (Selfless Spirit, Dauntless Bodyguard, Spellskite)' },
-                            { id: 'recursion-creatures', name: 'Recursion Creatures', defaultValue: 0, description: 'Return cards from graveyard (Eternal Witness, Sun Titan, Karmic Guide)' },
-                            { id: 'token-makers', name: 'Token Makers', defaultValue: 0, description: 'Create creature tokens (Avenger of Zendikar, Deep Forest Hermit, Hornet Queen)' },
-                            { id: 'blink-targets', name: 'Blink/Flicker Targets', defaultValue: 0, description: 'High-value ETB creatures for blinking (Mulldrifter, Archaeomancer, any ETB value)' }
-                        ]
-                    },
-                    {
-                        id: 'tribal-creatures',
-                        name: 'Tribal Creatures',
-                        subcategories: [
-                            { id: 'tribal-payoffs', name: 'Tribal Payoffs', defaultValue: 0, description: 'Reward for playing tribe (Door of Destinies, Coat of Arms, tribal anthem effects)' },
-                            { id: 'tribal-lords', name: 'Tribal Lords', defaultValue: 0, description: 'Buff creatures of your tribe (Lord of Atlantis, Elvish Champion, any type lord)' },
-                            { id: 'tribal-support', name: 'Tribal Support', defaultValue: 0, description: 'Help tribal strategy without being the tribe (Kindred Discovery, Vanquisher\'s Banner)' },
-                            { id: 'changeling', name: 'Changelings', defaultValue: 0, description: 'All creature types (Changeling Outcast, Unsettled Mariner, tribal wildcards)' }
-                        ]
-                    },
-                    {
-                        id: 'combat-creatures',
-                        name: 'Combat Creatures',
-                        subcategories: [
-                            { id: 'evasion', name: 'Evasive Creatures', defaultValue: 0, description: 'Flying, unblockable, menace, etc. (Flyers, Invisible Stalker, Etali)' },
-                            { id: 'finishers', name: 'Finishers', defaultValue: 0, description: 'Win the game with combat (Craterhoof Behemoth, Triumph of the Hordes carriers)' },
-                            { id: 'combat-tricks', name: 'Combat Tricks', defaultValue: 0, description: 'Surprise combat abilities (Mother of Runes, flash creatures, combat effects)' },
-                            { id: 'defenders', name: 'Defenders', defaultValue: 0, description: 'High toughness or defensive abilities (Wall of Roots, Stuffy Doll, Fog Bank)' }
-                        ]
-                    },
-                    {
-                        id: 'synergy-creatures',
-                        name: '🔗 Synergy Pieces',
-                        subcategories: [
-                            { id: 'synergy-enablers-creatures', name: 'Synergy Enablers', defaultValue: 0, description: 'Creatures that enable your strategy (Panharmonicon, Doubling Season creatures, cost reducers)' },
-                            { id: 'synergy-payoffs-creatures', name: 'Synergy Payoffs', defaultValue: 0, description: 'Creatures that reward your strategy (Craterhoof for tokens, Purphoros for ETBs)' },
-                            { id: 'tribal-creatures-synergy', name: 'Tribal Creatures', defaultValue: 0, description: 'Creatures of your chosen tribe (Elves, Zombies, Dragons, etc.)' },
-                            { id: 'theme-support-creatures', name: 'Theme Support', defaultValue: 0, description: 'Creatures supporting your theme (graveyard, +1/+1 counters, etc.)' }
-                        ]
-                    },
-                    {
-                        id: 'etb-die-triggers',
-                        name: '💥 ETB/Die Triggers',
-                        subcategories: [
-                            { id: 'etb-draw', name: 'Draw on ETB', defaultValue: 0, description: 'Draw cards when entering (Mulldrifter, Wall of Omens, Elvish Visionary)' },
-                            { id: 'etb-removal', name: 'Removal on ETB', defaultValue: 0, description: 'Remove permanents when entering (Ravenous Chupacabra, Reclamation Sage)' },
-                            { id: 'etb-ramp', name: 'Ramp on ETB', defaultValue: 0, description: 'Ramp when entering (Wood Elves, Farhaven Elf, Solemn Simulacrum)' },
-                            { id: 'etb-opponent-sac', name: 'Opponent Sac (ETB)', defaultValue: 0, description: 'Force opponents to sacrifice on ETB (Fleshbag Marauder, Plaguecrafter, Demon\'s Disciple)' },
-                            { id: 'etb-opponent-discard', name: 'Opponent Discard (ETB)', defaultValue: 0, description: 'Force opponents to discard on ETB (Liliana\'s Specter, Burglar Rat)' },
-                            { id: 'etb-life-loss', name: 'Opponent Lose Life (ETB)', defaultValue: 0, description: 'Deal damage/drain on ETB (Gray Merchant, Mulldrifter in aristocrats)' },
-                            { id: 'etb-tokens', name: 'Create Tokens (ETB)', defaultValue: 0, description: 'Make tokens when entering (Avenger of Zendikar, Deep Forest Hermit)' },
-                            { id: 'etb-other', name: 'Other ETB Triggers', defaultValue: 0, description: 'Miscellaneous ETB effects (tutors, mill, etc.)' },
-                            { id: 'die-draw', name: 'Draw on Death', defaultValue: 0, description: 'Draw when dying or others die (Grim Haruspex, Midnight Reaper)' },
-                            { id: 'die-opponent-sac', name: 'Opponent Sac (Death)', defaultValue: 0, description: 'Force sac when this dies (Dictate of Erebos creatures, Butcher of Malakir)' },
-                            { id: 'die-life-loss', name: 'Opponent Lose Life (Death)', defaultValue: 0, description: 'Drain when dying (Blood Artist, Zulaport Cutthroat)' },
-                            { id: 'die-tokens', name: 'Create Tokens (Death)', defaultValue: 0, description: 'Make tokens when dying (Hangarback Walker, Bitterblossom)' },
-                            { id: 'die-recursion', name: 'Recursion (Death)', defaultValue: 0, description: 'Return from graveyard (Reassembling Skeleton, Bloodghast)' },
-                            { id: 'die-other', name: 'Other Death Triggers', defaultValue: 0, description: 'Miscellaneous death triggers (various effects)' }
-                        ]
-                    },
-                    {
-                        id: 'discard-drain',
-                        name: '🩸 Discard & Life Loss',
-                        subcategories: [
-                            { id: 'discard-etb', name: 'Discard (ETB)', defaultValue: 0, description: 'Force discard on ETB (covered in ETB triggers above)' },
-                            { id: 'discard-attack', name: 'Discard (Attack)', defaultValue: 0, description: 'Force discard on attack/damage (Nekusar, Tinybones, Waste Not triggers)' },
-                            { id: 'discard-repeatable', name: 'Repeatable Discard', defaultValue: 0, description: 'Activated/triggered discard (Oppression creatures, repeated hand attack)' },
-                            { id: 'drain-etb', name: 'Drain (ETB)', defaultValue: 0, description: 'Drain life on ETB (Gray Merchant, Soul Warden triggers)' },
-                            { id: 'drain-attack', name: 'Drain (Attack)', defaultValue: 0, description: 'Drain when attacking (lifelink, Pontiff of Blight)' },
-                            { id: 'drain-death', name: 'Drain (Death)', defaultValue: 0, description: 'Drain when creatures die (Blood Artist, Zulaport Cutthroat)' },
-                            { id: 'drain-repeatable', name: 'Repeatable Drain', defaultValue: 0, description: 'Activated drain abilities (Exquisite Blood triggers, repeated pings)' },
-                            { id: 'direct-damage', name: 'Direct Damage', defaultValue: 0, description: 'Creatures that ping/burn (Prodigal Pyromancer, Goblin Sharpshooter)' }
-                        ]
-                    },
-                    {
-                        id: 'combat-damage-triggers',
-                        name: '⚡ Combat/Damage Triggers',
-                        icon: '⚡',
-                        subcategories: [
-                            { id: 'damage-draw', name: 'Deal Damage → Draw', defaultValue: 0, description: 'Draw when dealing damage (Edric, Bident of Thassa, Curiosity effects)' },
-                            { id: 'damage-opponent-sac', name: 'Deal Damage → Opponent Sac', defaultValue: 0, description: 'Opponent sacrifices when you deal damage' },
-                            { id: 'damage-opponent-discard', name: 'Deal Damage → Opponent Discard', defaultValue: 0, description: 'Opponent discards when you deal damage (Nekusar, Waste Not triggers)' },
-                            { id: 'damage-tokens', name: 'Deal Damage → Create Tokens', defaultValue: 0, description: 'Create tokens when dealing damage' },
-                            { id: 'damage-life-loss', name: 'Deal Damage → Life Loss', defaultValue: 0, description: 'Additional damage/drain (Purphoros, Syr Konrad, Impact Tremors on ETB)' },
-                            { id: 'damage-other', name: 'Deal Damage → Other Effects', defaultValue: 0, description: 'Other repeatable damage-based triggers' }
-                        ]
-                    },
-                    {
-                        id: 'offensive-threats',
-                        name: '⚔️ Offensive Threats',
-                        subcategories: [
-                            { id: 'big-beaters', name: 'Big Beaters (6+ Power)', defaultValue: 0, description: 'Large creatures that hit hard (Ghalta, Blightsteel Colossus, big dragons)' },
-                            { id: 'keyword-soup', name: 'Multiple Keywords', defaultValue: 0, description: 'Creatures with 3+ keywords (Akroma, Questing Beast, ability soup)' },
-                            { id: 'unblockable-threats', name: 'Unblockable', defaultValue: 0, description: 'Can\'t be blocked (Invisible Stalker, Blighted Agent, true unblockable)' },
-                            { id: 'finisher-threats', name: 'Game-Ending Threats', defaultValue: 0, description: 'Win the game with combat (Craterhoof, Triumph carriers, instant wins)' },
-                            { id: 'must-answer', name: 'Must-Answer Threats', defaultValue: 0, description: 'Generate so much value they must be removed (Rhystic Study creatures, engines)' },
-                            { id: 'voltron-pieces', name: 'Voltron Pieces', defaultValue: 0, description: 'Creatures to suit up with equipment/auras (hexproof creatures, commanders)' }
-                        ]
-                    },
-                    {
-                        id: 'evasion-keywords',
-                        name: '🦅 Evasion & Keywords',
-                        subcategories: [
-                            { id: 'flying', name: 'Flying', defaultValue: 0, description: 'Can only be blocked by flying or reach' },
-                            { id: 'menace', name: 'Menace', defaultValue: 0, description: 'Must be blocked by 2+ creatures' },
-                            { id: 'trample', name: 'Trample', defaultValue: 0, description: 'Excess damage goes through' },
-                            { id: 'unblockable', name: 'Unblockable', defaultValue: 0, description: 'Cannot be blocked' },
-                            { id: 'first-strike', name: 'First/Double Strike', defaultValue: 0, description: 'Deals combat damage first' },
-                            { id: 'deathtouch', name: 'Deathtouch', defaultValue: 0, description: 'Any damage is lethal' },
-                            { id: 'lifelink', name: 'Lifelink', defaultValue: 0, description: 'Gain life equal to damage' },
-                            { id: 'vigilance', name: 'Vigilance', defaultValue: 0, description: 'Doesn\'t tap to attack' },
-                            { id: 'haste', name: 'Haste', defaultValue: 0, description: 'Can attack immediately' },
-                            { id: 'hexproof', name: 'Hexproof', defaultValue: 0, description: 'Can\'t be targeted' },
-                            { id: 'indestructible', name: 'Indestructible', defaultValue: 0, description: 'Cannot be destroyed' },
-                            { id: 'other-evasion', name: 'Other Evasion', defaultValue: 0, description: 'Shadow, horsemanship, fear, etc.' }
-                        ]
-                    },
-                    {
-                        id: 'creatures-other',
-                        name: 'Other Creatures',
-                        subcategories: [
-                            { id: 'creatures-uncategorized', name: 'Other', defaultValue: 0, description: 'Unique or miscellaneous creatures that don\'t fit other categories' }
-                        ]
-                    }
-                ]
-            },
-            noncreature: {
-                name: '⚡ Non-Creature Spells',
-                icon: '⚡',
-                categories: [
-                    {
-                        id: 'ramp',
-                        name: 'Ramp & Mana',
-                        subcategories: [
-                            { id: 'fast-mana', name: 'Fast Mana (0-1 CMC)', defaultValue: 0, description: 'Zero or one mana acceleration (Sol Ring, Mana Crypt, Mox Diamond, Jeweled Lotus)' },
-                            { id: 'efficient-ramp', name: 'Efficient Ramp (2 CMC)', defaultValue: 0, description: 'Two mana rocks and ramp (Signets, Talismans, Farseek, Nature\'s Lore)' },
-                            { id: 'expensive-ramp', name: 'Expensive Ramp (3+ CMC)', defaultValue: 0, description: 'Three or more mana ramp (Commander\'s Sphere, Cultivate, Kodama\'s Reach)' },
-                            { id: 'land-ramp', name: 'Land Ramp Spells', defaultValue: 0, description: 'Spells that put lands onto battlefield (Rampant Growth, Explosive Vegetation)' },
-                            { id: 'rituals', name: 'Rituals', defaultValue: 0, description: 'Temporary mana burst (Dark Ritual, Jeska\'s Will, Mana Geyser)' }
-                        ]
-                    },
-                    {
-                        id: 'draw',
-                        name: 'Card Draw',
-                        subcategories: [
-                            { id: 'cantrips', name: 'Cantrips (0-1 CMC)', defaultValue: 0, description: 'Cheap cycle or draw one (Ponder, Preordain, Brainstorm, Opt)' },
-                            { id: 'raw-draw', name: 'Raw Draw Spells', defaultValue: 0, description: 'Draw multiple cards immediately (Blue Sun\'s Zenith, Painful Truths, Harmonize)' },
-                            { id: 'draw-engines', name: 'Draw Engines', defaultValue: 0, description: 'Repeatable card draw (Rhystic Study, Phyrexian Arena, Mystic Remora)' },
-                            { id: 'wheeling', name: 'Wheel Effects', defaultValue: 0, description: 'Everyone discards and draws (Wheel of Fortune, Windfall, Reforge the Soul)' },
-                            { id: 'tutors', name: 'Tutors', defaultValue: 0, description: 'Search library for specific cards (Demonic Tutor, Vampiric Tutor, Enlightened Tutor)' },
-                            { id: 'impulse-draw', name: 'Impulse Draw', defaultValue: 0, description: 'Exile and play (Outpost Siege, Light Up the Stage, red exile draw)' }
-                        ]
-                    },
-                    {
-                        id: 'removal-spells',
-                        name: 'Spot Removal',
-                        subcategories: [
-                            { id: 'creature-removal', name: 'Creature Removal', defaultValue: 0, description: 'Kill or exile creatures (Path to Exile, Swords to Plowshares, Murder)' },
-                            { id: 'artifact-enchantment-removal', name: 'Artifact/Ench. Removal', defaultValue: 0, description: 'Destroy artifacts and/or enchantments (Naturalize, Return to Dust, Nature\'s Claim)' },
-                            { id: 'artifact-removal', name: 'Artifact Removal Only', defaultValue: 0, description: 'Only hits artifacts (Vandalblast, By Force, Smelt)' },
-                            { id: 'enchantment-removal', name: 'Enchantment Removal Only', defaultValue: 0, description: 'Only hits enchantments (Back to Nature, Tranquility, Demystify)' },
-                            { id: 'planeswalker-removal', name: 'Planeswalker Removal', defaultValue: 0, description: 'Directly remove planeswalkers (Hero\'s Downfall, Dreadbore, Bedevil)' },
-                            { id: 'land-removal', name: 'Land Removal', defaultValue: 0, description: 'Destroy or exile lands (Ghost Quarter, Strip Mine, Wasteland)' },
-                            { id: 'flexible-removal', name: 'Flexible Removal', defaultValue: 0, description: 'Hit multiple permanent types (Anguished Unmaking, Generous Gift, Beast Within)' }
-                        ]
-                    },
-                    {
-                        id: 'wipes',
-                        name: 'Board Wipes',
-                        subcategories: [
-                            { id: 'destroy-wipes', name: 'Destroy Wipes', defaultValue: 0, description: 'Destroy all creatures (Wrath of God, Damnation, Day of Judgment)' },
-                            { id: 'exile-wipes', name: 'Exile Wipes', defaultValue: 0, description: 'Exile all creatures (Merciless Eviction, Farewell, Final Judgment)' },
-                            { id: 'asymmetric', name: 'Asymmetric Wipes', defaultValue: 0, description: 'One-sided wipes (Toxic Deluge at low life, Blasphemous Act with indestructible)' },
-                            { id: 'creature-wipes', name: 'Creature-Only Wipes', defaultValue: 0, description: 'Only destroy creatures, spare other permanents' },
-                            { id: 'permanent-wipes', name: 'All Permanent Wipes', defaultValue: 0, description: 'Destroy all permanents (Cyclonic Rift, Nevinyrral\'s Disk)' }
-                        ]
-                    },
-                    {
-                        id: 'protection',
-                        name: 'Protection & Interaction',
-                        subcategories: [
-                            { id: 'counterspells', name: 'Counterspells', defaultValue: 0, description: 'Counter target spell (Counterspell, Swan Song, Arcane Denial, Negate)' },
-                            { id: 'protection-spells', name: 'Protection Spells', defaultValue: 0, description: 'Protect your permanents (Heroic Intervention, Teferi\'s Protection, Flawless Maneuver)' },
-                            { id: 'redirection', name: 'Redirection', defaultValue: 0, description: 'Change targets of spells/abilities (Deflecting Swat, Bolt Bend, Redirect)' },
-                            { id: 'phasing', name: 'Phasing Effects', defaultValue: 0, description: 'Phase out to protect (Teferi\'s Protection, Ghostway, Eerie Interlude)' }
-                        ]
-                    },
-                    {
-                        id: 'reanimation',
-                        name: 'Reanimation & Recursion',
-                        subcategories: [
-                            { id: 'reanimation', name: 'Reanimation', defaultValue: 0, description: 'Return creatures from graveyard to battlefield (Animate Dead, Reanimate, Living Death)' },
-                            { id: 'graveyard-recursion', name: 'Graveyard Recursion', defaultValue: 0, description: 'Return any cards from graveyard (Regrowth, Eternal Witness effects as spells)' },
-                            { id: 'self-mill', name: 'Self-Mill', defaultValue: 0, description: 'Put cards from library to graveyard (Entomb, Buried Alive, Traumatize self)' },
-                            { id: 'graveyard-hate', name: 'Graveyard Hate', defaultValue: 0, description: 'Exile opponent graveyards (Rest in Peace, Bojuka Bog, Tormod\'s Crypt)' }
-                        ]
-                    },
-                    {
-                        id: 'tokens-anthems',
-                        name: 'Tokens & Anthems',
-                        subcategories: [
-                            { id: 'token-spells', name: 'Token Generation', defaultValue: 0, description: 'Create creature tokens (Secure the Wastes, White Sun\'s Zenith, Army of the Damned)' },
-                            { id: 'anthems', name: 'Anthems/Buffs', defaultValue: 0, description: 'Permanent buffs to your creatures (Glorious Anthem, Shared Animosity, Beastmaster Ascension)' },
-                            { id: 'pump-spells', name: 'Pump Spells', defaultValue: 0, description: 'Temporary power boost (Giant Growth, Berserk, Become Immense)' }
-                        ]
-                    },
-                    {
-                        id: 'extra-turns',
-                        name: 'Extra Turns & Combat',
-                        subcategories: [
-                            { id: 'extra-turns', name: 'Extra Turns', defaultValue: 0, description: 'Take additional turns (Time Warp, Temporal Manipulation, Nexus of Fate)' },
-                            { id: 'extra-combats', name: 'Extra Combats', defaultValue: 0, description: 'Additional combat phases (Relentless Assault, Seize the Day, Combat Celebrant)' },
-                            { id: 'combat-trick-spells', name: 'Combat Tricks', defaultValue: 0, description: 'Instant-speed combat advantages (Boros Charm, Heroic Intervention, pump spells)' }
-                        ]
-                    },
-                    {
-                        id: 'planeswalkers',
-                        name: 'Planeswalkers',
-                        subcategories: [
-                            { id: 'planeswalker-removal', name: 'Removal Walkers', defaultValue: 0, description: 'Planeswalkers with removal abilities (Liliana, Elspeth removal modes)' },
-                            { id: 'planeswalker-draw', name: 'Draw Walkers', defaultValue: 0, description: 'Planeswalkers that draw cards (Teferi, Jace, card advantage walkers)' },
-                            { id: 'planeswalker-ramp', name: 'Ramp Walkers', defaultValue: 0, description: 'Planeswalkers that make mana (Nissa, Garruk, ramp walkers)' },
-                            { id: 'planeswalker-tokens', name: 'Token Makers', defaultValue: 0, description: 'Planeswalkers that create creature tokens (Elspeth, Gideon, token makers)' },
-                            { id: 'planeswalker-protection', name: 'Protection', defaultValue: 0, description: 'Planeswalkers that protect or control board (Teferi, Narset, Dovin)' },
-                            { id: 'planeswalker-finisher', name: 'Finisher', defaultValue: 0, description: 'Planeswalkers with game-ending ultimates (Nicol Bolas, Ugin, big finish walkers)' },
-                            { id: 'planeswalker-other', name: 'Utility/Other Walkers', defaultValue: 0, description: 'Miscellaneous or utility planeswalkers (Karn, various)' }
-                        ]
-                    },
-                    {
-                        id: 'combo-pieces',
-                        name: 'Combo Pieces',
-                        subcategories: [
-                            { id: 'combo-enablers', name: 'Combo Enablers', defaultValue: 0, description: 'Cards that set up combos (Intruder Alarm, Ashnod\'s Altar, untappers)' },
-                            { id: 'combo-payoffs', name: 'Combo Payoffs', defaultValue: 0, description: 'Win conditions for combos (Thassa\'s Oracle, Lab Man, drain effects)' },
-                            { id: 'infinite-pieces', name: 'Infinite Combo Pieces', defaultValue: 0, description: 'Create infinite loops (Dramatic Reversal + Isochron Scepter pieces)' }
-                        ]
-                    },
-                    {
-                        id: 'synergy-pieces',
-                        name: '🔗 Synergy Pieces',
-                        subcategories: [
-                            { id: 'synergy-enablers', name: 'Synergy Enablers', defaultValue: 0, description: 'Cards that enable your deck\'s strategy (Doubling Season, Panharmonicon, cost reducers)' },
-                            { id: 'synergy-payoffs', name: 'Synergy Payoffs', defaultValue: 0, description: 'Cards that reward your strategy (Craterhoof for tokens, Purphoros for ETBs)' },
-                            { id: 'tribal-synergy', name: 'Tribal Synergy', defaultValue: 0, description: 'Tribal support cards (Lord effects, tribal anthems, Kindred Discovery)' },
-                            { id: 'theme-support', name: 'Theme Support', defaultValue: 0, description: 'Cards supporting your deck\'s theme (graveyard matters, +1/+1 counters, etc.)' }
-                        ]
-                    },
-                    {
-                        id: 'equipment',
-                        name: '⚔️ Equipment',
-                        subcategories: [
-                            { id: 'combat-equipment-double', name: 'Dbl/First Strike', defaultValue: 0, description: 'Equipment granting double strike or first strike (Fireshrieker, Sword of Fire and Ice)' },
-                            { id: 'combat-equipment-power', name: 'Power/Tough Buffs', defaultValue: 0, description: 'Equipment that increases creature stats (Embercleave, Sword of the Animist)' },
-                            { id: 'combat-equipment-trample', name: 'Trample', defaultValue: 0, description: 'Equipment granting trample (various equipment)' },
-                            { id: 'evasion-equipment-flying', name: 'Flying', defaultValue: 0, description: 'Equipment granting flying (Fleetfeather Sandals, Wings of Hubris)' },
-                            { id: 'evasion-equipment-unblockable', name: 'Unblockable', defaultValue: 0, description: 'Makes creature unblockable (Whispersilk Cloak, Trailblazer\'s Boots)' },
-                            { id: 'evasion-equipment-other', name: 'Other Evasion', defaultValue: 0, description: 'Menace, intimidate, or other evasion (Shadowspear, etc.)' },
-                            { id: 'protection-equipment-hexproof', name: 'Hexproof', defaultValue: 0, description: 'Protects from targeting (Swiftfoot Boots, Lightning Greaves)' },
-                            { id: 'protection-equipment-indestructible', name: 'Indestructible', defaultValue: 0, description: 'Grants indestructible (Darksteel Plate, Shield of Kaldra)' },
-                            { id: 'utility-equipment-draw', name: 'Card Draw', defaultValue: 0, description: 'Equipment that draws cards (Skullclamp, Mask of Memory, Sword of Fire and Ice)' },
-                            { id: 'utility-equipment-other', name: 'Other Utility', defaultValue: 0, description: 'Miscellaneous equipment effects' }
-                        ]
-                    },
-                    {
-                        id: 'auras',
-                        name: '🎨 Auras',
-                        subcategories: [
-                            { id: 'combat-auras-power', name: 'Power/Tough', defaultValue: 0, description: 'Auras that buff stats (Rancor, Armadillo Cloak, Giant Growth auras)' },
-                            { id: 'combat-auras-keywords', name: 'Keywords', defaultValue: 0, description: 'Grant double strike, first strike, lifelink (various auras)' },
-                            { id: 'combat-auras-trample', name: 'Trample', defaultValue: 0, description: 'Grant trample (various auras)' },
-                            { id: 'evasion-auras-flying', name: 'Flying', defaultValue: 0, description: 'Grant flying (Angelic Destiny, Flight, various)' },
-                            { id: 'evasion-auras-unblockable', name: 'Unblockable', defaultValue: 0, description: 'Make creature unblockable (Aqueous Form, Shadow Rift)' },
-                            { id: 'evasion-auras-other', name: 'Other Evasion', defaultValue: 0, description: 'Menace, intimidate, shadow, etc.' },
-                            { id: 'protection-auras-hexproof', name: 'Hexproof', defaultValue: 0, description: 'Grant hexproof or shroud (Alpha Authority, Canopy Cover)' },
-                            { id: 'protection-auras-indestructible', name: 'Indestructible', defaultValue: 0, description: 'Grant indestructible (Indestructibility, Gift of Immortality)' },
-                            { id: 'protection-auras-protection', name: 'Protection', defaultValue: 0, description: 'Grant protection from colors/types (various)' },
-                            { id: 'utility-auras-draw', name: 'Card Draw', defaultValue: 0, description: 'Draw cards when creature deals damage (Curiosity, Keen Sense)' },
-                            { id: 'utility-auras-removal', name: 'Removal', defaultValue: 0, description: 'Pacify or remove threats (Pacifism, Prison Realm, Kenrith\'s Transformation)' },
-                            { id: 'utility-auras-other', name: 'Other Utility', defaultValue: 0, description: 'Miscellaneous aura effects' }
-                        ]
-                    },
-                    {
-                        id: 'artifacts',
-                        name: '🔧 Artifacts',
-                        subcategories: [
-                            { id: 'artifact-draw-repeatable', name: 'Repeatable Draw Artifacts', defaultValue: 0, description: 'Artifacts with ongoing draw (The One Ring, Staff of Nin, The Immortal Sun)' },
-                            { id: 'artifact-draw-oneshot', name: 'One-Shot Draw Artifacts', defaultValue: 0, description: 'Artifacts that draw once (Mind Stone, Ichor Wellspring)' },
-                            { id: 'artifact-removal', name: 'Removal Artifacts', defaultValue: 0, description: 'Artifacts that remove permanents (Nevinyrral\'s Disk, Oblivion Stone, Ugin\'s Nexus)' },
-                            { id: 'artifact-protection', name: 'Protection Artifacts', defaultValue: 0, description: 'Artifacts that protect (Darksteel Forge, Spellskite, Welding Jar)' },
-                            { id: 'artifact-tokens', name: 'Token-Making Artifacts', defaultValue: 0, description: 'Create creature tokens (Awakening Zone, Retrofitter Foundry)' },
-                            { id: 'artifact-utility', name: 'Utility Artifacts', defaultValue: 0, description: 'Miscellaneous artifact effects (Sensei\'s Divining Top, Mimic Vat)' }
-                        ]
-                    },
-                    {
-                        id: 'combo-pieces',
-                        name: 'Combo Pieces',
-                        subcategories: [
-                            { id: 'combo-enablers', name: 'Combo Enablers', defaultValue: 0, description: 'Cards that set up combos (Intruder Alarm, Ashnod\'s Altar, untappers)' },
-                            { id: 'combo-payoffs', name: 'Combo Payoffs', defaultValue: 0, description: 'Win conditions for combos (Thassa\'s Oracle, Lab Man, drain effects)' },
-                            { id: 'infinite-pieces', name: 'Infinite Combo Pieces', defaultValue: 0, description: 'Create infinite loops (Dramatic Reversal + Isochron Scepter pieces)' }
-                        ]
-                    },
-                    {
-                        id: 'synergy-pieces',
-                        name: '🔗 Synergy Pieces',
-                        subcategories: [
-                            { id: 'synergy-enablers', name: 'Synergy Enablers', defaultValue: 0, description: 'Cards that enable your deck\'s strategy (Doubling Season, Panharmonicon, cost reducers)' },
-                            { id: 'synergy-payoffs', name: 'Synergy Payoffs', defaultValue: 0, description: 'Cards that reward your strategy (Craterhoof for tokens, Purphoros for ETBs)' },
-                            { id: 'tribal-synergy', name: 'Tribal Synergy', defaultValue: 0, description: 'Tribal support cards (Lord effects, tribal anthems, Kindred Discovery)' },
-                            { id: 'theme-support', name: 'Theme Support', defaultValue: 0, description: 'Cards supporting your deck\'s theme (graveyard matters, +1/+1 counters, etc.)' }
-                        ]
-                    },
-                    {
-                        id: 'spells-other',
-                        name: 'Other Spells',
-                        subcategories: [
-                            { id: 'spells-uncategorized', name: 'Other', defaultValue: 0, description: 'Unique or miscellaneous spells that don\'t fit other categories' }
-                        ]
-                    }
-                ]
-            }
-        };
-
-        // CMC Explanation constant
-        const CMC_EXPLANATION = {
-            title: "What is CMC?",
-            text: "CMC = Converted Mana Cost (also called Mana Value). It's the total cost to cast a spell. For example: Sol Ring (1 CMC), Signets (2 CMC), Cultivate (3 CMC). Lower CMC cards are generally faster!"
-        };
-
-        const FUNNY_MANA_QUOTES = [
-            "Remember: basics are for basics. You're not basic. 🎩",
-            "Mana screw? Not today, friend! 🎲",
-            "Your mana base is so smooth, it could host a podcast. 🎙️",
-            "Perfectly balanced, as all mana bases should be. ⚗️",
-            "Now go forth and cast spells like you own the place! 🔮",
-            "Your lands are looking sharp! Unlike your opponent's life total. 😎",
-            "This mana base slaps harder than a Craterhoof trigger. 🦌",
-            "More consistent than your friend who always plays blue. 💙",
-            "Smoother than a greased-up Vorinclex. 🤢",
-            "Chef's kiss! *mwah* 👨‍🍳",
-            "Your mana base just entered the chat. 💬",
-            "Built different. No, seriously, it's optimal now. ✨",
-            "Mana flooding? We don't know her. 🌊",
-            "This is the way. 🛡️",
-            "Your opponents are going to hate this (in a respectful way). 😈",
-            "Who needs green ramp when your mana base is this good? 🌲",
-            "Finally, a land base that respects your commander. 🎖️",
-            "No pain lands needed when you're this prepared! 💪",
-            "Your deck is about to pop off! 🎆",
-            "Time to shuffle up and dominate! 🃏",
-            "More reliable than a Sol Ring in your opening hand. 💍",
-            "Smoother than tapping Ancient Tomb with no consequences. 🏛️",
-            "Your mana curve is more beautiful than a foil Black Lotus. 🌸",
-            "This mana base doesn't need a Mana Crypt to be fast. ⚡",
-            "More balanced than getting a Rhystic Study to resolve. 📚",
-            "Your opponents just got Cyclonic Rift'd... but for their hopes. 🌀",
-            "Lands this good should be banned in casual pods. 🚫",
-            "You're about to Demonic Tutor for victory. 😈",
-            "This mana base is more legendary than Urza himself. 🧙",
-            "Smoother than casting a turn 1 Birds of Paradise. 🐦",
-            "Your lands are more optimized than a cEDH deck. 🏆",
-            "More consistent than that guy who always plays Atraxa. 👾",
-            "Time to channel your inner Spike. This is competitive-ready! 🔥",
-            "Your mana base passed the Bolt test... and the Thoughtseize test. ⚡",
-            "Lands this good could make even a Colossal Dreadmaw viable. 🦖",
-            "More powerful than exiling three cards to Force of Will. 💨",
-            "Your mana base doesn't need to ask 'Did you pay the 1?' 🤑",
-            "This is more satisfying than resolving a kicked Rite of Replication. 🪞",
-            "Smoother than turn 2 Smothering Tithe in a 4-player pod. 💰",
-            "Your lands are more reliable than your opponent's Sensei's Divining Top. 🔝",
-            "This mana base makes Omnath jealous. 🌈",
-            "More polished than a freshly opened Secret Lair. ✨",
-            "You're about to make your opponents scoop faster than a Worldfire. 🔥",
-            "This mana base is stickier than Teferi's Protection. 🛡️",
-            "Lands so good, even Gitrog Monster is taking notes. 🐸",
-            "More explosive than a Dockside Extortionist at a treasure convention. 💎",
-            "Your mana base just said 'No' to variance. ⛔",
-            "Smoother than drawing your entire deck with Thassa's Oracle. 🐟",
-            "This is more threatening than an unanswered Doubling Season. 🌱",
-            "Your lands are more consistent than your friend's excuse for playing Stax. ⚙️",
-            "This mana base could support a 5-color super friends deck. No, really. 🎭",
-            "More optimized than a Food Chain combo. 🍖",
-            "Your opponents are about to get Armageddon'd... metaphorically. 💥",
-            "Lands this good make Azusa weep tears of joy. 😭",
-            "This is cleaner than a board state before Wrath of God. ⚔️",
-            "More reliable than 'Draw, Sol Ring, go.' 💍",
-            "Your mana base doesn't miss, unlike your opponent's Chaos Warp. 🎲",
-            "This is spicier than a Tibalt, Cosmic Imposter steal. 😈",
-            "Smoother than a turn 3 Winota flip into Craterhoof. 🦌",
-            "Your lands are more synchronized than a Grand Arbiter lock. ⚖️",
-            "This mana base hits harder than an Eldrazi Conscription. 👾",
-            "More satisfying than Narset wheeling away your opponent's hand. 🎡",
-            "Your mana is more bountiful than a Zendikar Rising full-art forest. 🌲",
-            "This could support casting Expropriate. Twice. 👑",
-            "Lands so good, your opponents can't even get salty. 🧂",
-            "More elegant than a Swords to Plowshares on a Blightsteel. ⚔️",
-            "Your mana base just won the commander game before turn 1. 🏅"
-        ];
-
-
-        const DEMO_DECKS = [
-            {
-                id: 1,
-                name: "Atraxa Superfriends",
-                commander: "Atraxa, Praetors' Voice",
-                colors: ['W', 'U', 'B', 'G'],
-                strategy: "Planeswalkers",
-                lands: 37,
-                creatures: 18,
-                noncreature: 44,
-                isExample: true
-            },
-            {
-                id: 2,
-                name: "Krenko Goblin Tribal",
-                commander: "Krenko, Mob Boss",
-                colors: ['R'],
-                strategy: "Tribal Aggro",
-                lands: 35,
-                creatures: 42,
-                noncreature: 22,
-                isExample: true
-            },
-            {
-                id: 3,
-                name: "Muldrotha Value Engine",
-                commander: "Muldrotha, the Gravetide",
-                colors: ['U', 'B', 'G'],
-                strategy: "Graveyard Value",
-                lands: 38,
-                creatures: 32,
-                noncreature: 29,
-                isExample: true
-            },
-            {
-                id: 4,
-                name: "Narset Extra Turns",
-                commander: "Narset, Enlightened Master",
-                colors: ['W', 'U', 'R'],
-                strategy: "Extra Turns",
-                lands: 37,
-                creatures: 15,
-                noncreature: 47,
-                isExample: true
-            },
-            {
-                id: 5,
-                name: "Godo Combo",
-                commander: "Godo, Bandit Warlord",
-                colors: ['R'],
-                strategy: "Combo",
-                lands: 36,
-                creatures: 12,
-                noncreature: 51,
-                isExample: true
-            },
-            {
-                id: 6,
-                name: "Tatyova Landfall",
-                commander: "Tatyova, Benthic Druid",
-                colors: ['U', 'G'],
-                strategy: "Landfall",
-                lands: 45,
-                creatures: 28,
-                noncreature: 26,
-                isExample: true
-            },
-            {
-                id: 7,
-                name: "Urza Artifacts",
-                commander: "Urza, Lord High Artificer",
-                colors: ['U'],
-                strategy: "Artifact Combo",
-                lands: 34,
-                creatures: 22,
-                noncreature: 43,
-                isExample: true
-            },
-            {
-                id: 8,
-                name: "Edgar Markov Vampires",
-                commander: "Edgar Markov",
-                colors: ['W', 'B', 'R'],
-                strategy: "Tribal Aggro",
-                lands: 36,
-                creatures: 38,
-                noncreature: 25,
-                isExample: true
-            },
-            {
-                id: 9,
-                name: "Kozilek Eldrazi",
-                commander: "Kozilek, Butcher of Truth",
-                colors: ['C'],
-                strategy: "Colorless Ramp",
-                lands: 36,
-                creatures: 28,
-                noncreature: 35,
-                isExample: true
-            },
-            {
-                id: 10,
-                name: "The Gitrog Monster",
-                commander: "The Gitrog Monster",
-                colors: ['B', 'G'],
-                strategy: "Lands Matter",
-                lands: 42,
-                creatures: 24,
-                noncreature: 33,
-                isExample: true
-            }
-        ];
-
-        const fetchCardFromScryfall = async (cardName) => {
-            try {
-                const response = await fetch(
-                    `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`
-                );
-                if (!response.ok) throw new Error('Card not found');
-                return await response.json();
-            } catch (error) {
-                console.error('Error fetching card:', error);
-                return null;
-            }
-        };
-
-        // Error Boundary Component
-        class ErrorBoundary extends React.Component {
-            constructor(props) {
-                super(props);
-                this.state = { hasError: false, error: null, errorInfo: null };
-            }
-
-            static getDerivedStateFromError(error) {
-                return { hasError: true };
-            }
-
-            componentDidCatch(error, errorInfo) {
-                console.error("Error caught by boundary:", error, errorInfo);
-                this.setState({ error, errorInfo });
-            }
-
-            render() {
-                if (this.state.hasError) {
-                    return (
-                        <div style={{
-                            padding: '2rem',
-                            textAlign: 'center',
-                            background: 'var(--bg-primary)',
-                            color: 'var(--text-primary)',
-                            minHeight: '100vh',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            <h1 style={{ color: '#ff4444', marginBottom: '1rem' }}>⚠️ Something went wrong</h1>
-                            <p style={{ marginBottom: '1rem' }}>The app encountered an error. Please try refreshing the page.</p>
-                            <button 
-                                onClick={() => window.location.reload()}
-                                style={{
-                                    padding: '0.75rem 2rem',
-                                    background: '#4287f5',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    fontSize: '1rem',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Refresh Page
-                            </button>
-                            <details style={{ marginTop: '2rem', maxWidth: '600px', textAlign: 'left' }}>
-                                <summary style={{ cursor: 'pointer', marginBottom: '1rem' }}>Error Details</summary>
-                                <pre style={{ 
-                                    background: '#222', 
-                                    padding: '1rem', 
-                                    borderRadius: '4px',
-                                    overflow: 'auto',
-                                    fontSize: '0.85rem'
-                                }}>
-                                    {this.state.error && this.state.error.toString()}
-                                    {this.state.errorInfo && this.state.errorInfo.componentStack}
-                                </pre>
-                            </details>
-                        </div>
-                    );
-                }
-
-                return this.props.children;
-            }
-        }
-
-        // Loading Component
-        function LoadingScreen() {
-            return (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'var(--bg-primary)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 9999
-                }}>
-                    <div style={{
-                        width: '60px',
-                        height: '60px',
-                        border: '4px solid rgba(66, 135, 245, 0.3)',
-                        borderTop: '4px solid #4287f5',
-                        borderRadius: '50%',
-                        animation: 'spin 1s linear infinite'
-                    }}></div>
-                    <p style={{
-                        marginTop: '1.5rem',
-                        color: 'var(--text-primary)',
-                        fontSize: '1.1rem'
-                    }}>
-                        Loading Deck Builder...
-                    </p>
-                    <style>{`
-                        @keyframes spin {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
-                        }
-                    `}</style>
-                </div>
-            );
-        }
-
         function StandaloneManaCalculator() {
             const [pipCounts, setPipCounts] = useState({
                 W: { single: 0, double: 0, triple: 0 },
@@ -2731,6 +2009,728 @@
                 </div>
             );
         }
+        // Enhanced category structure with exile wipes
+        const DECK_CATEGORIES = {
+            lands: {
+                name: '🏞 Lands',
+                icon: '🏞',
+                categories: [
+                    {
+                        id: 'basics',
+                        name: 'Basic Lands',
+                        subcategories: [
+                            { id: 'plains', name: 'Plains', defaultValue: 0, description: 'Basic land that taps for white mana' },
+                            { id: 'islands', name: 'Islands', defaultValue: 0, description: 'Basic land that taps for blue mana' },
+                            { id: 'swamps', name: 'Swamps', defaultValue: 0, description: 'Basic land that taps for black mana' },
+                            { id: 'mountains', name: 'Mountains', defaultValue: 0, description: 'Basic land that taps for red mana' },
+                            { id: 'forests', name: 'Forests', defaultValue: 0, description: 'Basic land that taps for green mana' },
+                            { id: 'wastes', name: 'Wastes', defaultValue: 0, description: 'Basic land that taps for colorless mana' }
+                        ]
+                    },
+                    {
+                        id: 'utility-mono',
+                        name: 'Mono-Color Utility Lands',
+                        subcategories: [
+                            { id: 'utility-white', name: 'White Utility', defaultValue: 0, description: 'White utility lands (Eiganjo Castle, Emeria the Sky Ruin, etc.)' },
+                            { id: 'utility-blue', name: 'Blue Utility', defaultValue: 0, description: 'Blue utility lands (Minamo School at Water\'s Edge, Academy Ruins, etc.)' },
+                            { id: 'utility-black', name: 'Black Utility', defaultValue: 0, description: 'Black utility lands (Cabal Coffers, Urborg Tomb of Yawgmoth, Bojuka Bog, etc.)' },
+                            { id: 'utility-red', name: 'Red Utility', defaultValue: 0, description: 'Red utility lands (Valakut the Molten Pinnacle, Shinka the Bloodsoaked Keep, etc.)' },
+                            { id: 'utility-green', name: 'Green Utility', defaultValue: 0, description: 'Green utility lands (Gaea\'s Cradle, Nykthos Shrine to Nyx, Yavimaya Cradle, etc.)' },
+                            { id: 'utility-colorless', name: 'Colorless Utility', defaultValue: 0, description: 'Colorless utility lands (Reliquary Tower, Rogue\'s Passage, Command Tower, etc.)' }
+                        ]
+                    },
+                    {
+                        id: 'nonbasics',
+                        name: 'Non-Basic Lands',
+                        subcategories: [
+                            { id: 'duals', name: 'Dual Lands', defaultValue: 0, description: 'Lands that produce two colors (Check lands, Pain lands, Tango lands, etc.)' },
+                            { id: 'trilands', name: 'Tri-Lands', defaultValue: 0, description: 'Lands that produce three colors (Triomes, Arcane Sanctum, etc.)' },
+                            { id: 'fetches', name: 'Fetch Lands', defaultValue: 0, description: 'Search for other lands (Evolving Wilds, Terramorphic Expanse, Prismatic Vista)' },
+                            { id: 'shocks', name: 'Shock Lands', defaultValue: 0, description: 'Dual lands that can enter untapped for 2 life (Temple Garden, Watery Grave, etc.)' },
+                            { id: 'utility', name: 'Utility Lands', defaultValue: 0, description: 'Lands with special abilities (Reliquary Tower, Rogue\'s Passage, Yavimaya Cradle)' },
+                            { id: 'creature-lands', name: 'Creature Lands', defaultValue: 0, description: 'Lands that become creatures (Mutavault, Celestial Colonnade, manlands)' },
+                            { id: 'mdfc-lands', name: 'MDFC Lands', defaultValue: 0, description: 'Modal double-faced cards with land on back (Pathway lands, Zendikar MDFCs)' }
+                        ]
+                    }
+                ]
+            },
+            creatures: {
+                name: '🧟 Creatures',
+                icon: '🧟',
+                categories: [
+                    {
+                        id: 'mana-creatures',
+                        name: 'Ramp Creatures',
+                        subcategories: [
+                            { id: 'dorks', name: 'Mana Dorks', defaultValue: 0, description: 'Creatures that tap for mana (Birds of Paradise, Llanowar Elves, Faeburrow Elder)' },
+                            { id: 'land-creatures', name: 'Land Fetch Creatures', defaultValue: 0, description: 'Creatures that search for lands (Wood Elves, Farhaven Elf, Solemn Simulacrum)' },
+                            { id: 'treasure-creatures', name: 'Treasure Makers', defaultValue: 0, description: 'Creatures that create treasure tokens (Dockside Extortionist, Pitiless Plunderer)' }
+                        ]
+                    },
+                    {
+                        id: 'draw-creatures',
+                        name: 'Card Draw Creatures',
+                        subcategories: [
+                            { id: 'draw-etb', name: 'Draw on ETB', defaultValue: 0, description: 'Draw cards when creature enters (Mulldrifter, Wall of Omens, Elvish Visionary)' },
+                            { id: 'draw-death', name: 'Draw on Death', defaultValue: 0, description: 'Draw when creature or others die (Grim Haruspex, Midnight Reaper, Skullclamp targets)' },
+                            { id: 'draw-attack', name: 'Draw on Attack/Damage', defaultValue: 0, description: 'Draw when attacking or dealing damage (Tymna, Edric, Bident of Thassa creatures)' },
+                            { id: 'tutor-creatures', name: 'Tutor Creatures', defaultValue: 0, description: 'Search your library for specific cards (Recruiter of the Guard, Imperial Recruiter)' },
+                            { id: 'looting-creatures', name: 'Looting Creatures', defaultValue: 0, description: 'Draw then discard (Merfolk Looter, Looter il-Kor, rummaging effects)' }
+                        ]
+                    },
+                    {
+                        id: 'removal-creatures',
+                        name: 'Removal Creatures',
+                        subcategories: [
+                            { id: 'etb-removal', name: 'ETB Removal', defaultValue: 0, description: 'Remove permanents when entering (Ravenous Chupacabra, Reclamation Sage)' },
+                            { id: 'fight-creatures', name: 'Fight Creatures', defaultValue: 0, description: 'Creatures that fight or use power-based removal (Kogla, Apex Devastator triggers)' },
+                            { id: 'exile-creatures', name: 'Exile Effects', defaultValue: 0, description: 'Exile instead of destroy (Containment Priest, Angel of Serenity)' },
+                            { id: 'bounce-creatures', name: 'Bounce Creatures', defaultValue: 0, description: 'Return permanents to hand (Man-o\'-War, Venser Shaper Savant)' }
+                        ]
+                    },
+                    {
+                        id: 'sac-creatures',
+                        name: 'Sacrifice Outlets',
+                        subcategories: [
+                            { id: 'free-sac', name: 'Free Sac Outlets', defaultValue: 0, description: 'Sacrifice without mana cost (Viscera Seer, Carrion Feeder, Goblin Bombardment)' },
+                            { id: 'paid-sac', name: 'Paid Sac Outlets', defaultValue: 0, description: 'Sacrifice requiring mana (Yawgmoth, Birthing Pod, High Market)' },
+                        ]
+                    },
+                    {
+                        id: 'utility-creatures',
+                        name: 'Utility Creatures',
+                        subcategories: [
+                            { id: 'hatebears', name: 'Hatebears', defaultValue: 0, description: 'Disrupt opponents strategies (Thalia, Drannith Magistrate, Opposition Agent)' },
+                            { id: 'protection-creatures', name: 'Protection Creatures', defaultValue: 0, description: 'Protect your board (Selfless Spirit, Dauntless Bodyguard, Spellskite)' },
+                            { id: 'recursion-creatures', name: 'Recursion Creatures', defaultValue: 0, description: 'Return cards from graveyard (Eternal Witness, Sun Titan, Karmic Guide)' },
+                            { id: 'token-makers', name: 'Token Makers', defaultValue: 0, description: 'Create creature tokens (Avenger of Zendikar, Deep Forest Hermit, Hornet Queen)' },
+                            { id: 'blink-targets', name: 'Blink/Flicker Targets', defaultValue: 0, description: 'High-value ETB creatures for blinking (Mulldrifter, Archaeomancer, any ETB value)' }
+                        ]
+                    },
+                    {
+                        id: 'tribal-creatures',
+                        name: 'Tribal Creatures',
+                        subcategories: [
+                            { id: 'tribal-payoffs', name: 'Tribal Payoffs', defaultValue: 0, description: 'Reward for playing tribe (Door of Destinies, Coat of Arms, tribal anthem effects)' },
+                            { id: 'tribal-lords', name: 'Tribal Lords', defaultValue: 0, description: 'Buff creatures of your tribe (Lord of Atlantis, Elvish Champion, any type lord)' },
+                            { id: 'tribal-support', name: 'Tribal Support', defaultValue: 0, description: 'Help tribal strategy without being the tribe (Kindred Discovery, Vanquisher\'s Banner)' },
+                            { id: 'changeling', name: 'Changelings', defaultValue: 0, description: 'All creature types (Changeling Outcast, Unsettled Mariner, tribal wildcards)' }
+                        ]
+                    },
+                    {
+                        id: 'combat-creatures',
+                        name: 'Combat Creatures',
+                        subcategories: [
+                            { id: 'evasion', name: 'Evasive Creatures', defaultValue: 0, description: 'Flying, unblockable, menace, etc. (Flyers, Invisible Stalker, Etali)' },
+                            { id: 'finishers', name: 'Finishers', defaultValue: 0, description: 'Win the game with combat (Craterhoof Behemoth, Triumph of the Hordes carriers)' },
+                            { id: 'combat-tricks', name: 'Combat Tricks', defaultValue: 0, description: 'Surprise combat abilities (Mother of Runes, flash creatures, combat effects)' },
+                            { id: 'defenders', name: 'Defenders', defaultValue: 0, description: 'High toughness or defensive abilities (Wall of Roots, Stuffy Doll, Fog Bank)' }
+                        ]
+                    },
+                    {
+                        id: 'synergy-creatures',
+                        name: '🔗 Synergy Pieces',
+                        subcategories: [
+                            { id: 'synergy-enablers-creatures', name: 'Synergy Enablers', defaultValue: 0, description: 'Creatures that enable your strategy (Panharmonicon, Doubling Season creatures, cost reducers)' },
+                            { id: 'synergy-payoffs-creatures', name: 'Synergy Payoffs', defaultValue: 0, description: 'Creatures that reward your strategy (Craterhoof for tokens, Purphoros for ETBs)' },
+                            { id: 'tribal-creatures-synergy', name: 'Tribal Creatures', defaultValue: 0, description: 'Creatures of your chosen tribe (Elves, Zombies, Dragons, etc.)' },
+                            { id: 'theme-support-creatures', name: 'Theme Support', defaultValue: 0, description: 'Creatures supporting your theme (graveyard, +1/+1 counters, etc.)' }
+                        ]
+                    },
+                    {
+                        id: 'etb-die-triggers',
+                        name: '💥 ETB/Die Triggers',
+                        subcategories: [
+                            { id: 'etb-draw', name: 'Draw on ETB', defaultValue: 0, description: 'Draw cards when entering (Mulldrifter, Wall of Omens, Elvish Visionary)' },
+                            { id: 'etb-removal', name: 'Removal on ETB', defaultValue: 0, description: 'Remove permanents when entering (Ravenous Chupacabra, Reclamation Sage)' },
+                            { id: 'etb-ramp', name: 'Ramp on ETB', defaultValue: 0, description: 'Ramp when entering (Wood Elves, Farhaven Elf, Solemn Simulacrum)' },
+                            { id: 'etb-opponent-sac', name: 'Opponent Sac (ETB)', defaultValue: 0, description: 'Force opponents to sacrifice on ETB (Fleshbag Marauder, Plaguecrafter, Demon\'s Disciple)' },
+                            { id: 'etb-opponent-discard', name: 'Opponent Discard (ETB)', defaultValue: 0, description: 'Force opponents to discard on ETB (Liliana\'s Specter, Burglar Rat)' },
+                            { id: 'etb-life-loss', name: 'Opponent Lose Life (ETB)', defaultValue: 0, description: 'Deal damage/drain on ETB (Gray Merchant, Mulldrifter in aristocrats)' },
+                            { id: 'etb-tokens', name: 'Create Tokens (ETB)', defaultValue: 0, description: 'Make tokens when entering (Avenger of Zendikar, Deep Forest Hermit)' },
+                            { id: 'etb-other', name: 'Other ETB Triggers', defaultValue: 0, description: 'Miscellaneous ETB effects (tutors, mill, etc.)' },
+                            { id: 'die-draw', name: 'Draw on Death', defaultValue: 0, description: 'Draw when dying or others die (Grim Haruspex, Midnight Reaper)' },
+                            { id: 'die-opponent-sac', name: 'Opponent Sac (Death)', defaultValue: 0, description: 'Force sac when this dies (Dictate of Erebos creatures, Butcher of Malakir)' },
+                            { id: 'die-life-loss', name: 'Opponent Lose Life (Death)', defaultValue: 0, description: 'Drain when dying (Blood Artist, Zulaport Cutthroat)' },
+                            { id: 'die-tokens', name: 'Create Tokens (Death)', defaultValue: 0, description: 'Make tokens when dying (Hangarback Walker, Bitterblossom)' },
+                            { id: 'die-recursion', name: 'Recursion (Death)', defaultValue: 0, description: 'Return from graveyard (Reassembling Skeleton, Bloodghast)' },
+                            { id: 'die-other', name: 'Other Death Triggers', defaultValue: 0, description: 'Miscellaneous death triggers (various effects)' }
+                        ]
+                    },
+                    {
+                        id: 'discard-drain',
+                        name: '🩸 Discard & Life Loss',
+                        subcategories: [
+                            { id: 'discard-etb', name: 'Discard (ETB)', defaultValue: 0, description: 'Force discard on ETB (covered in ETB triggers above)' },
+                            { id: 'discard-attack', name: 'Discard (Attack)', defaultValue: 0, description: 'Force discard on attack/damage (Nekusar, Tinybones, Waste Not triggers)' },
+                            { id: 'discard-repeatable', name: 'Repeatable Discard', defaultValue: 0, description: 'Activated/triggered discard (Oppression creatures, repeated hand attack)' },
+                            { id: 'drain-etb', name: 'Drain (ETB)', defaultValue: 0, description: 'Drain life on ETB (Gray Merchant, Soul Warden triggers)' },
+                            { id: 'drain-attack', name: 'Drain (Attack)', defaultValue: 0, description: 'Drain when attacking (lifelink, Pontiff of Blight)' },
+                            { id: 'drain-death', name: 'Drain (Death)', defaultValue: 0, description: 'Drain when creatures die (Blood Artist, Zulaport Cutthroat)' },
+                            { id: 'drain-repeatable', name: 'Repeatable Drain', defaultValue: 0, description: 'Activated drain abilities (Exquisite Blood triggers, repeated pings)' },
+                            { id: 'direct-damage', name: 'Direct Damage', defaultValue: 0, description: 'Creatures that ping/burn (Prodigal Pyromancer, Goblin Sharpshooter)' }
+                        ]
+                    },
+                    {
+                        id: 'combat-damage-triggers',
+                        name: '⚡ Combat/Damage Triggers',
+                        icon: '⚡',
+                        subcategories: [
+                            { id: 'damage-draw', name: 'Deal Damage → Draw', defaultValue: 0, description: 'Draw when dealing damage (Edric, Bident of Thassa, Curiosity effects)' },
+                            { id: 'damage-opponent-sac', name: 'Deal Damage → Opponent Sac', defaultValue: 0, description: 'Opponent sacrifices when you deal damage' },
+                            { id: 'damage-opponent-discard', name: 'Deal Damage → Opponent Discard', defaultValue: 0, description: 'Opponent discards when you deal damage (Nekusar, Waste Not triggers)' },
+                            { id: 'damage-tokens', name: 'Deal Damage → Create Tokens', defaultValue: 0, description: 'Create tokens when dealing damage' },
+                            { id: 'damage-life-loss', name: 'Deal Damage → Life Loss', defaultValue: 0, description: 'Additional damage/drain (Purphoros, Syr Konrad, Impact Tremors on ETB)' },
+                            { id: 'damage-other', name: 'Deal Damage → Other Effects', defaultValue: 0, description: 'Other repeatable damage-based triggers' }
+                        ]
+                    },
+                    {
+                        id: 'offensive-threats',
+                        name: '⚔️ Offensive Threats',
+                        subcategories: [
+                            { id: 'big-beaters', name: 'Big Beaters (6+ Power)', defaultValue: 0, description: 'Large creatures that hit hard (Ghalta, Blightsteel Colossus, big dragons)' },
+                            { id: 'keyword-soup', name: 'Multiple Keywords', defaultValue: 0, description: 'Creatures with 3+ keywords (Akroma, Questing Beast, ability soup)' },
+                            { id: 'unblockable-threats', name: 'Unblockable', defaultValue: 0, description: 'Can\'t be blocked (Invisible Stalker, Blighted Agent, true unblockable)' },
+                            { id: 'finisher-threats', name: 'Game-Ending Threats', defaultValue: 0, description: 'Win the game with combat (Craterhoof, Triumph carriers, instant wins)' },
+                            { id: 'must-answer', name: 'Must-Answer Threats', defaultValue: 0, description: 'Generate so much value they must be removed (Rhystic Study creatures, engines)' },
+                            { id: 'voltron-pieces', name: 'Voltron Pieces', defaultValue: 0, description: 'Creatures to suit up with equipment/auras (hexproof creatures, commanders)' }
+                        ]
+                    },
+                    {
+                        id: 'evasion-keywords',
+                        name: '🦅 Evasion & Keywords',
+                        subcategories: [
+                            { id: 'flying', name: 'Flying', defaultValue: 0, description: 'Can only be blocked by flying or reach' },
+                            { id: 'menace', name: 'Menace', defaultValue: 0, description: 'Must be blocked by 2+ creatures' },
+                            { id: 'trample', name: 'Trample', defaultValue: 0, description: 'Excess damage goes through' },
+                            { id: 'unblockable', name: 'Unblockable', defaultValue: 0, description: 'Cannot be blocked' },
+                            { id: 'first-strike', name: 'First/Double Strike', defaultValue: 0, description: 'Deals combat damage first' },
+                            { id: 'deathtouch', name: 'Deathtouch', defaultValue: 0, description: 'Any damage is lethal' },
+                            { id: 'lifelink', name: 'Lifelink', defaultValue: 0, description: 'Gain life equal to damage' },
+                            { id: 'vigilance', name: 'Vigilance', defaultValue: 0, description: 'Doesn\'t tap to attack' },
+                            { id: 'haste', name: 'Haste', defaultValue: 0, description: 'Can attack immediately' },
+                            { id: 'hexproof', name: 'Hexproof', defaultValue: 0, description: 'Can\'t be targeted' },
+                            { id: 'indestructible', name: 'Indestructible', defaultValue: 0, description: 'Cannot be destroyed' },
+                            { id: 'other-evasion', name: 'Other Evasion', defaultValue: 0, description: 'Shadow, horsemanship, fear, etc.' }
+                        ]
+                    },
+                    {
+                        id: 'creatures-other',
+                        name: 'Other Creatures',
+                        subcategories: [
+                            { id: 'creatures-uncategorized', name: 'Other', defaultValue: 0, description: 'Unique or miscellaneous creatures that don\'t fit other categories' }
+                        ]
+                    }
+                ]
+            },
+            noncreature: {
+                name: '⚡ Non-Creature Spells',
+                icon: '⚡',
+                categories: [
+                    {
+                        id: 'ramp',
+                        name: 'Ramp & Mana',
+                        subcategories: [
+                            { id: 'fast-mana', name: 'Fast Mana (0-1 CMC)', defaultValue: 0, description: 'Zero or one mana acceleration (Sol Ring, Mana Crypt, Mox Diamond, Jeweled Lotus)' },
+                            { id: 'efficient-ramp', name: 'Efficient Ramp (2 CMC)', defaultValue: 0, description: 'Two mana rocks and ramp (Signets, Talismans, Farseek, Nature\'s Lore)' },
+                            { id: 'expensive-ramp', name: 'Expensive Ramp (3+ CMC)', defaultValue: 0, description: 'Three or more mana ramp (Commander\'s Sphere, Cultivate, Kodama\'s Reach)' },
+                            { id: 'land-ramp', name: 'Land Ramp Spells', defaultValue: 0, description: 'Spells that put lands onto battlefield (Rampant Growth, Explosive Vegetation)' },
+                            { id: 'rituals', name: 'Rituals', defaultValue: 0, description: 'Temporary mana burst (Dark Ritual, Jeska\'s Will, Mana Geyser)' }
+                        ]
+                    },
+                    {
+                        id: 'draw',
+                        name: 'Card Draw',
+                        subcategories: [
+                            { id: 'cantrips', name: 'Cantrips (0-1 CMC)', defaultValue: 0, description: 'Cheap cycle or draw one (Ponder, Preordain, Brainstorm, Opt)' },
+                            { id: 'raw-draw', name: 'Raw Draw Spells', defaultValue: 0, description: 'Draw multiple cards immediately (Blue Sun\'s Zenith, Painful Truths, Harmonize)' },
+                            { id: 'draw-engines', name: 'Draw Engines', defaultValue: 0, description: 'Repeatable card draw (Rhystic Study, Phyrexian Arena, Mystic Remora)' },
+                            { id: 'wheeling', name: 'Wheel Effects', defaultValue: 0, description: 'Everyone discards and draws (Wheel of Fortune, Windfall, Reforge the Soul)' },
+                            { id: 'tutors', name: 'Tutors', defaultValue: 0, description: 'Search library for specific cards (Demonic Tutor, Vampiric Tutor, Enlightened Tutor)' },
+                            { id: 'impulse-draw', name: 'Impulse Draw', defaultValue: 0, description: 'Exile and play (Outpost Siege, Light Up the Stage, red exile draw)' }
+                        ]
+                    },
+                    {
+                        id: 'removal-spells',
+                        name: 'Spot Removal',
+                        subcategories: [
+                            { id: 'creature-removal', name: 'Creature Removal', defaultValue: 0, description: 'Kill or exile creatures (Path to Exile, Swords to Plowshares, Murder)' },
+                            { id: 'artifact-enchantment-removal', name: 'Artifact/Ench. Removal', defaultValue: 0, description: 'Destroy artifacts and/or enchantments (Naturalize, Return to Dust, Nature\'s Claim)' },
+                            { id: 'artifact-removal', name: 'Artifact Removal Only', defaultValue: 0, description: 'Only hits artifacts (Vandalblast, By Force, Smelt)' },
+                            { id: 'enchantment-removal', name: 'Enchantment Removal Only', defaultValue: 0, description: 'Only hits enchantments (Back to Nature, Tranquility, Demystify)' },
+                            { id: 'planeswalker-removal', name: 'Planeswalker Removal', defaultValue: 0, description: 'Directly remove planeswalkers (Hero\'s Downfall, Dreadbore, Bedevil)' },
+                            { id: 'land-removal', name: 'Land Removal', defaultValue: 0, description: 'Destroy or exile lands (Ghost Quarter, Strip Mine, Wasteland)' },
+                            { id: 'flexible-removal', name: 'Flexible Removal', defaultValue: 0, description: 'Hit multiple permanent types (Anguished Unmaking, Generous Gift, Beast Within)' }
+                        ]
+                    },
+                    {
+                        id: 'wipes',
+                        name: 'Board Wipes',
+                        subcategories: [
+                            { id: 'destroy-wipes', name: 'Destroy Wipes', defaultValue: 0, description: 'Destroy all creatures (Wrath of God, Damnation, Day of Judgment)' },
+                            { id: 'exile-wipes', name: 'Exile Wipes', defaultValue: 0, description: 'Exile all creatures (Merciless Eviction, Farewell, Final Judgment)' },
+                            { id: 'asymmetric', name: 'Asymmetric Wipes', defaultValue: 0, description: 'One-sided wipes (Toxic Deluge at low life, Blasphemous Act with indestructible)' },
+                            { id: 'creature-wipes', name: 'Creature-Only Wipes', defaultValue: 0, description: 'Only destroy creatures, spare other permanents' },
+                            { id: 'permanent-wipes', name: 'All Permanent Wipes', defaultValue: 0, description: 'Destroy all permanents (Cyclonic Rift, Nevinyrral\'s Disk)' }
+                        ]
+                    },
+                    {
+                        id: 'protection',
+                        name: 'Protection & Interaction',
+                        subcategories: [
+                            { id: 'counterspells', name: 'Counterspells', defaultValue: 0, description: 'Counter target spell (Counterspell, Swan Song, Arcane Denial, Negate)' },
+                            { id: 'protection-spells', name: 'Protection Spells', defaultValue: 0, description: 'Protect your permanents (Heroic Intervention, Teferi\'s Protection, Flawless Maneuver)' },
+                            { id: 'redirection', name: 'Redirection', defaultValue: 0, description: 'Change targets of spells/abilities (Deflecting Swat, Bolt Bend, Redirect)' },
+                            { id: 'phasing', name: 'Phasing Effects', defaultValue: 0, description: 'Phase out to protect (Teferi\'s Protection, Ghostway, Eerie Interlude)' }
+                        ]
+                    },
+                    {
+                        id: 'reanimation',
+                        name: 'Reanimation & Recursion',
+                        subcategories: [
+                            { id: 'reanimation', name: 'Reanimation', defaultValue: 0, description: 'Return creatures from graveyard to battlefield (Animate Dead, Reanimate, Living Death)' },
+                            { id: 'graveyard-recursion', name: 'Graveyard Recursion', defaultValue: 0, description: 'Return any cards from graveyard (Regrowth, Eternal Witness effects as spells)' },
+                            { id: 'self-mill', name: 'Self-Mill', defaultValue: 0, description: 'Put cards from library to graveyard (Entomb, Buried Alive, Traumatize self)' },
+                            { id: 'graveyard-hate', name: 'Graveyard Hate', defaultValue: 0, description: 'Exile opponent graveyards (Rest in Peace, Bojuka Bog, Tormod\'s Crypt)' }
+                        ]
+                    },
+                    {
+                        id: 'tokens-anthems',
+                        name: 'Tokens & Anthems',
+                        subcategories: [
+                            { id: 'token-spells', name: 'Token Generation', defaultValue: 0, description: 'Create creature tokens (Secure the Wastes, White Sun\'s Zenith, Army of the Damned)' },
+                            { id: 'anthems', name: 'Anthems/Buffs', defaultValue: 0, description: 'Permanent buffs to your creatures (Glorious Anthem, Shared Animosity, Beastmaster Ascension)' },
+                            { id: 'pump-spells', name: 'Pump Spells', defaultValue: 0, description: 'Temporary power boost (Giant Growth, Berserk, Become Immense)' }
+                        ]
+                    },
+                    {
+                        id: 'extra-turns',
+                        name: 'Extra Turns & Combat',
+                        subcategories: [
+                            { id: 'extra-turns', name: 'Extra Turns', defaultValue: 0, description: 'Take additional turns (Time Warp, Temporal Manipulation, Nexus of Fate)' },
+                            { id: 'extra-combats', name: 'Extra Combats', defaultValue: 0, description: 'Additional combat phases (Relentless Assault, Seize the Day, Combat Celebrant)' },
+                            { id: 'combat-trick-spells', name: 'Combat Tricks', defaultValue: 0, description: 'Instant-speed combat advantages (Boros Charm, Heroic Intervention, pump spells)' }
+                        ]
+                    },
+                    {
+                        id: 'planeswalkers',
+                        name: 'Planeswalkers',
+                        subcategories: [
+                            { id: 'planeswalker-removal', name: 'Removal Walkers', defaultValue: 0, description: 'Planeswalkers with removal abilities (Liliana, Elspeth removal modes)' },
+                            { id: 'planeswalker-draw', name: 'Draw Walkers', defaultValue: 0, description: 'Planeswalkers that draw cards (Teferi, Jace, card advantage walkers)' },
+                            { id: 'planeswalker-ramp', name: 'Ramp Walkers', defaultValue: 0, description: 'Planeswalkers that make mana (Nissa, Garruk, ramp walkers)' },
+                            { id: 'planeswalker-tokens', name: 'Token Makers', defaultValue: 0, description: 'Planeswalkers that create creature tokens (Elspeth, Gideon, token makers)' },
+                            { id: 'planeswalker-protection', name: 'Protection', defaultValue: 0, description: 'Planeswalkers that protect or control board (Teferi, Narset, Dovin)' },
+                            { id: 'planeswalker-finisher', name: 'Finisher', defaultValue: 0, description: 'Planeswalkers with game-ending ultimates (Nicol Bolas, Ugin, big finish walkers)' },
+                            { id: 'planeswalker-other', name: 'Utility/Other Walkers', defaultValue: 0, description: 'Miscellaneous or utility planeswalkers (Karn, various)' }
+                        ]
+                    },
+                    {
+                        id: 'combo-pieces',
+                        name: 'Combo Pieces',
+                        subcategories: [
+                            { id: 'combo-enablers', name: 'Combo Enablers', defaultValue: 0, description: 'Cards that set up combos (Intruder Alarm, Ashnod\'s Altar, untappers)' },
+                            { id: 'combo-payoffs', name: 'Combo Payoffs', defaultValue: 0, description: 'Win conditions for combos (Thassa\'s Oracle, Lab Man, drain effects)' },
+                            { id: 'infinite-pieces', name: 'Infinite Combo Pieces', defaultValue: 0, description: 'Create infinite loops (Dramatic Reversal + Isochron Scepter pieces)' }
+                        ]
+                    },
+                    {
+                        id: 'synergy-pieces',
+                        name: '🔗 Synergy Pieces',
+                        subcategories: [
+                            { id: 'synergy-enablers', name: 'Synergy Enablers', defaultValue: 0, description: 'Cards that enable your deck\'s strategy (Doubling Season, Panharmonicon, cost reducers)' },
+                            { id: 'synergy-payoffs', name: 'Synergy Payoffs', defaultValue: 0, description: 'Cards that reward your strategy (Craterhoof for tokens, Purphoros for ETBs)' },
+                            { id: 'tribal-synergy', name: 'Tribal Synergy', defaultValue: 0, description: 'Tribal support cards (Lord effects, tribal anthems, Kindred Discovery)' },
+                            { id: 'theme-support', name: 'Theme Support', defaultValue: 0, description: 'Cards supporting your deck\'s theme (graveyard matters, +1/+1 counters, etc.)' }
+                        ]
+                    },
+                    {
+                        id: 'equipment',
+                        name: '⚔️ Equipment',
+                        subcategories: [
+                            { id: 'combat-equipment-double', name: 'Dbl/First Strike', defaultValue: 0, description: 'Equipment granting double strike or first strike (Fireshrieker, Sword of Fire and Ice)' },
+                            { id: 'combat-equipment-power', name: 'Power/Tough Buffs', defaultValue: 0, description: 'Equipment that increases creature stats (Embercleave, Sword of the Animist)' },
+                            { id: 'combat-equipment-trample', name: 'Trample', defaultValue: 0, description: 'Equipment granting trample (various equipment)' },
+                            { id: 'evasion-equipment-flying', name: 'Flying', defaultValue: 0, description: 'Equipment granting flying (Fleetfeather Sandals, Wings of Hubris)' },
+                            { id: 'evasion-equipment-unblockable', name: 'Unblockable', defaultValue: 0, description: 'Makes creature unblockable (Whispersilk Cloak, Trailblazer\'s Boots)' },
+                            { id: 'evasion-equipment-other', name: 'Other Evasion', defaultValue: 0, description: 'Menace, intimidate, or other evasion (Shadowspear, etc.)' },
+                            { id: 'protection-equipment-hexproof', name: 'Hexproof', defaultValue: 0, description: 'Protects from targeting (Swiftfoot Boots, Lightning Greaves)' },
+                            { id: 'protection-equipment-indestructible', name: 'Indestructible', defaultValue: 0, description: 'Grants indestructible (Darksteel Plate, Shield of Kaldra)' },
+                            { id: 'utility-equipment-draw', name: 'Card Draw', defaultValue: 0, description: 'Equipment that draws cards (Skullclamp, Mask of Memory, Sword of Fire and Ice)' },
+                            { id: 'utility-equipment-other', name: 'Other Utility', defaultValue: 0, description: 'Miscellaneous equipment effects' }
+                        ]
+                    },
+                    {
+                        id: 'auras',
+                        name: '🎨 Auras',
+                        subcategories: [
+                            { id: 'combat-auras-power', name: 'Power/Tough', defaultValue: 0, description: 'Auras that buff stats (Rancor, Armadillo Cloak, Giant Growth auras)' },
+                            { id: 'combat-auras-keywords', name: 'Keywords', defaultValue: 0, description: 'Grant double strike, first strike, lifelink (various auras)' },
+                            { id: 'combat-auras-trample', name: 'Trample', defaultValue: 0, description: 'Grant trample (various auras)' },
+                            { id: 'evasion-auras-flying', name: 'Flying', defaultValue: 0, description: 'Grant flying (Angelic Destiny, Flight, various)' },
+                            { id: 'evasion-auras-unblockable', name: 'Unblockable', defaultValue: 0, description: 'Make creature unblockable (Aqueous Form, Shadow Rift)' },
+                            { id: 'evasion-auras-other', name: 'Other Evasion', defaultValue: 0, description: 'Menace, intimidate, shadow, etc.' },
+                            { id: 'protection-auras-hexproof', name: 'Hexproof', defaultValue: 0, description: 'Grant hexproof or shroud (Alpha Authority, Canopy Cover)' },
+                            { id: 'protection-auras-indestructible', name: 'Indestructible', defaultValue: 0, description: 'Grant indestructible (Indestructibility, Gift of Immortality)' },
+                            { id: 'protection-auras-protection', name: 'Protection', defaultValue: 0, description: 'Grant protection from colors/types (various)' },
+                            { id: 'utility-auras-draw', name: 'Card Draw', defaultValue: 0, description: 'Draw cards when creature deals damage (Curiosity, Keen Sense)' },
+                            { id: 'utility-auras-removal', name: 'Removal', defaultValue: 0, description: 'Pacify or remove threats (Pacifism, Prison Realm, Kenrith\'s Transformation)' },
+                            { id: 'utility-auras-other', name: 'Other Utility', defaultValue: 0, description: 'Miscellaneous aura effects' }
+                        ]
+                    },
+                    {
+                        id: 'artifacts',
+                        name: '🔧 Artifacts',
+                        subcategories: [
+                            { id: 'artifact-draw-repeatable', name: 'Repeatable Draw Artifacts', defaultValue: 0, description: 'Artifacts with ongoing draw (The One Ring, Staff of Nin, The Immortal Sun)' },
+                            { id: 'artifact-draw-oneshot', name: 'One-Shot Draw Artifacts', defaultValue: 0, description: 'Artifacts that draw once (Mind Stone, Ichor Wellspring)' },
+                            { id: 'artifact-removal', name: 'Removal Artifacts', defaultValue: 0, description: 'Artifacts that remove permanents (Nevinyrral\'s Disk, Oblivion Stone, Ugin\'s Nexus)' },
+                            { id: 'artifact-protection', name: 'Protection Artifacts', defaultValue: 0, description: 'Artifacts that protect (Darksteel Forge, Spellskite, Welding Jar)' },
+                            { id: 'artifact-tokens', name: 'Token-Making Artifacts', defaultValue: 0, description: 'Create creature tokens (Awakening Zone, Retrofitter Foundry)' },
+                            { id: 'artifact-utility', name: 'Utility Artifacts', defaultValue: 0, description: 'Miscellaneous artifact effects (Sensei\'s Divining Top, Mimic Vat)' }
+                        ]
+                    },
+                    {
+                        id: 'combo-pieces',
+                        name: 'Combo Pieces',
+                        subcategories: [
+                            { id: 'combo-enablers', name: 'Combo Enablers', defaultValue: 0, description: 'Cards that set up combos (Intruder Alarm, Ashnod\'s Altar, untappers)' },
+                            { id: 'combo-payoffs', name: 'Combo Payoffs', defaultValue: 0, description: 'Win conditions for combos (Thassa\'s Oracle, Lab Man, drain effects)' },
+                            { id: 'infinite-pieces', name: 'Infinite Combo Pieces', defaultValue: 0, description: 'Create infinite loops (Dramatic Reversal + Isochron Scepter pieces)' }
+                        ]
+                    },
+                    {
+                        id: 'synergy-pieces',
+                        name: '🔗 Synergy Pieces',
+                        subcategories: [
+                            { id: 'synergy-enablers', name: 'Synergy Enablers', defaultValue: 0, description: 'Cards that enable your deck\'s strategy (Doubling Season, Panharmonicon, cost reducers)' },
+                            { id: 'synergy-payoffs', name: 'Synergy Payoffs', defaultValue: 0, description: 'Cards that reward your strategy (Craterhoof for tokens, Purphoros for ETBs)' },
+                            { id: 'tribal-synergy', name: 'Tribal Synergy', defaultValue: 0, description: 'Tribal support cards (Lord effects, tribal anthems, Kindred Discovery)' },
+                            { id: 'theme-support', name: 'Theme Support', defaultValue: 0, description: 'Cards supporting your deck\'s theme (graveyard matters, +1/+1 counters, etc.)' }
+                        ]
+                    },
+                    {
+                        id: 'spells-other',
+                        name: 'Other Spells',
+                        subcategories: [
+                            { id: 'spells-uncategorized', name: 'Other', defaultValue: 0, description: 'Unique or miscellaneous spells that don\'t fit other categories' }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // CMC Explanation constant
+        const CMC_EXPLANATION = {
+            title: "What is CMC?",
+            text: "CMC = Converted Mana Cost (also called Mana Value). It's the total cost to cast a spell. For example: Sol Ring (1 CMC), Signets (2 CMC), Cultivate (3 CMC). Lower CMC cards are generally faster!"
+        };
+
+        const FUNNY_MANA_QUOTES = [
+            "Remember: basics are for basics. You're not basic. 🎩",
+            "Mana screw? Not today, friend! 🎲",
+            "Your mana base is so smooth, it could host a podcast. 🎙️",
+            "Perfectly balanced, as all mana bases should be. ⚗️",
+            "Now go forth and cast spells like you own the place! 🔮",
+            "Your lands are looking sharp! Unlike your opponent's life total. 😎",
+            "This mana base slaps harder than a Craterhoof trigger. 🦌",
+            "More consistent than your friend who always plays blue. 💙",
+            "Smoother than a greased-up Vorinclex. 🤢",
+            "Chef's kiss! *mwah* 👨‍🍳",
+            "Your mana base just entered the chat. 💬",
+            "Built different. No, seriously, it's optimal now. ✨",
+            "Mana flooding? We don't know her. 🌊",
+            "This is the way. 🛡️",
+            "Your opponents are going to hate this (in a respectful way). 😈",
+            "Who needs green ramp when your mana base is this good? 🌲",
+            "Finally, a land base that respects your commander. 🎖️",
+            "No pain lands needed when you're this prepared! 💪",
+            "Your deck is about to pop off! 🎆",
+            "Time to shuffle up and dominate! 🃏",
+            "More reliable than a Sol Ring in your opening hand. 💍",
+            "Smoother than tapping Ancient Tomb with no consequences. 🏛️",
+            "Your mana curve is more beautiful than a foil Black Lotus. 🌸",
+            "This mana base doesn't need a Mana Crypt to be fast. ⚡",
+            "More balanced than getting a Rhystic Study to resolve. 📚",
+            "Your opponents just got Cyclonic Rift'd... but for their hopes. 🌀",
+            "Lands this good should be banned in casual pods. 🚫",
+            "You're about to Demonic Tutor for victory. 😈",
+            "This mana base is more legendary than Urza himself. 🧙",
+            "Smoother than casting a turn 1 Birds of Paradise. 🐦",
+            "Your lands are more optimized than a cEDH deck. 🏆",
+            "More consistent than that guy who always plays Atraxa. 👾",
+            "Time to channel your inner Spike. This is competitive-ready! 🔥",
+            "Your mana base passed the Bolt test... and the Thoughtseize test. ⚡",
+            "Lands this good could make even a Colossal Dreadmaw viable. 🦖",
+            "More powerful than exiling three cards to Force of Will. 💨",
+            "Your mana base doesn't need to ask 'Did you pay the 1?' 🤑",
+            "This is more satisfying than resolving a kicked Rite of Replication. 🪞",
+            "Smoother than turn 2 Smothering Tithe in a 4-player pod. 💰",
+            "Your lands are more reliable than your opponent's Sensei's Divining Top. 🔝",
+            "This mana base makes Omnath jealous. 🌈",
+            "More polished than a freshly opened Secret Lair. ✨",
+            "You're about to make your opponents scoop faster than a Worldfire. 🔥",
+            "This mana base is stickier than Teferi's Protection. 🛡️",
+            "Lands so good, even Gitrog Monster is taking notes. 🐸",
+            "More explosive than a Dockside Extortionist at a treasure convention. 💎",
+            "Your mana base just said 'No' to variance. ⛔",
+            "Smoother than drawing your entire deck with Thassa's Oracle. 🐟",
+            "This is more threatening than an unanswered Doubling Season. 🌱",
+            "Your lands are more consistent than your friend's excuse for playing Stax. ⚙️",
+            "This mana base could support a 5-color super friends deck. No, really. 🎭",
+            "More optimized than a Food Chain combo. 🍖",
+            "Your opponents are about to get Armageddon'd... metaphorically. 💥",
+            "Lands this good make Azusa weep tears of joy. 😭",
+            "This is cleaner than a board state before Wrath of God. ⚔️",
+            "More reliable than 'Draw, Sol Ring, go.' 💍",
+            "Your mana base doesn't miss, unlike your opponent's Chaos Warp. 🎲",
+            "This is spicier than a Tibalt, Cosmic Imposter steal. 😈",
+            "Smoother than a turn 3 Winota flip into Craterhoof. 🦌",
+            "Your lands are more synchronized than a Grand Arbiter lock. ⚖️",
+            "This mana base hits harder than an Eldrazi Conscription. 👾",
+            "More satisfying than Narset wheeling away your opponent's hand. 🎡",
+            "Your mana is more bountiful than a Zendikar Rising full-art forest. 🌲",
+            "This could support casting Expropriate. Twice. 👑",
+            "Lands so good, your opponents can't even get salty. 🧂",
+            "More elegant than a Swords to Plowshares on a Blightsteel. ⚔️",
+            "Your mana base just won the commander game before turn 1. 🏅"
+        ];
+
+
+        const DEMO_DECKS = [
+            {
+                id: 1,
+                name: "Atraxa Superfriends",
+                commander: "Atraxa, Praetors' Voice",
+                colors: ['W', 'U', 'B', 'G'],
+                strategy: "Planeswalkers",
+                lands: 37,
+                creatures: 18,
+                noncreature: 44,
+                isExample: true
+            },
+            {
+                id: 2,
+                name: "Krenko Goblin Tribal",
+                commander: "Krenko, Mob Boss",
+                colors: ['R'],
+                strategy: "Tribal Aggro",
+                lands: 35,
+                creatures: 42,
+                noncreature: 22,
+                isExample: true
+            },
+            {
+                id: 3,
+                name: "Muldrotha Value Engine",
+                commander: "Muldrotha, the Gravetide",
+                colors: ['U', 'B', 'G'],
+                strategy: "Graveyard Value",
+                lands: 38,
+                creatures: 32,
+                noncreature: 29,
+                isExample: true
+            },
+            {
+                id: 4,
+                name: "Narset Extra Turns",
+                commander: "Narset, Enlightened Master",
+                colors: ['W', 'U', 'R'],
+                strategy: "Extra Turns",
+                lands: 37,
+                creatures: 15,
+                noncreature: 47,
+                isExample: true
+            },
+            {
+                id: 5,
+                name: "Godo Combo",
+                commander: "Godo, Bandit Warlord",
+                colors: ['R'],
+                strategy: "Combo",
+                lands: 36,
+                creatures: 12,
+                noncreature: 51,
+                isExample: true
+            },
+            {
+                id: 6,
+                name: "Tatyova Landfall",
+                commander: "Tatyova, Benthic Druid",
+                colors: ['U', 'G'],
+                strategy: "Landfall",
+                lands: 45,
+                creatures: 28,
+                noncreature: 26,
+                isExample: true
+            },
+            {
+                id: 7,
+                name: "Urza Artifacts",
+                commander: "Urza, Lord High Artificer",
+                colors: ['U'],
+                strategy: "Artifact Combo",
+                lands: 34,
+                creatures: 22,
+                noncreature: 43,
+                isExample: true
+            },
+            {
+                id: 8,
+                name: "Edgar Markov Vampires",
+                commander: "Edgar Markov",
+                colors: ['W', 'B', 'R'],
+                strategy: "Tribal Aggro",
+                lands: 36,
+                creatures: 38,
+                noncreature: 25,
+                isExample: true
+            },
+            {
+                id: 9,
+                name: "Kozilek Eldrazi",
+                commander: "Kozilek, Butcher of Truth",
+                colors: ['C'],
+                strategy: "Colorless Ramp",
+                lands: 36,
+                creatures: 28,
+                noncreature: 35,
+                isExample: true
+            },
+            {
+                id: 10,
+                name: "The Gitrog Monster",
+                commander: "The Gitrog Monster",
+                colors: ['B', 'G'],
+                strategy: "Lands Matter",
+                lands: 42,
+                creatures: 24,
+                noncreature: 33,
+                isExample: true
+            }
+        ];
+
+        const fetchCardFromScryfall = async (cardName) => {
+            try {
+                const response = await fetch(
+                    `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`
+                );
+                if (!response.ok) throw new Error('Card not found');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching card:', error);
+                return null;
+            }
+        };
+
+        // Error Boundary Component
+        class ErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null, errorInfo: null };
+            }
+
+            static getDerivedStateFromError(error) {
+                return { hasError: true };
+            }
+
+            componentDidCatch(error, errorInfo) {
+                console.error("Error caught by boundary:", error, errorInfo);
+                this.setState({ error, errorInfo });
+            }
+
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div style={{
+                            padding: '2rem',
+                            textAlign: 'center',
+                            background: 'var(--bg-primary)',
+                            color: 'var(--text-primary)',
+                            minHeight: '100vh',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <h1 style={{ color: '#ff4444', marginBottom: '1rem' }}>⚠️ Something went wrong</h1>
+                            <p style={{ marginBottom: '1rem' }}>The app encountered an error. Please try refreshing the page.</p>
+                            <button 
+                                onClick={() => window.location.reload()}
+                                style={{
+                                    padding: '0.75rem 2rem',
+                                    background: '#4287f5',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    fontSize: '1rem',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Refresh Page
+                            </button>
+                            <details style={{ marginTop: '2rem', maxWidth: '600px', textAlign: 'left' }}>
+                                <summary style={{ cursor: 'pointer', marginBottom: '1rem' }}>Error Details</summary>
+                                <pre style={{ 
+                                    background: '#222', 
+                                    padding: '1rem', 
+                                    borderRadius: '4px',
+                                    overflow: 'auto',
+                                    fontSize: '0.85rem'
+                                }}>
+                                    {this.state.error && this.state.error.toString()}
+                                    {this.state.errorInfo && this.state.errorInfo.componentStack}
+                                </pre>
+                            </details>
+                        </div>
+                    );
+                }
+
+                return this.props.children;
+            }
+        }
+
+        // Loading Component
+        function LoadingScreen() {
+            return (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'var(--bg-primary)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 9999
+                }}>
+                    <div style={{
+                        width: '60px',
+                        height: '60px',
+                        border: '4px solid rgba(66, 135, 245, 0.3)',
+                        borderTop: '4px solid #4287f5',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                    }}></div>
+                    <p style={{
+                        marginTop: '1.5rem',
+                        color: 'var(--text-primary)',
+                        fontSize: '1.1rem'
+                    }}>
+                        Loading Deck Builder...
+                    </p>
+                    <style>{`
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `}</style>
+                </div>
+            );
+        }
+
         function App() {
             const [view, setView] = useState('home');
             const [decks, setDecks] = useState(() => {
