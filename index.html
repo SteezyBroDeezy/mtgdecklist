@@ -738,35 +738,86 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: Arial, sans-serif;">
+            <div style="width: 60px; height: 60px; border: 4px solid rgba(66, 135, 245, 0.3); border-top: 4px solid #4287f5; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top: 1.5rem; font-size: 1.1rem;">Loading Deck Builder...</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #888;">If this persists, check your browser console</p>
+            <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+        </div>
+    </div>
 
     <!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
 <script>
-  // Your Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyBjwMNNj6k2kzCJNNh6jMLd2vvUN8NUhuE",
-    authDomain: "mtg-decklist-app.firebaseapp.com",
-    projectId: "mtg-decklist-app",
-    storageBucket: "mtg-decklist-app.firebasestorage.app",
-    messagingSenderId: "948508221922",
-    appId: "1:948508221922:web:367f67f7109c92a99799bb"
-  };
+  try {
+      console.log("Starting Firebase initialization...");
+      
+      // Your Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBjwMNNj6k2kzCJNNh6jMLd2vvUN8NUhuE",
+        authDomain: "mtg-decklist-app.firebaseapp.com",
+        projectId: "mtg-decklist-app",
+        storageBucket: "mtg-decklist-app.firebasestorage.app",
+        messagingSenderId: "948508221922",
+        appId: "1:948508221922:web:367f67f7109c92a99799bb"
+      };
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  
-  console.log("Firebase initialized!");
+      // Initialize Firebase
+      if (typeof firebase !== 'undefined') {
+          firebase.initializeApp(firebaseConfig);
+          window.auth = firebase.auth();
+          window.db = firebase.firestore();
+          console.log("✅ Firebase initialized successfully!");
+      } else {
+          console.error("❌ Firebase not loaded!");
+      }
+  } catch (error) {
+      console.error("❌ Firebase initialization error:", error);
+  }
 </script>
 
     <script type="text/babel">
+        // Debug logging for mobile
+        console.log("🚀 Starting app initialization...");
+        console.log("📱 User Agent:", navigator.userAgent);
+        console.log("📐 Window size:", window.innerWidth, "x", window.innerHeight);
+        console.log("🔥 Firebase available:", typeof firebase !== 'undefined');
+        console.log("⚛️ React available:", typeof React !== 'undefined');
+        console.log("⚛️ ReactDOM available:", typeof ReactDOM !== 'undefined');
+
         const { useState, useEffect, useMemo } = React;
 
+
+        // DETAILED Firebase check
+        console.log("🔍 Checking window.auth:", typeof window.auth, window.auth);
+        console.log("🔍 Checking window.db:", typeof window.db, window.db);
+        console.log("🔍 Checking firebase:", typeof firebase);
+        
+        // Get Firebase references from window
+        const auth = window.auth || (typeof firebase !== 'undefined' ? firebase.auth() : null);
+        const db = window.db || (typeof firebase !== 'undefined' ? firebase.firestore() : null);
+        
+        // Store back on window if we just created them
+        if (auth && !window.auth) {
+            window.auth = auth;
+            console.log("✅ Created window.auth");
+        }
+        if (db && !window.db) {
+            window.db = db;
+            console.log("✅ Created window.db");
+        }
+        
+        // Verify Firebase is ready
+        if (!auth || !db) {
+            console.error("❌ Firebase auth or db not available!");
+            console.error("auth:", auth, "db:", db);
+            console.error("window.auth:", window.auth, "window.db:", window.db);
+        } else {
+            console.log("✅ Firebase auth and db ready!");
+        }
         // Enhanced category structure with exile wipes
         const DECK_CATEGORIES = {
             lands: {
@@ -852,7 +903,6 @@
                         subcategories: [
                             { id: 'free-sac', name: 'Free Sac Outlets', defaultValue: 0, description: 'Sacrifice without mana cost (Viscera Seer, Carrion Feeder, Goblin Bombardment)' },
                             { id: 'paid-sac', name: 'Paid Sac Outlets', defaultValue: 0, description: 'Sacrifice requiring mana (Yawgmoth, Birthing Pod, High Market)' },
-                            { id: 'aristocrats', name: 'Aristocrats (Death Triggers)', defaultValue: 0, description: 'Gain value when creatures die (Blood Artist, Zulaport Cutthroat, Judith)' }
                         ]
                     },
                     {
@@ -882,8 +932,8 @@
                         subcategories: [
                             { id: 'evasion', name: 'Evasive Creatures', defaultValue: 0, description: 'Flying, unblockable, menace, etc. (Flyers, Invisible Stalker, Etali)' },
                             { id: 'finishers', name: 'Finishers', defaultValue: 0, description: 'Win the game with combat (Craterhoof Behemoth, Triumph of the Hordes carriers)' },
-                            { id: 'combat-tricks', name: 'Combat Trick Creatures', defaultValue: 0, description: 'Surprise combat abilities (Mother of Runes, flash creatures, combat effects)' },
-                            { id: 'defenders', name: 'Defenders/Blockers', defaultValue: 0, description: 'High toughness or defensive abilities (Wall of Roots, Stuffy Doll, Fog Bank)' }
+                            { id: 'combat-tricks', name: 'Combat Tricks', defaultValue: 0, description: 'Surprise combat abilities (Mother of Runes, flash creatures, combat effects)' },
+                            { id: 'defenders', name: 'Defenders', defaultValue: 0, description: 'High toughness or defensive abilities (Wall of Roots, Stuffy Doll, Fog Bank)' }
                         ]
                     },
                     {
@@ -921,13 +971,26 @@
                         name: '🩸 Discard & Life Loss',
                         subcategories: [
                             { id: 'discard-etb', name: 'Discard (ETB)', defaultValue: 0, description: 'Force discard on ETB (covered in ETB triggers above)' },
-                            { id: 'discard-attack', name: 'Discard (Attack/Damage)', defaultValue: 0, description: 'Force discard on attack/damage (Nekusar, Tinybones, Waste Not triggers)' },
+                            { id: 'discard-attack', name: 'Discard (Attack)', defaultValue: 0, description: 'Force discard on attack/damage (Nekusar, Tinybones, Waste Not triggers)' },
                             { id: 'discard-repeatable', name: 'Repeatable Discard', defaultValue: 0, description: 'Activated/triggered discard (Oppression creatures, repeated hand attack)' },
                             { id: 'drain-etb', name: 'Drain (ETB)', defaultValue: 0, description: 'Drain life on ETB (Gray Merchant, Soul Warden triggers)' },
                             { id: 'drain-attack', name: 'Drain (Attack)', defaultValue: 0, description: 'Drain when attacking (lifelink, Pontiff of Blight)' },
                             { id: 'drain-death', name: 'Drain (Death)', defaultValue: 0, description: 'Drain when creatures die (Blood Artist, Zulaport Cutthroat)' },
                             { id: 'drain-repeatable', name: 'Repeatable Drain', defaultValue: 0, description: 'Activated drain abilities (Exquisite Blood triggers, repeated pings)' },
                             { id: 'direct-damage', name: 'Direct Damage', defaultValue: 0, description: 'Creatures that ping/burn (Prodigal Pyromancer, Goblin Sharpshooter)' }
+                        ]
+                    },
+                    {
+                        id: 'combat-damage-triggers',
+                        name: '⚡ Combat/Damage Triggers',
+                        icon: '⚡',
+                        subcategories: [
+                            { id: 'damage-draw', name: 'Deal Damage → Draw', defaultValue: 0, description: 'Draw when dealing damage (Edric, Bident of Thassa, Curiosity effects)' },
+                            { id: 'damage-opponent-sac', name: 'Deal Damage → Opponent Sac', defaultValue: 0, description: 'Opponent sacrifices when you deal damage' },
+                            { id: 'damage-opponent-discard', name: 'Deal Damage → Opponent Discard', defaultValue: 0, description: 'Opponent discards when you deal damage (Nekusar, Waste Not triggers)' },
+                            { id: 'damage-tokens', name: 'Deal Damage → Create Tokens', defaultValue: 0, description: 'Create tokens when dealing damage' },
+                            { id: 'damage-life-loss', name: 'Deal Damage → Life Loss', defaultValue: 0, description: 'Additional damage/drain (Purphoros, Syr Konrad, Impact Tremors on ETB)' },
+                            { id: 'damage-other', name: 'Deal Damage → Other Effects', defaultValue: 0, description: 'Other repeatable damage-based triggers' }
                         ]
                     },
                     {
@@ -1066,8 +1129,8 @@
                             { id: 'planeswalker-draw', name: 'Draw Walkers', defaultValue: 0, description: 'Planeswalkers that draw cards (Teferi, Jace, card advantage walkers)' },
                             { id: 'planeswalker-ramp', name: 'Ramp Walkers', defaultValue: 0, description: 'Planeswalkers that make mana (Nissa, Garruk, ramp walkers)' },
                             { id: 'planeswalker-tokens', name: 'Token Makers', defaultValue: 0, description: 'Planeswalkers that create creature tokens (Elspeth, Gideon, token makers)' },
-                            { id: 'planeswalker-protection', name: 'Protection/Control', defaultValue: 0, description: 'Planeswalkers that protect or control board (Teferi, Narset, Dovin)' },
-                            { id: 'planeswalker-finisher', name: 'Finisher/Ultimate', defaultValue: 0, description: 'Planeswalkers with game-ending ultimates (Nicol Bolas, Ugin, big finish walkers)' },
+                            { id: 'planeswalker-protection', name: 'Protection', defaultValue: 0, description: 'Planeswalkers that protect or control board (Teferi, Narset, Dovin)' },
+                            { id: 'planeswalker-finisher', name: 'Finisher', defaultValue: 0, description: 'Planeswalkers with game-ending ultimates (Nicol Bolas, Ugin, big finish walkers)' },
                             { id: 'planeswalker-other', name: 'Utility/Other Walkers', defaultValue: 0, description: 'Miscellaneous or utility planeswalkers (Karn, various)' }
                         ]
                     },
@@ -1094,15 +1157,15 @@
                         id: 'equipment',
                         name: '⚔️ Equipment',
                         subcategories: [
-                            { id: 'combat-equipment-double', name: 'Double Strike/First Strike', defaultValue: 0, description: 'Equipment granting double strike or first strike (Fireshrieker, Sword of Fire and Ice)' },
+                            { id: 'combat-equipment-double', name: 'Dbl/First Strike', defaultValue: 0, description: 'Equipment granting double strike or first strike (Fireshrieker, Sword of Fire and Ice)' },
                             { id: 'combat-equipment-power', name: 'Power/Tough Buffs', defaultValue: 0, description: 'Equipment that increases creature stats (Embercleave, Sword of the Animist)' },
-                            { id: 'combat-equipment-trample', name: 'Trample Equipment', defaultValue: 0, description: 'Equipment granting trample (various equipment)' },
-                            { id: 'evasion-equipment-flying', name: 'Flying Equipment', defaultValue: 0, description: 'Equipment granting flying (Fleetfeather Sandals, Wings of Hubris)' },
-                            { id: 'evasion-equipment-unblockable', name: 'Unblockable Equipment', defaultValue: 0, description: 'Makes creature unblockable (Whispersilk Cloak, Trailblazer\'s Boots)' },
+                            { id: 'combat-equipment-trample', name: 'Trample', defaultValue: 0, description: 'Equipment granting trample (various equipment)' },
+                            { id: 'evasion-equipment-flying', name: 'Flying', defaultValue: 0, description: 'Equipment granting flying (Fleetfeather Sandals, Wings of Hubris)' },
+                            { id: 'evasion-equipment-unblockable', name: 'Unblockable', defaultValue: 0, description: 'Makes creature unblockable (Whispersilk Cloak, Trailblazer\'s Boots)' },
                             { id: 'evasion-equipment-other', name: 'Other Evasion', defaultValue: 0, description: 'Menace, intimidate, or other evasion (Shadowspear, etc.)' },
                             { id: 'protection-equipment-hexproof', name: 'Hexproof', defaultValue: 0, description: 'Protects from targeting (Swiftfoot Boots, Lightning Greaves)' },
                             { id: 'protection-equipment-indestructible', name: 'Indestructible', defaultValue: 0, description: 'Grants indestructible (Darksteel Plate, Shield of Kaldra)' },
-                            { id: 'utility-equipment-draw', name: 'Card Draw Equipment', defaultValue: 0, description: 'Equipment that draws cards (Skullclamp, Mask of Memory, Sword of Fire and Ice)' },
+                            { id: 'utility-equipment-draw', name: 'Card Draw', defaultValue: 0, description: 'Equipment that draws cards (Skullclamp, Mask of Memory, Sword of Fire and Ice)' },
                             { id: 'utility-equipment-other', name: 'Other Utility', defaultValue: 0, description: 'Miscellaneous equipment effects' }
                         ]
                     },
@@ -1110,18 +1173,18 @@
                         id: 'auras',
                         name: '🎨 Auras',
                         subcategories: [
-                            { id: 'combat-auras-power', name: 'Power/Toughness Auras', defaultValue: 0, description: 'Auras that buff stats (Rancor, Armadillo Cloak, Giant Growth auras)' },
-                            { id: 'combat-auras-keywords', name: 'Keyword Auras', defaultValue: 0, description: 'Grant double strike, first strike, lifelink (various auras)' },
-                            { id: 'combat-auras-trample', name: 'Trample Auras', defaultValue: 0, description: 'Grant trample (various auras)' },
-                            { id: 'evasion-auras-flying', name: 'Flying Auras', defaultValue: 0, description: 'Grant flying (Angelic Destiny, Flight, various)' },
-                            { id: 'evasion-auras-unblockable', name: 'Unblockable Auras', defaultValue: 0, description: 'Make creature unblockable (Aqueous Form, Shadow Rift)' },
-                            { id: 'evasion-auras-other', name: 'Other Evasion Auras', defaultValue: 0, description: 'Menace, intimidate, shadow, etc.' },
-                            { id: 'protection-auras-hexproof', name: 'Hexproof/Shroud Auras', defaultValue: 0, description: 'Grant hexproof or shroud (Alpha Authority, Canopy Cover)' },
-                            { id: 'protection-auras-indestructible', name: 'Indestructible Auras', defaultValue: 0, description: 'Grant indestructible (Indestructibility, Gift of Immortality)' },
-                            { id: 'protection-auras-protection', name: 'Protection Auras', defaultValue: 0, description: 'Grant protection from colors/types (various)' },
-                            { id: 'utility-auras-draw', name: 'Card Draw Auras', defaultValue: 0, description: 'Draw cards when creature deals damage (Curiosity, Keen Sense)' },
-                            { id: 'utility-auras-removal', name: 'Removal Auras', defaultValue: 0, description: 'Pacify or remove threats (Pacifism, Prison Realm, Kenrith\'s Transformation)' },
-                            { id: 'utility-auras-other', name: 'Other Utility Auras', defaultValue: 0, description: 'Miscellaneous aura effects' }
+                            { id: 'combat-auras-power', name: 'Power/Tough', defaultValue: 0, description: 'Auras that buff stats (Rancor, Armadillo Cloak, Giant Growth auras)' },
+                            { id: 'combat-auras-keywords', name: 'Keywords', defaultValue: 0, description: 'Grant double strike, first strike, lifelink (various auras)' },
+                            { id: 'combat-auras-trample', name: 'Trample', defaultValue: 0, description: 'Grant trample (various auras)' },
+                            { id: 'evasion-auras-flying', name: 'Flying', defaultValue: 0, description: 'Grant flying (Angelic Destiny, Flight, various)' },
+                            { id: 'evasion-auras-unblockable', name: 'Unblockable', defaultValue: 0, description: 'Make creature unblockable (Aqueous Form, Shadow Rift)' },
+                            { id: 'evasion-auras-other', name: 'Other Evasion', defaultValue: 0, description: 'Menace, intimidate, shadow, etc.' },
+                            { id: 'protection-auras-hexproof', name: 'Hexproof', defaultValue: 0, description: 'Grant hexproof or shroud (Alpha Authority, Canopy Cover)' },
+                            { id: 'protection-auras-indestructible', name: 'Indestructible', defaultValue: 0, description: 'Grant indestructible (Indestructibility, Gift of Immortality)' },
+                            { id: 'protection-auras-protection', name: 'Protection', defaultValue: 0, description: 'Grant protection from colors/types (various)' },
+                            { id: 'utility-auras-draw', name: 'Card Draw', defaultValue: 0, description: 'Draw cards when creature deals damage (Curiosity, Keen Sense)' },
+                            { id: 'utility-auras-removal', name: 'Removal', defaultValue: 0, description: 'Pacify or remove threats (Pacifism, Prison Realm, Kenrith\'s Transformation)' },
+                            { id: 'utility-auras-other', name: 'Other Utility', defaultValue: 0, description: 'Miscellaneous aura effects' }
                         ]
                     },
                     {
@@ -1368,6 +1431,114 @@
                 return null;
             }
         };
+
+        // Error Boundary Component
+        class ErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null, errorInfo: null };
+            }
+
+            static getDerivedStateFromError(error) {
+                return { hasError: true };
+            }
+
+            componentDidCatch(error, errorInfo) {
+                console.error("Error caught by boundary:", error, errorInfo);
+                this.setState({ error, errorInfo });
+            }
+
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div style={{
+                            padding: '2rem',
+                            textAlign: 'center',
+                            background: 'var(--bg-primary)',
+                            color: 'var(--text-primary)',
+                            minHeight: '100vh',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <h1 style={{ color: '#ff4444', marginBottom: '1rem' }}>⚠️ Something went wrong</h1>
+                            <p style={{ marginBottom: '1rem' }}>The app encountered an error. Please try refreshing the page.</p>
+                            <button 
+                                onClick={() => window.location.reload()}
+                                style={{
+                                    padding: '0.75rem 2rem',
+                                    background: '#4287f5',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    fontSize: '1rem',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Refresh Page
+                            </button>
+                            <details style={{ marginTop: '2rem', maxWidth: '600px', textAlign: 'left' }}>
+                                <summary style={{ cursor: 'pointer', marginBottom: '1rem' }}>Error Details</summary>
+                                <pre style={{ 
+                                    background: '#222', 
+                                    padding: '1rem', 
+                                    borderRadius: '4px',
+                                    overflow: 'auto',
+                                    fontSize: '0.85rem'
+                                }}>
+                                    {this.state.error && this.state.error.toString()}
+                                    {this.state.errorInfo && this.state.errorInfo.componentStack}
+                                </pre>
+                            </details>
+                        </div>
+                    );
+                }
+
+                return this.props.children;
+            }
+        }
+
+        // Loading Component
+        function LoadingScreen() {
+            return (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'var(--bg-primary)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 9999
+                }}>
+                    <div style={{
+                        width: '60px',
+                        height: '60px',
+                        border: '4px solid rgba(66, 135, 245, 0.3)',
+                        borderTop: '4px solid #4287f5',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                    }}></div>
+                    <p style={{
+                        marginTop: '1.5rem',
+                        color: 'var(--text-primary)',
+                        fontSize: '1.1rem'
+                    }}>
+                        Loading Deck Builder...
+                    </p>
+                    <style>{`
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `}</style>
+                </div>
+            );
+        }
 
         function App() {
             const [view, setView] = useState('home');
@@ -3918,6 +4089,333 @@ return (
                                     </div>
                                 </div>
 
+                                {/* COMPREHENSIVE DECK ANALYTICS */}
+                                {selectedDeck.categories && (() => {
+                                    const cats = selectedDeck.categories;
+                                    
+                                    // Calculate Total Draw Sources
+                                    const totalDraw = 
+                                        (cats['draw-etb'] || 0) +
+                                        (cats['draw-death'] || 0) +
+                                        (cats['draw-attack'] || 0) +
+                                        (cats['looting-creatures'] || 0) +
+                                        (cats['tutor-creatures'] || 0) +
+                                        (cats['cantrips'] || 0) +
+                                        (cats['raw-draw'] || 0) +
+                                        (cats['draw-engines'] || 0) +
+                                        (cats['wheeling'] || 0) +
+                                        (cats['tutors'] || 0) +
+                                        (cats['impulse-draw'] || 0) +
+                                        (cats['utility-equipment-draw'] || 0) +
+                                        (cats['utility-auras-draw'] || 0) +
+                                        (cats['artifact-draw-repeatable'] || 0) +
+                                        (cats['artifact-draw-oneshot'] || 0) +
+                                        (cats['planeswalker-draw'] || 0) +
+                                        (cats['damage-draw'] || 0);
+                                    
+                                    // Calculate Total Removal
+                                    const totalRemoval = 
+                                        (cats['etb-removal'] || 0) +
+                                        (cats['fight-creatures'] || 0) +
+                                        (cats['exile-creatures'] || 0) +
+                                        (cats['bounce-creatures'] || 0) +
+                                        (cats['creature-removal'] || 0) +
+                                        (cats['artifact-enchantment-removal'] || 0) +
+                                        (cats['artifact-removal'] || 0) +
+                                        (cats['enchantment-removal'] || 0) +
+                                        (cats['planeswalker-removal'] || 0) +
+                                        (cats['land-removal'] || 0) +
+                                        (cats['flexible-removal'] || 0) +
+                                        (cats['destroy-wipes'] || 0) +
+                                        (cats['exile-wipes'] || 0) +
+                                        (cats['asymmetric'] || 0) +
+                                        (cats['creature-wipes'] || 0) +
+                                        (cats['permanent-wipes'] || 0) +
+                                        (cats['utility-auras-removal'] || 0) +
+                                        (cats['planeswalker-removal'] || 0);
+                                    
+                                    // Calculate Total Ramp
+                                    const totalRamp = 
+                                        (cats['dorks'] || 0) +
+                                        (cats['etb-ramp'] || 0) +
+                                        (cats['land-creatures'] || 0) +
+                                        (cats['treasure-creatures'] || 0) +
+                                        (cats['fast-mana'] || 0) +
+                                        (cats['efficient-ramp'] || 0) +
+                                        (cats['land-ramp'] || 0) +
+                                        (cats['artifact-ramp'] || 0) +
+                                        (cats['planeswalker-ramp'] || 0);
+                                    
+                                    // Calculate Total Protection
+                                    const totalProtection = 
+                                        (cats['protection-creatures'] || 0) +
+                                        (cats['counterspells'] || 0) +
+                                        (cats['protection-spells'] || 0) +
+                                        (cats['redirection'] || 0) +
+                                        (cats['phasing'] || 0) +
+                                        (cats['protection-equipment-hexproof'] || 0) +
+                                        (cats['protection-equipment-indestructible'] || 0) +
+                                        (cats['protection-auras-hexproof'] || 0) +
+                                        (cats['protection-auras-indestructible'] || 0) +
+                                        (cats['protection-auras-protection'] || 0) +
+                                        (cats['artifact-protection'] || 0) +
+                                        (cats['planeswalker-protection'] || 0);
+                                    
+                                    // Calculate Total Evasion
+                                    const totalEvasion = 
+                                        (cats['flying'] || 0) +
+                                        (cats['menace'] || 0) +
+                                        (cats['trample'] || 0) +
+                                        (cats['unblockable'] || 0) +
+                                        (cats['first-strike'] || 0) +
+                                        (cats['deathtouch'] || 0) +
+                                        (cats['other-evasion'] || 0) +
+                                        (cats['evasion-equipment-flying'] || 0) +
+                                        (cats['evasion-equipment-unblockable'] || 0) +
+                                        (cats['evasion-equipment-other'] || 0) +
+                                        (cats['evasion-auras-flying'] || 0) +
+                                        (cats['evasion-auras-unblockable'] || 0) +
+                                        (cats['evasion-auras-other'] || 0);
+                                    
+                                    // Calculate Synergy Highlights
+                                    const synergyEnablers = (cats['synergy-enablers'] || 0) + (cats['synergy-enablers-creatures'] || 0);
+                                    const synergyPayoffs = (cats['synergy-payoffs'] || 0) + (cats['synergy-payoffs-creatures'] || 0);
+                                    const etbTriggers = (cats['etb-draw'] || 0) + (cats['etb-removal'] || 0) + (cats['etb-ramp'] || 0) + 
+                                        (cats['etb-opponent-sac'] || 0) + (cats['etb-opponent-discard'] || 0) + (cats['etb-life-loss'] || 0) + 
+                                        (cats['etb-tokens'] || 0) + (cats['etb-other'] || 0);
+                                    const deathTriggers = (cats['die-draw'] || 0) + (cats['die-opponent-sac'] || 0) + (cats['die-life-loss'] || 0) + 
+                                        (cats['die-tokens'] || 0) + (cats['die-recursion'] || 0) + (cats['die-other'] || 0);
+                                    const combatTriggers = (cats['damage-draw'] || 0) + (cats['damage-opponent-sac'] || 0) + (cats['damage-opponent-discard'] || 0) + 
+                                        (cats['damage-tokens'] || 0) + (cats['damage-life-loss'] || 0) + (cats['damage-other'] || 0);
+                                    
+                                    // Calculate Threat Analysis
+                                    const bigBeaters = cats['big-beaters'] || 0;
+                                    const finishers = cats['finisher-threats'] || 0;
+                                    const unblockableCreatures = cats['unblockable-threats'] || 0;
+                                    
+                                    return (totalDraw > 0 || totalRemoval > 0 || totalRamp > 0 || totalProtection > 0 || totalEvasion > 0) && (
+                                        <div style={{
+                                            background: 'rgba(66, 135, 245, 0.1)',
+                                            border: '1px solid var(--accent-bright)',
+                                            borderRadius: '8px',
+                                            padding: window.innerWidth <= 768 ? '1rem' : '1.5rem',
+                                            marginBottom: '2rem'
+                                        }}>
+                                            <h4 style={{
+                                                color: 'var(--accent-bright)',
+                                                marginBottom: '1rem',
+                                                fontSize: window.innerWidth <= 768 ? '1rem' : '1.1rem',
+                                                fontWeight: 600
+                                            }}>
+                                                📊 Deck Analytics
+                                            </h4>
+                                            
+                                            {/* Correlation Totals Grid */}
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: window.innerWidth <= 768 
+                                                    ? 'repeat(2, 1fr)' 
+                                                    : 'repeat(5, 1fr)',
+                                                gap: window.innerWidth <= 768 ? '0.5rem' : '1rem',
+                                                marginBottom: '1.5rem'
+                                            }}>
+                                                {totalDraw > 0 && (
+                                                    <div style={{
+                                                        textAlign: 'center',
+                                                        padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                        background: 'var(--bg-secondary)',
+                                                        borderRadius: '8px'
+                                                    }}>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                            fontWeight: 700,
+                                                            color: 'var(--accent-bright)'
+                                                        }}>
+                                                            {totalDraw}
+                                                        </div>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                            color: 'var(--text-muted)'
+                                                        }}>
+                                                            {window.innerWidth <= 768 ? 'DRAW' : 'Draw Sources'}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                
+                                                {totalRemoval > 0 && (
+                                                    <div style={{
+                                                        textAlign: 'center',
+                                                        padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                        background: 'var(--bg-secondary)',
+                                                        borderRadius: '8px'
+                                                    }}>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                            fontWeight: 700,
+                                                            color: 'var(--accent-bright)'
+                                                        }}>
+                                                            {totalRemoval}
+                                                        </div>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                            color: 'var(--text-muted)'
+                                                        }}>
+                                                            Removal
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                
+                                                {totalRamp > 0 && (
+                                                    <div style={{
+                                                        textAlign: 'center',
+                                                        padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                        background: 'var(--bg-secondary)',
+                                                        borderRadius: '8px'
+                                                    }}>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                            fontWeight: 700,
+                                                            color: 'var(--accent-bright)'
+                                                        }}>
+                                                            {totalRamp}
+                                                        </div>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                            color: 'var(--text-muted)'
+                                                        }}>
+                                                            Ramp
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                
+                                                {totalProtection > 0 && (
+                                                    <div style={{
+                                                        textAlign: 'center',
+                                                        padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                        background: 'var(--bg-secondary)',
+                                                        borderRadius: '8px'
+                                                    }}>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                            fontWeight: 700,
+                                                            color: 'var(--accent-bright)'
+                                                        }}>
+                                                            {totalProtection}
+                                                        </div>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                            color: 'var(--text-muted)'
+                                                        }}>
+                                                            {window.innerWidth <= 768 ? 'PROTECT' : 'Protection'}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                
+                                                {totalEvasion > 0 && (
+                                                    <div style={{
+                                                        textAlign: 'center',
+                                                        padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                        background: 'var(--bg-secondary)',
+                                                        borderRadius: '8px'
+                                                    }}>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                            fontWeight: 700,
+                                                            color: 'var(--accent-bright)'
+                                                        }}>
+                                                            {totalEvasion}
+                                                        </div>
+                                                        <div style={{
+                                                            fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                            color: 'var(--text-muted)'
+                                                        }}>
+                                                            Evasion
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Synergy & Threats - Two Column Layout */}
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: window.innerWidth <= 768 ? '1fr' : '1fr 1fr',
+                                                gap: '1rem'
+                                            }}>
+                                                {/* Synergy Highlights */}
+                                                {(synergyEnablers > 0 || synergyPayoffs > 0 || etbTriggers > 0 || deathTriggers > 0) && (
+                                                    <div>
+                                                        <h5 style={{
+                                                            color: 'var(--gold)',
+                                                            marginBottom: '0.5rem',
+                                                            fontSize: window.innerWidth <= 768 ? '0.9rem' : '1rem',
+                                                            fontWeight: 600
+                                                        }}>
+                                                            🔗 Synergy Highlights
+                                                        </h5>
+                                                        <div style={{fontSize: window.innerWidth <= 768 ? '0.85rem' : '0.9rem'}}>
+                                                            {synergyEnablers > 0 && (
+                                                                <div style={{marginBottom: '0.3rem', color: 'var(--text-secondary)'}}>
+                                                                    • {synergyEnablers} Synergy Enablers
+                                                                </div>
+                                                            )}
+                                                            {synergyPayoffs > 0 && (
+                                                                <div style={{marginBottom: '0.3rem', color: 'var(--text-secondary)'}}>
+                                                                    • {synergyPayoffs} Synergy Payoffs
+                                                                </div>
+                                                            )}
+                                                            {etbTriggers > 0 && (
+                                                                <div style={{marginBottom: '0.3rem', color: 'var(--text-secondary)'}}>
+                                                                    • {etbTriggers} ETB Triggers
+                                                                </div>
+                                                            )}
+                                                            {deathTriggers > 0 && (
+                                                                <div style={{marginBottom: '0.3rem', color: 'var(--text-secondary)'}}>
+                                                                    • {deathTriggers} Death Triggers
+                                                                </div>
+                                                            )}
+                                                            {combatTriggers > 0 && (
+                                                                <div style={{marginBottom: '0.3rem', color: 'var(--text-secondary)'}}>
+                                                                    • {combatTriggers} Combat/Damage Triggers
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                
+                                                {/* Threat Analysis */}
+                                                {(bigBeaters > 0 || finishers > 0 || unblockableCreatures > 0) && (
+                                                    <div>
+                                                        <h5 style={{
+                                                            color: 'var(--gold)',
+                                                            marginBottom: '0.5rem',
+                                                            fontSize: window.innerWidth <= 768 ? '0.9rem' : '1rem',
+                                                            fontWeight: 600
+                                                        }}>
+                                                            ⚔️ Offensive Threats
+                                                        </h5>
+                                                        <div style={{fontSize: window.innerWidth <= 768 ? '0.85rem' : '0.9rem'}}>
+                                                            {bigBeaters > 0 && (
+                                                                <div style={{marginBottom: '0.3rem', color: 'var(--text-secondary)'}}>
+                                                                    • {bigBeaters} Big Beaters (6+ power)
+                                                                </div>
+                                                            )}
+                                                            {finishers > 0 && (
+                                                                <div style={{marginBottom: '0.3rem', color: 'var(--text-secondary)'}}>
+                                                                    • {finishers} Game-Ending Threats
+                                                                </div>
+                                                            )}
+                                                            {unblockableCreatures > 0 && (
+                                                                <div style={{marginBottom: '0.3rem', color: 'var(--text-secondary)'}}>
+                                                                    • {unblockableCreatures} Unblockable Creatures
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                                 {/* Subtype Breakdown - Like Homepage Example */}
                                 {selectedDeck.categories && Object.keys(selectedDeck.categories).length > 0 && (
                                     <div style={{
@@ -6862,9 +7360,31 @@ return (
                             onClose();
                         }
                     } else {
-                        // Logged in - just confirm
-                        if (window.confirm('Your deck might be lost! Are you sure you want to leave without saving?')) {
+                        // Logged in - offer to save
+                        const shouldSave = window.confirm(
+                            'You have unsaved changes!\n\n' +
+                            'Click OK to SAVE your deck\n' +
+                            'Click Cancel to leave without saving'
+                        );
+                        
+                        if (shouldSave) {
+                            // User wants to save - trigger save and close
+                            setHasUnsavedChanges(false);
+                            onSave({
+                                ...deckData, 
+                                notableCards,
+                                sideboard: sideboardCategories,
+                                lands: totals.lands,
+                                creatures: totals.creatures,
+                                noncreature: totals.noncreature
+                            });
                             onClose();
+                        } else {
+                            // User chose Cancel - confirm they want to leave
+                            if (window.confirm('Are you sure you want to leave without saving?')) {
+                                onClose();
+                            }
+                            // If they cancel this too, stay on modal
                         }
                     }
                 } else {
@@ -10175,9 +10695,31 @@ return (
                             onClose();
                         }
                     } else {
-                        // Logged in - just confirm
-                        if (window.confirm('Your deck might be lost! Are you sure you want to leave without saving?')) {
+                        // Logged in - offer to save
+                        const shouldSave = window.confirm(
+                            'You have unsaved changes!\n\n' +
+                            'Click OK to SAVE your changes\n' +
+                            'Click Cancel to leave without saving'
+                        );
+                        
+                        if (shouldSave) {
+                            // User wants to save - trigger save and close
+                            setHasUnsavedChanges(false);
+                            onSave({
+                                ...deckData, 
+                                notableCards,
+                                sideboard: sideboardCategories,
+                                lands: totals.lands,
+                                creatures: totals.creatures,
+                                noncreature: totals.noncreature
+                            });
                             onClose();
+                        } else {
+                            // User chose Cancel - confirm they want to leave
+                            if (window.confirm('Are you sure you want to leave without saving?')) {
+                                onClose();
+                            }
+                            // If they cancel this too, stay on modal
                         }
                     }
                 } else {
@@ -12952,7 +13494,7 @@ return (
             );
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        ReactDOM.render(<ErrorBoundary><App /></ErrorBoundary>, document.getElementById('root'));
     </script>
 
 
