@@ -197,6 +197,239 @@
             }
         }
 
+        /* ============================================ */
+        /* MOBILE RESPONSIVE STYLES */
+        /* ============================================ */
+        
+        @media (max-width: 1200px) {
+            .modal-content-wrapper {
+                flex-direction: column;
+            }
+            .stats-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 2px solid var(--border-color);
+                max-height: 400px;
+            }
+        }
+
+        /* Utility classes for responsive visibility */
+        .desktop-only {
+            display: block;
+        }
+        
+        .mobile-only {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .desktop-only {
+                display: none !important;
+            }
+            
+            .mobile-only {
+                display: block !important;
+            }
+            
+            .pip-counter {
+                grid-template-columns: 1fr;
+            }
+            .pip-input-group {
+                min-width: auto;
+            }
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .hero {
+                padding: 2rem 1rem;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .header-content > div {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            /* Hide text-heavy intro sections on mobile */
+            .mobile-hide {
+                display: none !important;
+            }
+            
+            /* Show mobile simplified home, hide desktop version */
+            .mobile-simple-home {
+                display: block !important;
+            }
+            
+            .desktop-home-content {
+                display: none !important;
+            }
+            
+            /* Mobile homepage - simplified */
+            .mobile-simple-home {
+                padding: 1rem;
+                max-width: 100%;
+            }
+            
+            /* Mobile action buttons - big and full width */
+            .mobile-action-button {
+                width: 100%;
+                padding: 1.5rem !important;
+                font-size: 1.3rem !important;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            }
+            
+            .mobile-action-button span {
+                font-size: 1.8rem;
+            }
+            
+            /* Mana calculator - simplified on mobile */
+            .mana-calc-mobile {
+                padding: 1rem;
+            }
+            
+            .mana-calc-mobile h2 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            /* Hide verbose explanations in calculator */
+            .calc-explanation {
+                display: none;
+            }
+            
+            /* Mobile input groups - bigger touch targets */
+            .mobile-input-group {
+                margin-bottom: 1.5rem;
+            }
+            
+            .mobile-input-group label {
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+            
+            .mobile-number-input {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .mobile-number-input button {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+                border-radius: 8px;
+                border: 2px solid var(--gold);
+                background: var(--bg-tertiary);
+                color: var(--gold);
+                cursor: pointer;
+            }
+            
+            .mobile-number-input input {
+                flex: 1;
+                text-align: center;
+                font-size: 1.3rem;
+                padding: 0.75rem;
+                border-radius: 8px;
+            }
+            
+            /* Browse decks - full width cards */
+            .mobile-deck-card {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            
+            /* Modal on mobile - full screen */
+            .mobile-modal {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100% !important;
+                max-height: 100% !important;
+                border-radius: 0 !important;
+                padding: 1rem !important;
+            }
+            
+            /* Header on mobile - compact */
+            .app-header {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .header-content {
+                gap: 0.5rem;
+            }
+            
+            .header-content button {
+                padding: 0.75rem 1rem !important;
+                font-size: 1rem !important;
+            }
+            
+            /* Logo smaller on mobile */
+            .logo {
+                font-size: 1.2rem !important;
+            }
+            
+            .logo-subtitle {
+                font-size: 0.7rem !important;
+            }
+            
+            /* Collapsible sections on mobile */
+            .mobile-collapsible {
+                border: 2px solid var(--border-color);
+                border-radius: 8px;
+                margin-bottom: 1rem;
+                overflow: hidden;
+            }
+            
+            .mobile-collapsible-header {
+                padding: 1rem;
+                background: var(--bg-secondary);
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-weight: 600;
+            }
+            
+            .mobile-collapsible-content {
+                padding: 1rem;
+                background: var(--bg-tertiary);
+            }
+            
+            /* Browse search and sort - stacked on mobile */
+            .mobile-browse-controls {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .mobile-browse-controls input,
+            .mobile-browse-controls select {
+                width: 100%;
+                font-size: 1.1rem;
+                padding: 1rem;
+            }
+            
+            /* Deck stats - bigger on mobile */
+            .mobile-deck-stats {
+                font-size: 1rem;
+                display: flex;
+                gap: 1.5rem;
+                justify-content: center;
+                padding: 1rem;
+            }
+        }
+
         .featured-calculator-box {
             animation: subtle-glow 3s ease-in-out infinite;
         }
