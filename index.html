@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>MTG Deck Skeleton v1.1.0 - Firebase Fixed</title>
+    <title>MTG Deck Skeleton v1.2.0 - Firebase Wait Fixed</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -1232,6 +1232,10 @@
                 return null;
             }
         };
+
+        // Get Firebase references (available because we waited for Firebase to load)
+        const auth = window.auth;
+        const db = window.db;
 
         function App() {
             const [view, setView] = useState('home');
@@ -11216,7 +11220,18 @@ return (
             );
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        // Wait for Firebase before rendering React app
+        function startApp() {
+            if (!window.auth || !window.db) {
+                console.log('Waiting for Firebase before starting React...');
+                setTimeout(startApp, 100);
+                return;
+            }
+            console.log('Firebase ready! Starting React app...');
+            ReactDOM.render(<App />, document.getElementById('root'));
+        }
+        
+        startApp();
     </script>
 
 
