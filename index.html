@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>MTG Deck Skeleton v1.0.DEBUG - Mobile Error Logger</title>
+    <title>MTG Deck Skeleton v1.1.0 - Firebase Fixed</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -742,51 +742,6 @@
 </head>
 <body>
     <div id="root"></div>
-    
-    <!-- MOBILE ERROR LOGGER -->
-    <div id="mobile-error-log" style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        background: #ff0000;
-        color: white;
-        padding: 1rem;
-        z-index: 99999;
-        font-family: monospace;
-        font-size: 12px;
-        max-height: 200px;
-        overflow: auto;
-        display: none;
-    "></div>
-    
-    <script>
-        // Capture ALL errors
-        window.onerror = function(msg, url, lineNo, columnNo, error) {
-            var errorLog = document.getElementById('mobile-error-log');
-            errorLog.style.display = 'block';
-            errorLog.innerHTML += '<div style="border-bottom: 1px solid white; padding: 5px;">' +
-                '<strong>ERROR:</strong> ' + msg + '<br>' +
-                'Line: ' + lineNo + ', Column: ' + columnNo + '<br>' +
-                'File: ' + (url || 'inline') + '<br>' +
-                'Stack: ' + (error && error.stack ? error.stack : 'N/A') +
-                '</div>';
-            return false;
-        };
-        
-        // Capture console errors
-        var oldError = console.error;
-        console.error = function() {
-            var errorLog = document.getElementById('mobile-error-log');
-            errorLog.style.display = 'block';
-            errorLog.innerHTML += '<div style="border-bottom: 1px solid white; padding: 5px;">' +
-                '<strong>Console Error:</strong> ' + Array.from(arguments).join(' ') +
-                '</div>';
-            oldError.apply(console, arguments);
-        };
-        
-        console.log('🔍 Mobile error logging active!');
-    </script>
 
     <!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -794,22 +749,36 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-  // Your Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyBjwMNNj6k2kzCJNNh6jMLd2vvUN8NUhuE",
-    authDomain: "mtg-decklist-app.firebaseapp.com",
-    projectId: "mtg-decklist-app",
-    storageBucket: "mtg-decklist-app.firebasestorage.app",
-    messagingSenderId: "948508221922",
-    appId: "1:948508221922:web:367f67f7109c92a99799bb"
-  };
+  // Wait for Firebase to load before initializing
+  function initFirebase() {
+    if (typeof firebase === 'undefined') {
+      console.log('Waiting for Firebase to load...');
+      setTimeout(initFirebase, 100);
+      return;
+    }
+    
+    console.log('Firebase loaded! Initializing...');
+    
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBjwMNNj6k2kzCJNNh6jMLd2vvUN8NUhuE",
+      authDomain: "mtg-decklist-app.firebaseapp.com",
+      projectId: "mtg-decklist-app",
+      storageBucket: "mtg-decklist-app.firebasestorage.app",
+      messagingSenderId: "948508221922",
+      appId: "1:948508221922:web:367f67f7109c92a99799bb"
+    };
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    window.auth = firebase.auth();
+    window.db = firebase.firestore();
+    
+    console.log("✅ Firebase initialized successfully!");
+  }
   
-  console.log("Firebase initialized!");
+  // Start checking for Firebase
+  initFirebase();
 </script>
 
     <script type="text/babel">
