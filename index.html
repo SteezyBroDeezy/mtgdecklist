@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Deck Skeleton + Mana Calculator v1.0.2 - MTG Commander Deck Builder</title>
+    <title>Deck Skeleton + Mana Calculator - MTG Commander Deck Builder</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -1809,7 +1806,7 @@ return (
                                 </svg>
                                 <span style={{
                                     fontFamily: 'Pirata One, cursive',
-                                    fontSize: '1.3rem',
+                                    fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                     color: 'var(--bone)',
                                     whiteSpace: 'nowrap',
                                     fontFamily: 'Pirata One, cursive'
@@ -1846,7 +1843,7 @@ return (
                                         width: '45px',
                                         height: '45px',
                                         padding: '0.5rem',
-                                        fontSize: '1.5rem',
+                                        fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                         borderRadius: '8px'
                                     }}
                                 >
@@ -1863,7 +1860,7 @@ return (
                                         gap: '0.3rem',
                                         padding: '0.5rem 0.75rem',
                                         fontSize: '0.85rem',
-                                        borderRadius: '8px',
+                                        borderRadius: '12px',
                                         whiteSpace: 'nowrap'
                                     }}
                                 >
@@ -1904,7 +1901,7 @@ return (
                                                 width: '45px',
                                                 height: '45px',
                                                 padding: '0.5rem',
-                                                fontSize: '1.5rem',
+                                                fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                                 borderRadius: '8px'
                                             }}
                                         >
@@ -2258,7 +2255,7 @@ return (
                                             marginTop: '1.5rem',
                                             background: 'var(--bg-secondary)',
                                             border: '2px solid var(--border-color)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             color: 'var(--text-primary)',
                                             fontSize: '1rem',
                                             cursor: 'pointer',
@@ -2277,7 +2274,7 @@ return (
                                             marginTop: '1rem',
                                             background: 'var(--bg-tertiary)',
                                             border: '2px solid var(--accent)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             fontSize: '0.95rem',
                                             lineHeight: '1.7',
                                             color: 'var(--text-secondary)'
@@ -2345,7 +2342,7 @@ return (
                                         <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
                                     </svg>
                                 </div>
-                                <h2 style={{fontFamily: 'MedievalSharp, cursive', fontSize: '1.5rem', color: 'var(--bone)', marginTop: '0.5rem', marginBottom: '1.5rem'}}>+ Mana Calculator</h2>
+                                <h2 style={{fontFamily: 'MedievalSharp, cursive', fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', color: 'var(--bone)', marginTop: '0.5rem', marginBottom: '1.5rem'}}>+ Mana Calculator</h2>
                                 
                                 {/* Desktop: Simple tagline */}
                                 <div className="desktop-only">
@@ -2373,7 +2370,7 @@ return (
                                             gap: '0.8rem'
                                         }}
                                     >
-                                        <span style={{fontSize: '1.5rem'}}>⚔️</span>
+                                        <span style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>⚔️</span>
                                         <span>Create a New Deck</span>
                                     </button>
                                     <button 
@@ -2387,7 +2384,7 @@ return (
                                             gap: '0.8rem'
                                         }}
                                     >
-                                        <span style={{fontSize: '1.5rem'}}>📚</span>
+                                        <span style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>📚</span>
                                         <span>Browse Public Decks</span>
                                     </button>
                                     <button 
@@ -2409,7 +2406,7 @@ return (
                                             gap: '0.8rem'
                                         }}
                                     >
-                                        <span style={{fontSize: '1.5rem'}}>⚗️</span>
+                                        <span style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>⚗️</span>
                                         <span>Mana Calculator</span>
                                     </button>
                                 </div>
@@ -2425,7 +2422,7 @@ return (
                                             marginBottom: '1rem',
                                             background: 'var(--bg-secondary)',
                                             border: '2px solid var(--border-color)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             color: 'var(--text-primary)',
                                             fontSize: '1rem',
                                             cursor: 'pointer',
@@ -2444,7 +2441,7 @@ return (
                                             marginBottom: '1rem',
                                             background: 'var(--bg-tertiary)',
                                             border: '2px solid var(--accent)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             fontSize: '0.95rem',
                                             lineHeight: '1.7',
                                             color: 'var(--text-secondary)'
@@ -2476,7 +2473,7 @@ return (
                                             marginBottom: '1rem',
                                             background: 'var(--bg-secondary)',
                                             border: '2px solid var(--border-color)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             color: 'var(--text-primary)',
                                             fontSize: '1rem',
                                             cursor: 'pointer',
@@ -2495,7 +2492,7 @@ return (
                                             marginBottom: '1.5rem',
                                             background: 'var(--bg-tertiary)',
                                             border: '2px solid var(--gold)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             fontSize: '0.95rem',
                                             lineHeight: '1.7',
                                             color: 'var(--text-secondary)'
@@ -2566,7 +2563,7 @@ return (
                                     <div style={{
                                         background: 'var(--bg-tertiary)',
                                         border: '1px solid var(--accent)',
-                                        borderRadius: '8px',
+                                        borderRadius: '12px',
                                         padding: '1.5rem',
                                         marginBottom: '1.5rem'
                                     }}>
@@ -2593,10 +2590,10 @@ return (
                                         <div style={{
                                             background: 'var(--bg-secondary)',
                                             padding: '1.2rem',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             border: '1px solid var(--border-color)'
                                         }}>
-                                            <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>⚡</div>
+                                            <div style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', marginBottom: '0.5rem'}}>⚡</div>
                                             <div style={{fontWeight: 600, marginBottom: '0.5rem', color: 'var(--accent-bright)'}}>Quick Overview</div>
                                             <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
                                                 See your deck's structure at a glance. Perfect for identifying imbalances before building.
@@ -2606,10 +2603,10 @@ return (
                                         <div style={{
                                             background: 'var(--bg-secondary)',
                                             padding: '1.2rem',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             border: '1px solid var(--border-color)'
                                         }}>
-                                            <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>💾</div>
+                                            <div style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', marginBottom: '0.5rem'}}>💾</div>
                                             <div style={{fontWeight: 600, marginBottom: '0.5rem', color: 'var(--accent-bright)'}}>Easy Reference</div>
                                             <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
                                                 Store your current deck ratios for easy tweaking and future reference when brewing new decks.
@@ -2619,10 +2616,10 @@ return (
                                         <div style={{
                                             background: 'var(--bg-secondary)',
                                             padding: '1.2rem',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             border: '1px solid var(--border-color)'
                                         }}>
-                                            <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>🎯</div>
+                                            <div style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', marginBottom: '0.5rem'}}>🎯</div>
                                             <div style={{fontWeight: 600, marginBottom: '0.5rem', color: 'var(--accent-bright)'}}>📈 No Card Names Needed</div>
                                             <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6'}}>
                                                 Skip the tedious card-by-card entry. Focus on strategy and structure, not inventory.
@@ -2704,7 +2701,7 @@ return (
                                             <div style={{
                                                 background: 'var(--bg-secondary)',
                                                 padding: '1rem',
-                                                borderRadius: '8px',
+                                                borderRadius: '12px',
                                                 border: '1px solid rgba(212, 175, 55, 0.3)',
                                                 textAlign: 'center'
                                             }}>
@@ -2714,7 +2711,7 @@ return (
                                             <div style={{
                                                 background: 'var(--bg-secondary)',
                                                 padding: '1rem',
-                                                borderRadius: '8px',
+                                                borderRadius: '12px',
                                                 border: '1px solid rgba(212, 175, 55, 0.3)',
                                                 textAlign: 'center'
                                             }}>
@@ -2724,7 +2721,7 @@ return (
                                             <div style={{
                                                 background: 'var(--bg-secondary)',
                                                 padding: '1rem',
-                                                borderRadius: '8px',
+                                                borderRadius: '12px',
                                                 border: '1px solid rgba(212, 175, 55, 0.3)',
                                                 textAlign: 'center'
                                             }}>
@@ -2737,7 +2734,7 @@ return (
                                         <div style={{
                                             background: 'rgba(212, 175, 55, 0.1)',
                                             border: '1px solid rgba(212, 175, 55, 0.3)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             padding: '1.5rem'
                                         }}>
                                             <h4 style={{
@@ -2826,7 +2823,7 @@ return (
                                             <span style={{fontSize: '1.8rem'}}>⚗️</span>
                                             <span style={{
                                                 fontFamily: 'Pirata One, cursive',
-                                                fontSize: '1.5rem',
+                                                fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                                 color: 'var(--gold)',
                                                 fontWeight: 700
                                             }}>
@@ -3130,7 +3127,7 @@ return (
                                                 padding: '0.5rem 1rem',
                                                 background: 'rgba(212, 175, 55, 0.15)',
                                                 border: '2px solid var(--gold)',
-                                                borderRadius: '8px',
+                                                borderRadius: '12px',
                                                 color: 'var(--gold)',
                                                 fontSize: '1rem',
                                                 fontWeight: 600,
@@ -3309,7 +3306,7 @@ return (
                                                         fontFamily: 'MedievalSharp, cursive',
                                                         color: 'var(--bone)',
                                                         marginBottom: '0.5rem',
-                                                        fontSize: '1.3rem',
+                                                        fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                                         paddingRight: deck.isExample ? '5rem' : '0'
                                                     }}>
                                                         {deck.name}
@@ -3359,7 +3356,7 @@ return (
                                             border: '2px dashed var(--border-color)'
                                         }}>
                                             <p style={{
-                                                fontSize: '1.5rem',
+                                                fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                                 color: 'var(--text-secondary)',
                                                 marginBottom: '1rem'
                                             }}>
@@ -3390,7 +3387,7 @@ return (
                                         borderRadius: '12px'
                                     }}>
                                         <p style={{
-                                            fontSize: '1.5rem',
+                                            fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                             color: 'var(--text-secondary)',
                                             marginBottom: '2rem'
                                         }}>
@@ -3527,7 +3524,7 @@ return (
                                             padding: '0.75rem 1rem',
                                             background: 'var(--bg-tertiary)',
                                             border: '2px solid var(--border-color)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             color: 'var(--text-primary)',
                                             fontSize: '1rem',
                                             fontFamily: 'Pirata One, cursive',
@@ -3592,7 +3589,7 @@ return (
                                                         fontFamily: 'Pirata One, cursive',
                                                         color: 'var(--accent-bright)',
                                                         marginBottom: '0.75rem',
-                                                        fontSize: '1.3rem'
+                                                        fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
                                                     }}>
                                                         {deck.name}
                                                     </h3>
@@ -3750,17 +3747,17 @@ return (
                                     gap: window.innerWidth <= 768 ? '0.5rem' : '1rem',
                                     marginBottom: '2rem'
                                 }}>
-                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center'}}>
+                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '12px', textAlign: 'center'}}>
                                         <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.lands}</div>
                                         <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>LANDS</div>
                                     </div>
-                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center'}}>
+                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '12px', textAlign: 'center'}}>
                                         <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.creatures}</div>
                                         <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
                                             {window.innerWidth <= 768 ? 'CREAT.' : 'CREATURES'}
                                         </div>
                                     </div>
-                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center'}}>
+                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '12px', textAlign: 'center'}}>
                                         <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.noncreature}</div>
                                         <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
                                             {window.innerWidth <= 768 ? 'NON-CREAT.' : 'NON-CREATURE SPELLS'}
@@ -3773,7 +3770,7 @@ return (
                                     <div style={{
                                         background: 'rgba(212, 175, 55, 0.1)',
                                         border: '1px solid rgba(212, 175, 55, 0.3)',
-                                        borderRadius: '8px',
+                                        borderRadius: '12px',
                                         padding: '1.5rem',
                                         marginBottom: '2rem'
                                     }}>
@@ -3822,7 +3819,7 @@ return (
                                         <div style={{
                                             background: 'rgba(212, 175, 55, 0.2)',
                                             border: '1px solid var(--gold)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             padding: '1rem',
                                             color: 'var(--text-secondary)',
                                             fontSize: '0.9rem',
@@ -3943,7 +3940,7 @@ return (
                                     padding: '1rem',
                                     marginTop: '1.5rem',
                                     background: 'rgba(66, 135, 245, 0.1)',
-                                    borderRadius: '8px',
+                                    borderRadius: '12px',
                                     color: 'var(--text-secondary)',
                                     fontSize: '0.9rem'
                                 }}>
@@ -4138,7 +4135,7 @@ return (
                                 color: 'var(--gold)',
                                 marginTop: 0,
                                 marginBottom: '1rem',
-                                fontSize: '1.3rem'
+                                fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
                             }}>
                                 📚 How to Use the Mana Calculator
                             </h3>
@@ -4178,7 +4175,7 @@ return (
                             <div style={{
                                 background: 'rgba(212, 175, 55, 0.15)',
                                 border: '1px solid var(--gold)',
-                                borderRadius: '8px',
+                                borderRadius: '12px',
                                 padding: '1rem',
                                 marginTop: '1rem'
                             }}>
@@ -4191,7 +4188,7 @@ return (
                             <div style={{
                                 background: 'rgba(66, 135, 245, 0.1)',
                                 border: '1px solid rgba(66, 135, 245, 0.3)',
-                                borderRadius: '8px',
+                                borderRadius: '12px',
                                 padding: '1rem',
                                 marginTop: '1rem'
                             }}>
@@ -4517,11 +4514,11 @@ return (
                                 }}>
                                     2
                                 </div>
-                                <label style={{fontWeight: 700, fontSize: '1.3rem', color: 'var(--text-primary)', margin: 0, cursor: 'pointer'}}>
+                                <label style={{fontWeight: 700, fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', color: 'var(--text-primary)', margin: 0, cursor: 'pointer'}}>
                                     🏔️ Count Your DUAL LANDS
                                 </label>
                             </div>
-                            <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
+                            <div style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', color: 'var(--text-primary)', fontWeight: 'bold'}}>
                                 {showLandsSection ? '▼' : '▶'}
                             </div>
                         </div>
@@ -4532,7 +4529,7 @@ return (
                         <div style={{
                             background: 'rgba(0, 115, 62, 0.15)',
                             border: '1px solid rgba(0, 115, 62, 0.3)',
-                            borderRadius: '8px',
+                            borderRadius: '12px',
                             padding: '1rem',
                             marginBottom: '1rem',
                             marginLeft: '2.5rem',
@@ -4674,11 +4671,11 @@ return (
                                 }}>
                                     1
                                 </div>
-                                <label style={{fontWeight: 700, fontSize: '1.3rem', color: 'var(--text-primary)', margin: 0, cursor: 'pointer'}}>
+                                <label style={{fontWeight: 700, fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', color: 'var(--text-primary)', margin: 0, cursor: 'pointer'}}>
                                     🎴 Count Mana Pips from Your SPELLS
                                 </label>
                             </div>
-                            <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
+                            <div style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', color: 'var(--text-primary)', fontWeight: 'bold'}}>
                                 {showPipsSection ? '▼' : '▶'}
                             </div>
                         </div>
@@ -4689,7 +4686,7 @@ return (
                         <div style={{
                             background: 'rgba(66, 135, 245, 0.15)',
                             border: '1px solid rgba(66, 135, 245, 0.3)',
-                            borderRadius: '8px',
+                            borderRadius: '12px',
                             padding: '1rem',
                             marginBottom: '1rem',
                             marginLeft: '2.5rem',
@@ -4971,7 +4968,7 @@ return (
                                 gap: '0.8rem'
                             }}
                         >
-                            <span style={{fontSize: '1.5rem'}}>⚗️</span>
+                            <span style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>⚗️</span>
                             <span>Calculate My Mana Base</span>
                         </button>
                     </div>
@@ -4993,7 +4990,7 @@ return (
                                     marginTop: '1rem',
                                     padding: '1rem',
                                     background: 'var(--bg-secondary)',
-                                    borderRadius: '8px',
+                                    borderRadius: '12px',
                                     border: '1px solid var(--border-color)'
                                 }}>
                                     <h4 style={{color: 'var(--gold)', marginBottom: '0.5rem'}}>📖 How This Calculator Works</h4>
@@ -5024,7 +5021,7 @@ return (
 
                     {showResults && manaCalculation && (
                         <div className="mana-results">
-                            <div style={{fontWeight: 600, fontSize: '1.3rem', marginBottom: '1rem', color: 'var(--gold)', textAlign: 'center'}}>
+                            <div style={{fontWeight: 600, fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', marginBottom: '1rem', color: 'var(--gold)', textAlign: 'center'}}>
                                 📊 Your Optimal Mana Base
                             </div>
                             
@@ -5252,7 +5249,7 @@ return (
                                 background: 'transparent',
                                 border: 'none',
                                 color: 'var(--text-muted)',
-                                fontSize: '1.5rem',
+                                fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                 cursor: 'pointer'
                             }}
                         >
@@ -5300,7 +5297,7 @@ return (
                                 <div style={{
                                     background: 'rgba(212, 175, 55, 0.2)',
                                     padding: '1rem',
-                                    borderRadius: '8px',
+                                    borderRadius: '12px',
                                     textAlign: 'center'
                                 }}>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--gold)'}}>
@@ -5313,7 +5310,7 @@ return (
                                 <div style={{
                                     background: 'var(--bg-card)',
                                     padding: '1rem',
-                                    borderRadius: '8px',
+                                    borderRadius: '12px',
                                     textAlign: 'center'
                                 }}>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)'}}>
@@ -5369,7 +5366,7 @@ return (
                                             padding: '0.75rem',
                                             background: 'var(--bg-tertiary)',
                                             border: '1px solid var(--border-color)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             color: 'var(--text-primary)',
                                             fontSize: '1rem',
                                             cursor: 'pointer'
@@ -5540,7 +5537,7 @@ return (
                             background: 'transparent',
                             border: 'none',
                             color: 'var(--text-muted)',
-                            fontSize: '1.5rem',
+                            fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                             cursor: 'pointer'
                         }}
                     >
@@ -5682,7 +5679,7 @@ return (
                                             padding: '0.75rem',
                                             background: 'var(--bg-tertiary)',
                                             border: '1px solid var(--border-color)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             color: 'var(--text-primary)',
                                             fontSize: '1rem'
                                         }}
@@ -5715,7 +5712,7 @@ return (
                                         padding: '0.75rem',
                                         background: 'transparent',
                                         border: '1px solid var(--border-color)',
-                                        borderRadius: '8px',
+                                        borderRadius: '12px',
                                         color: 'var(--text-secondary)',
                                         cursor: 'pointer',
                                         fontSize: '1rem'
@@ -5746,7 +5743,7 @@ return (
                                         padding: '0.75rem',
                                         background: 'var(--bg-tertiary)',
                                         border: '1px solid var(--border-color)',
-                                        borderRadius: '8px',
+                                        borderRadius: '12px',
                                         color: 'var(--text-primary)',
                                         fontSize: '1rem'
                                     }}
@@ -5784,7 +5781,7 @@ return (
                                         padding: '0.75rem',
                                         background: 'var(--bg-tertiary)',
                                         border: '1px solid var(--border-color)',
-                                        borderRadius: '8px',
+                                        borderRadius: '12px',
                                         color: 'var(--text-primary)',
                                         fontSize: '1rem'
                                     }}
@@ -5904,7 +5901,7 @@ return (
                             background: 'transparent',
                             border: 'none',
                             color: 'var(--text-muted)',
-                            fontSize: '1.5rem',
+                            fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                             cursor: 'pointer'
                         }}
                     >
@@ -5954,7 +5951,7 @@ return (
                                     padding: '0.75rem',
                                     background: 'var(--bg-tertiary)',
                                     border: '1px solid var(--border-color)',
-                                    borderRadius: '8px',
+                                    borderRadius: '12px',
                                     color: 'var(--text-primary)',
                                     fontSize: '1rem',
                                     fontFamily: 'Cinzel, serif',
@@ -5982,7 +5979,7 @@ return (
                                     padding: '0.75rem',
                                     background: 'var(--bg-tertiary)',
                                     border: '1px solid var(--border-color)',
-                                    borderRadius: '8px',
+                                    borderRadius: '12px',
                                     color: 'var(--text-primary)',
                                     fontSize: '1rem'
                                 }}
@@ -6069,7 +6066,7 @@ return (
                         right: 0,
                         background: 'var(--bg-secondary)',
                         border: '2px solid var(--border-color)',
-                        borderRadius: '8px',
+                        borderRadius: '12px',
                         marginTop: '0.5rem',
                         maxHeight: '300px',
                         overflowY: 'auto',
@@ -6827,7 +6824,7 @@ return (
                                                         <div style={{
                                                             background: 'rgba(212, 175, 55, 0.15)',
                                                             border: '2px dashed var(--gold)',
-                                                            borderRadius: '8px',
+                                                            borderRadius: '12px',
                                                             padding: '1rem',
                                                             marginBottom: '1.5rem'
                                                         }}>
@@ -7890,7 +7887,7 @@ return (
                                             <div style={{
                                                 background: 'rgba(0, 115, 62, 0.15)',
                                                 border: '1px solid rgba(0, 115, 62, 0.3)',
-                                                borderRadius: '8px',
+                                                borderRadius: '12px',
                                                 padding: '1rem',
                                                 marginBottom: '1rem',
                                                 marginLeft: '2.5rem'
@@ -8026,7 +8023,7 @@ return (
                                             <div style={{
                                                 background: 'rgba(66, 135, 245, 0.15)',
                                                 border: '1px solid rgba(66, 135, 245, 0.3)',
-                                                borderRadius: '8px',
+                                                borderRadius: '12px',
                                                 padding: '1rem',
                                                 marginBottom: '1rem',
                                                 marginLeft: '2.5rem'
@@ -8301,7 +8298,7 @@ return (
                                                     gap: '0.7rem'
                                                 }}
                                             >
-                                                <span style={{fontSize: '1.3rem'}}>⚗️</span>
+                                                <span style={{fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>⚗️</span>
                                                 <span>Calculate Mana Base</span>
                                             </button>
                                         </div>
@@ -8448,18 +8445,30 @@ return (
                                         alignItems: 'center', 
                                         marginBottom: '1rem', 
                                         cursor: window.innerWidth <= 768 ? 'pointer' : 'default', 
-                                        padding: window.innerWidth <= 768 ? '1rem' : '0', 
-                                        background: window.innerWidth <= 768 ? 'rgba(212, 175, 55, 0.15)' : 'transparent', 
-                                        borderRadius: '8px',
-                                        border: window.innerWidth <= 768 ? '2px solid var(--gold)' : 'none'
+                                        padding: window.innerWidth <= 768 ? '1.5rem' : '0', 
+                                        background: window.innerWidth <= 768 ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(139, 111, 71, 0.15) 100%)' : 'transparent', 
+                                        borderRadius: '12px',
+                                        border: window.innerWidth <= 768 ? '3px solid var(--gold)' : 'none',
+                                        boxShadow: window.innerWidth <= 768 ? '0 4px 12px rgba(212, 175, 55, 0.3)' : 'none',
+                                        transition: 'all 0.2s ease'
                                     }} 
                                     onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}
+                                    onTouchStart={(e) => {
+                                        if (window.innerWidth <= 768) {
+                                            e.currentTarget.style.transform = 'scale(0.98)';
+                                        }
+                                    }}
+                                    onTouchEnd={(e) => {
+                                        if (window.innerWidth <= 768) {
+                                            e.currentTarget.style.transform = 'scale(1)';
+                                        }
+                                    }}
                                 >
-                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: '1.3rem'}}>
-                                        Live Deck Stats {window.innerWidth <= 768 && `(Tap to ${statsExpanded ? 'collapse' : 'expand'})`}
+                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
+                                        📊 Live Deck Stats {window.innerWidth <= 768 && `(${statsExpanded ? 'Tap to Hide' : 'Tap to View'})`}
                                     </h3>
                                     {window.innerWidth <= 768 && (
-                                        <span style={{fontSize: '1.5rem', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▲</span>
+                                        <span style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▲</span>
                                     )}
                                 </div>
                                 {(window.innerWidth > 768 || statsExpanded) && (
@@ -8469,23 +8478,23 @@ return (
                                     padding: window.innerWidth <= 768 ? '0.5rem' : '0'
                                 }}>
 
-                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.lands}</div>
                                 </div>
 
-                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🧟 Creatures</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.creatures}</div>
                                 </div>
 
-                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>⚡ Non-Creature</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.noncreature}</div>
                                 </div>
 
                                 {/* Quick Totals (Category-level) */}
-                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid rgba(212, 175, 55, 0.5)'}}>
+                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', border: '1px solid rgba(212, 175, 55, 0.5)'}}>
                                     <div style={{fontWeight: 600, marginBottom: '1rem', color: 'var(--gold)', fontSize: '0.9rem'}}>⚡ Quick Totals</div>
                                     
                                     {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => {
@@ -8562,7 +8571,7 @@ return (
                                 </div>
 
                                 {/* Detailed Subtypes */}
-                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid var(--border-color)'}}>
+                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', border: '1px solid var(--border-color)'}}>
                                     <div style={{fontWeight: 600, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '0.9rem'}}>📊 Key Subtypes</div>
                                     
                                     {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => {
@@ -8608,7 +8617,7 @@ return (
 
                                 {/* Sideboard Totals */}
                                 {sideboardTotals.total > 0 && (
-                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
+                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
                                         <div style={{fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '1rem'}}>📦 Sideboard (Total: {sideboardTotals.total})</div>
                                         <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem'}}>
                                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -9353,7 +9362,7 @@ return (
                                                         <div style={{
                                                             background: 'rgba(212, 175, 55, 0.15)',
                                                             border: '2px dashed var(--gold)',
-                                                            borderRadius: '8px',
+                                                            borderRadius: '12px',
                                                             padding: '1rem',
                                                             marginBottom: '1.5rem'
                                                         }}>
@@ -10416,7 +10425,7 @@ return (
                                             <div style={{
                                                 background: 'rgba(0, 115, 62, 0.15)',
                                                 border: '1px solid rgba(0, 115, 62, 0.3)',
-                                                borderRadius: '8px',
+                                                borderRadius: '12px',
                                                 padding: '1rem',
                                                 marginBottom: '1rem',
                                                 marginLeft: '2.5rem'
@@ -10552,7 +10561,7 @@ return (
                                             <div style={{
                                                 background: 'rgba(66, 135, 245, 0.15)',
                                                 border: '1px solid rgba(66, 135, 245, 0.3)',
-                                                borderRadius: '8px',
+                                                borderRadius: '12px',
                                                 padding: '1rem',
                                                 marginBottom: '1rem',
                                                 marginLeft: '2.5rem'
@@ -10827,7 +10836,7 @@ return (
                                                     gap: '0.7rem'
                                                 }}
                                             >
-                                                <span style={{fontSize: '1.3rem'}}>⚗️</span>
+                                                <span style={{fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>⚗️</span>
                                                 <span>Calculate Mana Base</span>
                                             </button>
                                         </div>
@@ -10969,7 +10978,7 @@ return (
                                         <div style={{
                                             padding: '1rem',
                                             background: 'rgba(66, 135, 245, 0.1)',
-                                            borderRadius: '8px',
+                                            borderRadius: '12px',
                                             color: 'var(--text-secondary)',
                                             fontSize: '0.95rem',
                                             fontStyle: 'italic'
@@ -10988,18 +10997,30 @@ return (
                                         alignItems: 'center', 
                                         marginBottom: '1rem', 
                                         cursor: window.innerWidth <= 768 ? 'pointer' : 'default', 
-                                        padding: window.innerWidth <= 768 ? '1rem' : '0', 
-                                        background: window.innerWidth <= 768 ? 'rgba(212, 175, 55, 0.15)' : 'transparent', 
-                                        borderRadius: '8px',
-                                        border: window.innerWidth <= 768 ? '2px solid var(--gold)' : 'none'
+                                        padding: window.innerWidth <= 768 ? '1.5rem' : '0', 
+                                        background: window.innerWidth <= 768 ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(139, 111, 71, 0.15) 100%)' : 'transparent', 
+                                        borderRadius: '12px',
+                                        border: window.innerWidth <= 768 ? '3px solid var(--gold)' : 'none',
+                                        boxShadow: window.innerWidth <= 768 ? '0 4px 12px rgba(212, 175, 55, 0.3)' : 'none',
+                                        transition: 'all 0.2s ease'
                                     }} 
                                     onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}
+                                    onTouchStart={(e) => {
+                                        if (window.innerWidth <= 768) {
+                                            e.currentTarget.style.transform = 'scale(0.98)';
+                                        }
+                                    }}
+                                    onTouchEnd={(e) => {
+                                        if (window.innerWidth <= 768) {
+                                            e.currentTarget.style.transform = 'scale(1)';
+                                        }
+                                    }}
                                 >
-                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: '1.3rem'}}>
-                                        Live Deck Stats {window.innerWidth <= 768 && `(Tap to ${statsExpanded ? 'collapse' : 'expand'})`}
+                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: window.innerWidth <= 768 ? '1.6rem' : '1.3rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
+                                        📊 Live Deck Stats {window.innerWidth <= 768 && `(${statsExpanded ? 'Tap to Hide' : 'Tap to View'})`}
                                     </h3>
                                     {window.innerWidth <= 768 && (
-                                        <span style={{fontSize: '1.5rem', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▲</span>
+                                        <span style={{fontSize: '2rem', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▲</span>
                                     )}
                                 </div>
                                 {(window.innerWidth > 768 || statsExpanded) && (
@@ -11009,23 +11030,23 @@ return (
                                     padding: window.innerWidth <= 768 ? '0.5rem' : '0'
                                 }}>
 
-                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.lands}</div>
                                 </div>
 
-                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🧟 Creatures</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.creatures}</div>
                                 </div>
 
-                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>⚡ Non-Creature</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.noncreature}</div>
                                 </div>
 
                                 {/* Quick Totals (Category-level) */}
-                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid rgba(212, 175, 55, 0.5)'}}>
+                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', border: '1px solid rgba(212, 175, 55, 0.5)'}}>
                                     <div style={{fontWeight: 600, marginBottom: '1rem', color: 'var(--gold)', fontSize: '0.9rem'}}>⚡ Quick Totals</div>
                                     
                                     {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => {
@@ -11102,7 +11123,7 @@ return (
                                 </div>
 
                                 {/* Detailed Subtypes */}
-                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid var(--border-color)'}}>
+                                <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', border: '1px solid var(--border-color)'}}>
                                     <div style={{fontWeight: 600, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '0.9rem'}}>📊 Key Subtypes</div>
                                     
                                     {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => {
@@ -11148,7 +11169,7 @@ return (
 
                                 {/* Sideboard Totals */}
                                 {sideboardTotals.total > 0 && (
-                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
+                                    <div style={{background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', border: '2px solid rgba(139, 69, 19, 0.7)'}}>
                                         <div style={{fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-bright)', fontSize: '1rem'}}>📦 Sideboard (Total: {sideboardTotals.total})</div>
                                         <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem'}}>
                                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
