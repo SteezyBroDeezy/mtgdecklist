@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>MTG Deck Skeleton v1.2.0 - Firebase Wait Fixed</title>
+    <title>Deck Skeleton + Mana Calculator - MTG Commander Deck Builder</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -749,36 +746,22 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-  // Wait for Firebase to load before initializing
-  function initFirebase() {
-    if (typeof firebase === 'undefined') {
-      console.log('Waiting for Firebase to load...');
-      setTimeout(initFirebase, 100);
-      return;
-    }
-    
-    console.log('Firebase loaded! Initializing...');
-    
-    // Your Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBjwMNNj6k2kzCJNNh6jMLd2vvUN8NUhuE",
-      authDomain: "mtg-decklist-app.firebaseapp.com",
-      projectId: "mtg-decklist-app",
-      storageBucket: "mtg-decklist-app.firebasestorage.app",
-      messagingSenderId: "948508221922",
-      appId: "1:948508221922:web:367f67f7109c92a99799bb"
-    };
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBjwMNNj6k2kzCJNNh6jMLd2vvUN8NUhuE",
+    authDomain: "mtg-decklist-app.firebaseapp.com",
+    projectId: "mtg-decklist-app",
+    storageBucket: "mtg-decklist-app.firebasestorage.app",
+    messagingSenderId: "948508221922",
+    appId: "1:948508221922:web:367f67f7109c92a99799bb"
+  };
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    window.auth = firebase.auth();
-    window.db = firebase.firestore();
-    
-    console.log("✅ Firebase initialized successfully!");
-  }
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
   
-  // Start checking for Firebase
-  initFirebase();
+  console.log("Firebase initialized!");
 </script>
 
     <script type="text/babel">
@@ -1232,10 +1215,6 @@
                 return null;
             }
         };
-
-        // Get Firebase references (available because we waited for Firebase to load)
-        const auth = window.auth;
-        const db = window.db;
 
         function App() {
             const [view, setView] = useState('home');
@@ -11220,18 +11199,7 @@ return (
             );
         }
 
-        // Wait for Firebase before rendering React app
-        function startApp() {
-            if (!window.auth || !window.db) {
-                console.log('Waiting for Firebase before starting React...');
-                setTimeout(startApp, 100);
-                return;
-            }
-            console.log('Firebase ready! Starting React app...');
-            ReactDOM.render(<App />, document.getElementById('root'));
-        }
-        
-        startApp();
+        ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 
 
