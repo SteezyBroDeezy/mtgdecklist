@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Deck Skeleton + Mana Calculator v1.4110</title>
+    <title>Deck Skeleton + Mana Calculator v2.0.0 PHASE1</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -1801,6 +1798,7 @@
             const [showInfoExpanded, setShowInfoExpanded] = useState(false);
             const [showManaCalcInfo, setShowManaCalcInfo] = useState(false);
             const [showMobileAbout, setShowMobileAbout] = useState(false);
+            const [showManaCalcAbout, setShowManaCalcAbout] = useState(false);
             const [manaCalculation, setManaCalculation] = useState(null);
             const [showResults, setShowResults] = useState(false);
             const [randomQuote, setRandomQuote] = useState('');
@@ -3031,12 +3029,23 @@
 
             // Bug Report Submission
             const submitBugReport = async (description, email) => {
+                console.log('🐛 Bug report submission started');
+                console.log('Description length:', description?.length);
+                
                 if (!description || description.trim().length < 10) {
                     alert('❌ Please provide a detailed description (at least 10 characters).');
                     return false;
                 }
 
+                // Check if Firebase is available
+                if (!db) {
+                    console.error('❌ Firebase db not available');
+                    alert('❌ Cannot submit report: Database not available. Please refresh the page and try again.');
+                    return false;
+                }
+
                 try {
+                    console.log('📝 Attempting to save to Firebase...');
                     await db.collection('bug-reports').add({
                         description: description.trim(),
                         email: email?.trim() || 'anonymous',
@@ -3046,10 +3055,12 @@
                         url: window.location.href
                     });
 
+                    console.log('✅ Bug report submitted successfully!');
                     return true;
                 } catch (error) {
-                    console.error('Error submitting bug report:', error);
-                    alert('❌ Error submitting report. Please try again.');
+                    console.error('❌ Error submitting bug report:', error);
+                    console.error('Error details:', error.message, error.code);
+                    alert(`❌ Error submitting report: ${error.message}\n\nPlease try again or contact support.`);
                     return false;
                 }
             };
@@ -4047,6 +4058,57 @@ return (
                                             </p>
                                             <p style={{marginBottom: 0}}>
                                                 🎯 Deck didn't work? Adjust ratios easily and save with an account!
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* About Mana Calculator - Expandable button */}
+                                    <button 
+                                        onClick={() => setShowManaCalcAbout(!showManaCalcAbout)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '1rem',
+                                            marginTop: '1rem',
+                                            background: 'var(--bg-secondary)',
+                                            border: '2px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)',
+                                            fontSize: '1rem',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <span>⚗️ About Mana Calculator</span>
+                                        <span>{showManaCalcAbout ? '▼' : '▶'}</span>
+                                    </button>
+                                    
+                                    {showManaCalcAbout && (
+                                        <div style={{
+                                            padding: '1.2rem',
+                                            marginTop: '1rem',
+                                            background: 'var(--bg-tertiary)',
+                                            border: '2px solid rgba(66, 135, 245, 0.5)',
+                                            borderRadius: '8px',
+                                            fontSize: '0.95rem',
+                                            lineHeight: '1.7',
+                                            color: 'var(--text-secondary)'
+                                        }}>
+                                            <p style={{marginBottom: '0.8rem', fontWeight: 600, color: 'rgba(66, 135, 245, 0.9)'}}>
+                                                Calculate your optimal mana base for Commander
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                📊 <strong>How it works:</strong> Enter your color pip requirements (single, double, triple pips) and total lands
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                🎯 <strong>Smart weighting:</strong> Double pips count more heavily than single pips because they're harder to cast
+                                            </p>
+                                            <p style={{marginBottom: '0.8rem'}}>
+                                                🏔️ <strong>Dual lands:</strong> Include your Shocklands, Fetchlands, etc. to get accurate recommendations
+                                            </p>
+                                            <p style={{marginBottom: 0}}>
+                                                ✨ Get the perfect land distribution for reliable color fixing!
                                             </p>
                                         </div>
                                     )}
