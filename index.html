@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck Skeleton + Mana Calculator v2.0.0 PHASE1</title>
+    <title>Deck Skeleton + Mana Calculator v2.0.1 PHASE1-FIXED</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -4112,6 +4112,33 @@ return (
                                             </p>
                                         </div>
                                     )}
+
+                                    {/* Bug Report Button - Mobile Home */}
+                                    <button 
+                                        onClick={() => setShowBugReportModal(true)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '1rem',
+                                            marginTop: '1.5rem',
+                                            background: 'linear-gradient(135deg, rgba(255, 87, 51, 0.15) 0%, rgba(255, 51, 51, 0.15) 100%)',
+                                            border: '2px solid rgba(255, 87, 51, 0.5)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)',
+                                            fontSize: '1rem',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+                                            fontWeight: 600,
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                        onMouseEnter={(e) => e.target.style.transform = 'scale(1.02)'}
+                                        onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                                    >
+                                        <span>🐛</span>
+                                        <span>Report a Bug</span>
+                                    </button>
                             </div>
 
                             {/* DESKTOP: Full detailed homepage */}
@@ -4813,6 +4840,7 @@ return (
                             addToPublicDecks={addToPublicDecks}
                             removeFromPublicDecks={removeFromPublicDecks}
                             loadPublicDecks={loadPublicDecks}
+                            onShowBugReport={() => setShowBugReportModal(true)}
                         />
                     )}
 
@@ -6098,7 +6126,7 @@ return (
 
 
         // Settings Modal Component
-        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks }) {
+        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport }) {
             const [bulkPrivacy, setBulkPrivacy] = useState('public');
             const [updating, setUpdating] = useState(false);
 
@@ -6415,7 +6443,7 @@ return (
                             <button
                                 onClick={() => {
                                     onClose();
-                                    setTimeout(() => setShowBugReportModal(true), 100);
+                                    setTimeout(() => onShowBugReport(), 100);
                                 }}
                                 className="btn btn-secondary"
                                 style={{
