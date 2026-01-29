@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck Skeleton + Mana Calculator v2.2.1 PHASE2-TASK1-FIXED</title>
+    <title>Deck Skeleton + Mana Calculator v2.2.2 PHASE2-BUG-BUTTONS</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -3945,6 +3945,17 @@ return (
                                     <p style={{color: 'var(--text-secondary)', fontSize: '1.1rem'}}>
                                         Track Commander deck ratios
                                     </p>
+                                    <p style={{
+                                        color: 'rgba(255, 87, 51, 0.9)',
+                                        fontSize: '0.9rem',
+                                        marginTop: '0.5rem',
+                                        cursor: 'pointer',
+                                        textDecoration: 'underline'
+                                    }}
+                                    onClick={() => setShowBugReportModal(true)}
+                                    >
+                                        🐛 Report a Bug or Suggestion
+                                    </p>
                                     {!user && (
                                         <p style={{
                                             color: 'var(--gold)',
@@ -4030,26 +4041,6 @@ return (
                                     <p style={{textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '2rem'}}>
                                         No account needed to use the calculator!
                                     </p>
-
-                                    {/* Bug Report Button - Desktop */}
-                                    <div style={{display: 'flex', justifyContent: 'center', marginTop: '2rem'}}>
-                                        <button 
-                                            onClick={() => setShowBugReportModal(true)}
-                                            className="btn btn-secondary"
-                                            style={{
-                                                padding: '0.8rem 2rem',
-                                                background: 'linear-gradient(135deg, rgba(255, 87, 51, 0.15) 0%, rgba(255, 51, 51, 0.15) 100%)',
-                                                border: '2px solid rgba(255, 87, 51, 0.5)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '0.5rem',
-                                                transition: 'all 0.2s ease'
-                                            }}
-                                        >
-                                            <span style={{fontSize: '1.2rem'}}>🐛</span>
-                                            <span>Report a Bug or Suggestion</span>
-                                        </button>
-                                    </div>
                                 </div>
 
                                     {/* About Deck Skeleton - Expandable at bottom */}
@@ -4409,6 +4400,26 @@ return (
                                 <p style={{fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '0.5rem'}}>
                                     No account needed to use! Create an account to save your decks.
                                 </p>
+
+                                {/* Bug Report Button - Desktop */}
+                                <div style={{display: 'flex', justifyContent: 'center', marginTop: '2rem'}}>
+                                    <button 
+                                        onClick={() => setShowBugReportModal(true)}
+                                        className="btn btn-secondary"
+                                        style={{
+                                            padding: '0.8rem 2rem',
+                                            background: 'linear-gradient(135deg, rgba(255, 87, 51, 0.15) 0%, rgba(255, 51, 51, 0.15) 100%)',
+                                            border: '2px solid rgba(255, 87, 51, 0.5)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                    >
+                                        <span style={{fontSize: '1.2rem'}}>🐛</span>
+                                        <span>Report a Bug or Suggestion</span>
+                                    </button>
+                                </div>
                             </div>
 
 
