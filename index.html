@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck Skeleton + Mana Calculator v2.3.0 PHASE2-READY</title>
+    <title>Deck Skeleton + Mana Calculator v2.8.0 WORKING-BASE-WITH-STATES</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -7243,6 +7243,8 @@ return (
                 lands: false
             });
             const [statsExpanded, setStatsExpanded] = useState(true);
+            const [pipSectionExpanded, setPipSectionExpanded] = useState(false);
+            const [landSectionExpanded, setLandSectionExpanded] = useState(false);
 
             useEffect(() => {
                 const initialCategories = {};
@@ -10583,6 +10585,8 @@ return (
                 lands: false
             });
             const [statsExpanded, setStatsExpanded] = useState(true);
+            const [pipSectionExpanded, setPipSectionExpanded] = useState(false);
+            const [landSectionExpanded, setLandSectionExpanded] = useState(false);
 
             useEffect(() => {
                 const initialCategories = {};
