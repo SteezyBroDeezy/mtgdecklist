@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck Skeleton + Mana Calculator v2.8.0 WORKING-BASE-WITH-STATES</title>
+    <title>Deck Skeleton + Mana Calculator v2.9.0 PIP-SECTIONS-EXPANDABLE</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -9767,12 +9767,19 @@ return (
                                         {/* Calculate Button */}
                                         {/* STEP 2: Count Mana Pips */}
                                         <div style={{
-                                            background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
-                                            border: '3px solid rgba(66, 135, 245, 0.4)',
-                                            borderRadius: '12px',
-                                            padding: '1.5rem',
-                                            marginBottom: '1.5rem'
-                                        }}>
+                                            {/* Clickable Header */}
+                                            <div 
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    cursor: 'pointer',
+                                                    marginBottom: pipSectionExpanded ? '1rem' : '0',
+                                                    padding: '0.5rem'
+                                                }}
+                                                onClick={() => setPipSectionExpanded(!pipSectionExpanded)}
+                                            >
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
                                             <div style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
@@ -9782,21 +9789,29 @@ return (
                                                 <div style={{
                                                     background: 'linear-gradient(135deg, #4287f5 0%, #886aea 100%)',
                                                     color: 'white',
-                                                    width: '36px',
-                                                    height: '36px',
+                                                    width: '38px',
+                                                    height: '38px',
                                                     borderRadius: '50%',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     fontWeight: 700,
-                                                    fontSize: '1.15rem'
+                                                    fontSize: '1.2rem'
                                                 }}>
                                                     1
                                                 </div>
-                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                <label style={{fontWeight: 700, fontSize: '1.2rem', color: 'var(--text-primary)', margin: 0}}>
                                                     🎴 Count Mana Pips from Your SPELLS
                                                 </label>
+                                                </div>
+                                                <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
+                                                    {pipSectionExpanded ? '▼' : '▶'}
+                                                </div>
                                             </div>
+
+                                            {/* Collapsible Content */}
+                                            {pipSectionExpanded && (
+                                            <>
                                             <div style={{
                                                 background: 'rgba(66, 135, 245, 0.15)',
                                                 border: '1px solid rgba(66, 135, 245, 0.3)',
@@ -10063,6 +10078,8 @@ return (
                                                 ))}
                                             </div>
                                         </div>
+                                        </>
+                                        )}
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
                                             <button 
                                                 className="btn btn-primary"
@@ -13107,12 +13124,19 @@ return (
                                         {/* Calculate Button */}
                                         {/* STEP 2: Count Mana Pips */}
                                         <div style={{
-                                            background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
-                                            border: '3px solid rgba(66, 135, 245, 0.4)',
-                                            borderRadius: '12px',
-                                            padding: '1.5rem',
-                                            marginBottom: '1.5rem'
-                                        }}>
+                                            {/* Clickable Header */}
+                                            <div 
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    cursor: 'pointer',
+                                                    marginBottom: pipSectionExpanded ? '1rem' : '0',
+                                                    padding: '0.5rem'
+                                                }}
+                                                onClick={() => setPipSectionExpanded(!pipSectionExpanded)}
+                                            >
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
                                             <div style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
@@ -13122,21 +13146,29 @@ return (
                                                 <div style={{
                                                     background: 'linear-gradient(135deg, #4287f5 0%, #886aea 100%)',
                                                     color: 'white',
-                                                    width: '36px',
-                                                    height: '36px',
+                                                    width: '38px',
+                                                    height: '38px',
                                                     borderRadius: '50%',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     fontWeight: 700,
-                                                    fontSize: '1.15rem'
+                                                    fontSize: '1.2rem'
                                                 }}>
                                                     1
                                                 </div>
-                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                <label style={{fontWeight: 700, fontSize: '1.2rem', color: 'var(--text-primary)', margin: 0}}>
                                                     🎴 Count Mana Pips from Your SPELLS
                                                 </label>
+                                                </div>
+                                                <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
+                                                    {pipSectionExpanded ? '▼' : '▶'}
+                                                </div>
                                             </div>
+
+                                            {/* Collapsible Content */}
+                                            {pipSectionExpanded && (
+                                            <>
                                             <div style={{
                                                 background: 'rgba(66, 135, 245, 0.15)',
                                                 border: '1px solid rgba(66, 135, 245, 0.3)',
@@ -13403,6 +13435,8 @@ return (
                                                 ))}
                                             </div>
                                         </div>
+                                        </>
+                                        )}
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
                                             <button 
                                                 className="btn btn-primary"
