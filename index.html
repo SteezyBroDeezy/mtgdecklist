@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck Skeleton + Mana Calculator v2.4.0 PHASE2-COMPLETE</title>
+    <title>Deck Skeleton + Mana Calculator v2.2.3 PHASE2-BUG-BOTTOM</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -9363,28 +9363,9 @@ return (
                                     </div>
 
                                         <div style={{marginBottom: '1.5rem'}}>
-                                            <label 
-                                                onClick={() => setLandSectionExpanded(!landSectionExpanded)}
-                                                style={{
-                                                    fontWeight: 600, 
-                                                    marginBottom: '0.5rem', 
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    cursor: 'pointer',
-                                                    padding: '0.5rem',
-                                                    background: 'rgba(66, 135, 245, 0.1)',
-                                                    borderRadius: '8px',
-                                                    border: '2px solid rgba(66, 135, 245, 0.3)'
-                                                }}
-                                            >
-                                                <span>🏔️ Count Actual Lands</span>
-                                                <span style={{fontSize: '1.3rem', color: 'var(--accent-bright)'}}>
-                                                    {landSectionExpanded ? '▼' : '▶'}
-                                                </span>
+                                            <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
+                                                Total Lands in Deck
                                             </label>
-                                            {landSectionExpanded && (
-                                            <>
                                             {window.innerWidth <= 768 ? (
                                                 <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
                                                     <button
@@ -9780,8 +9761,6 @@ return (
                                                 ))}
                                             </div>
                                         </div>
-                                        </>
-                                        )}
 
                                         {/* Calculate Button */}
                                         {/* STEP 2: Count Mana Pips */}
@@ -9812,28 +9791,10 @@ return (
                                                 }}>
                                                     1
                                                 </div>
-                                                <label 
-                                                    onClick={() => setPipSectionExpanded(!pipSectionExpanded)}
-                                                    style={{
-                                                        fontWeight: 700, 
-                                                        fontSize: '1.15rem', 
-                                                        color: 'var(--text-primary)', 
-                                                        margin: 0,
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'space-between',
-                                                        flex: 1
-                                                    }}
-                                                >
-                                                    <span>🎴 Count Mana Pips from Your SPELLS</span>
-                                                    <span style={{fontSize: '1.3rem', color: 'var(--accent-bright)', marginLeft: '0.5rem'}}>
-                                                        {pipSectionExpanded ? '▼' : '▶'}
-                                                    </span>
+                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                    🎴 Count Mana Pips from Your SPELLS
                                                 </label>
                                             </div>
-                                            {pipSectionExpanded && (
-                                            <>
                                             <div style={{
                                                 background: 'rgba(66, 135, 245, 0.15)',
                                                 border: '1px solid rgba(66, 135, 245, 0.3)',
@@ -10100,8 +10061,6 @@ return (
                                                 ))}
                                             </div>
                                         </div>
-                                        </>
-                                        )}
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
                                             <button 
                                                 className="btn btn-primary"
@@ -10270,7 +10229,7 @@ return (
                                     onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}
                                 >
                                     <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: '1.3rem'}}>
-                                        Live Deck Stats {window.innerWidth <= 768 && `(Tap to ${statsExpanded ? 'fullscreen' : 'expand'})`}
+                                        Live Deck Stats {window.innerWidth <= 768 && `(Tap to ${statsExpanded ? 'collapse' : 'expand'})`}
                                     </h3>
                                     {window.innerWidth <= 768 && (
                                         <span style={{fontSize: '1.5rem', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▲</span>
@@ -10278,59 +10237,10 @@ return (
                                 </div>
                                 {(window.innerWidth > 768 || statsExpanded) && (
                                 <div style={{
-                                    position: window.innerWidth <= 768 && statsExpanded ? 'fixed' : 'relative',
-                                    top: window.innerWidth <= 768 && statsExpanded ? 0 : 'auto',
-                                    left: window.innerWidth <= 768 && statsExpanded ? 0 : 'auto',
-                                    right: window.innerWidth <= 768 && statsExpanded ? 0 : 'auto',
-                                    bottom: window.innerWidth <= 768 && statsExpanded ? 0 : 'auto',
-                                    zIndex: window.innerWidth <= 768 && statsExpanded ? 99999 : 'auto',
-                                    background: window.innerWidth <= 768 && statsExpanded ? 'var(--bg-primary)' : 'transparent',
-                                    maxHeight: window.innerWidth <= 768 && !statsExpanded ? '60vh' : 'none',
+                                    maxHeight: window.innerWidth <= 768 ? '60vh' : 'none',
                                     overflowY: window.innerWidth <= 768 ? 'auto' : 'visible',
-                                    padding: window.innerWidth <= 768 && statsExpanded ? '1rem' : (window.innerWidth <= 768 ? '0.5rem' : '0')
+                                    padding: window.innerWidth <= 768 ? '0.5rem' : '0'
                                 }}>
-                                {window.innerWidth <= 768 && statsExpanded && (
-                                    <div style={{
-                                        position: 'sticky',
-                                        top: 0,
-                                        zIndex: 100,
-                                        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(139, 111, 71, 0.2) 100%)',
-                                        padding: '1rem',
-                                        marginBottom: '1.5rem',
-                                        borderRadius: '12px',
-                                        border: '3px solid var(--gold)',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}>
-                                        <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: '1.8rem', textShadow: '2px 2px 4px rgba(0,0,0,0.7)'}}>
-                                            📊 Live Deck Stats
-                                        </h3>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setStatsExpanded(false);
-                                            }}
-                                            style={{
-                                                background: 'rgba(255, 0, 0, 0.2)',
-                                                border: '2px solid rgba(255, 0, 0, 0.6)',
-                                                borderRadius: '50%',
-                                                width: '50px',
-                                                height: '50px',
-                                                fontSize: '2rem',
-                                                color: '#ff4444',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontWeight: 'bold',
-                                                lineHeight: 1
-                                            }}
-                                        >
-                                            ×
-                                        </button>
-                                    </div>
-                                )}
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
@@ -12791,28 +12701,9 @@ return (
                                     </div>
 
                                         <div style={{marginBottom: '1.5rem'}}>
-                                            <label 
-                                                onClick={() => setLandSectionExpanded(!landSectionExpanded)}
-                                                style={{
-                                                    fontWeight: 600, 
-                                                    marginBottom: '0.5rem', 
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    cursor: 'pointer',
-                                                    padding: '0.5rem',
-                                                    background: 'rgba(66, 135, 245, 0.1)',
-                                                    borderRadius: '8px',
-                                                    border: '2px solid rgba(66, 135, 245, 0.3)'
-                                                }}
-                                            >
-                                                <span>🏔️ Count Actual Lands</span>
-                                                <span style={{fontSize: '1.3rem', color: 'var(--accent-bright)'}}>
-                                                    {landSectionExpanded ? '▼' : '▶'}
-                                                </span>
+                                            <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
+                                                Total Lands in Deck
                                             </label>
-                                            {landSectionExpanded && (
-                                            <>
                                             {window.innerWidth <= 768 ? (
                                                 <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
                                                     <button
@@ -13208,8 +13099,6 @@ return (
                                                 ))}
                                             </div>
                                         </div>
-                                        </>
-                                        )}
 
                                         {/* Calculate Button */}
                                         {/* STEP 2: Count Mana Pips */}
@@ -13240,28 +13129,10 @@ return (
                                                 }}>
                                                     1
                                                 </div>
-                                                <label 
-                                                    onClick={() => setPipSectionExpanded(!pipSectionExpanded)}
-                                                    style={{
-                                                        fontWeight: 700, 
-                                                        fontSize: '1.15rem', 
-                                                        color: 'var(--text-primary)', 
-                                                        margin: 0,
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'space-between',
-                                                        flex: 1
-                                                    }}
-                                                >
-                                                    <span>🎴 Count Mana Pips from Your SPELLS</span>
-                                                    <span style={{fontSize: '1.3rem', color: 'var(--accent-bright)', marginLeft: '0.5rem'}}>
-                                                        {pipSectionExpanded ? '▼' : '▶'}
-                                                    </span>
+                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                    🎴 Count Mana Pips from Your SPELLS
                                                 </label>
                                             </div>
-                                            {pipSectionExpanded && (
-                                            <>
                                             <div style={{
                                                 background: 'rgba(66, 135, 245, 0.15)',
                                                 border: '1px solid rgba(66, 135, 245, 0.3)',
@@ -13528,8 +13399,6 @@ return (
                                                 ))}
                                             </div>
                                         </div>
-                                        </>
-                                        )}
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
                                             <button 
                                                 className="btn btn-primary"
@@ -13712,7 +13581,7 @@ return (
                                     onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}
                                 >
                                     <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: '1.3rem'}}>
-                                        Live Deck Stats {window.innerWidth <= 768 && `(Tap to ${statsExpanded ? 'fullscreen' : 'expand'})`}
+                                        Live Deck Stats {window.innerWidth <= 768 && `(Tap to ${statsExpanded ? 'collapse' : 'expand'})`}
                                     </h3>
                                     {window.innerWidth <= 768 && (
                                         <span style={{fontSize: '1.5rem', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▲</span>
@@ -13720,59 +13589,10 @@ return (
                                 </div>
                                 {(window.innerWidth > 768 || statsExpanded) && (
                                 <div style={{
-                                    position: window.innerWidth <= 768 && statsExpanded ? 'fixed' : 'relative',
-                                    top: window.innerWidth <= 768 && statsExpanded ? 0 : 'auto',
-                                    left: window.innerWidth <= 768 && statsExpanded ? 0 : 'auto',
-                                    right: window.innerWidth <= 768 && statsExpanded ? 0 : 'auto',
-                                    bottom: window.innerWidth <= 768 && statsExpanded ? 0 : 'auto',
-                                    zIndex: window.innerWidth <= 768 && statsExpanded ? 99999 : 'auto',
-                                    background: window.innerWidth <= 768 && statsExpanded ? 'var(--bg-primary)' : 'transparent',
-                                    maxHeight: window.innerWidth <= 768 && !statsExpanded ? '60vh' : 'none',
+                                    maxHeight: window.innerWidth <= 768 ? '60vh' : 'none',
                                     overflowY: window.innerWidth <= 768 ? 'auto' : 'visible',
-                                    padding: window.innerWidth <= 768 && statsExpanded ? '1rem' : (window.innerWidth <= 768 ? '0.5rem' : '0')
+                                    padding: window.innerWidth <= 768 ? '0.5rem' : '0'
                                 }}>
-                                {window.innerWidth <= 768 && statsExpanded && (
-                                    <div style={{
-                                        position: 'sticky',
-                                        top: 0,
-                                        zIndex: 100,
-                                        background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(139, 111, 71, 0.2) 100%)',
-                                        padding: '1rem',
-                                        marginBottom: '1.5rem',
-                                        borderRadius: '12px',
-                                        border: '3px solid var(--gold)',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}>
-                                        <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: '1.8rem', textShadow: '2px 2px 4px rgba(0,0,0,0.7)'}}>
-                                            📊 Live Deck Stats
-                                        </h3>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setStatsExpanded(false);
-                                            }}
-                                            style={{
-                                                background: 'rgba(255, 0, 0, 0.2)',
-                                                border: '2px solid rgba(255, 0, 0, 0.6)',
-                                                borderRadius: '50%',
-                                                width: '50px',
-                                                height: '50px',
-                                                fontSize: '2rem',
-                                                color: '#ff4444',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontWeight: 'bold',
-                                                lineHeight: 1
-                                            }}
-                                        >
-                                            ×
-                                        </button>
-                                    </div>
-                                )}
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
