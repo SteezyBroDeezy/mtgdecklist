@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0071)file:///C:/Users/BiggityBrolo/Downloads/Deck_v2.9.0_PIP_EXPANDABLE.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deck Skeleton + Mana Calculator v2.9.0 PIP-SECTIONS-EXPANDABLE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:wght@400;600;700&family=Pirata+One&family=MedievalSharp&family=UnifrakturMaguntia:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <link href="./deck29_files/css2" rel="stylesheet">
+    <script src="./deck29_files/react.production.min.js.download"></script>
+    <script src="./deck29_files/react-dom.production.min.js.download"></script>
+    <script src="./deck29_files/babel.min.js.download"></script>
     <style>
         * {
             margin: 0;
@@ -981,9 +981,9 @@
     </div>
 
     <!-- Firebase Scripts -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="./deck29_files/firebase-app-compat.js.download"></script>
+<script src="./deck29_files/firebase-auth-compat.js.download"></script>
+<script src="./deck29_files/firebase-firestore-compat.js.download"></script>
 <script>
   try {
       console.log("Starting Firebase initialization...");
@@ -9629,38 +9629,53 @@ return (
                                             </div>
                                         </div>
 
-                                        {/* STEP 1: Dual Lands */}
+                                        {/* STEP 1: Dual Lands - EXPANDABLE */}
                                         <div style={{
                                             background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
                                             border: '3px solid rgba(0, 115, 62, 0.4)',
                                             borderRadius: '12px',
-                                            padding: '1.5rem',
+                                            padding: '1rem',
                                             marginBottom: '1.5rem'
                                         }}>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '0.8rem',
-                                                marginBottom: '0.5rem'
-                                            }}>
+                                            {/* Clickable Header */}
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    cursor: 'pointer',
+                                                    marginBottom: landSectionExpanded ? '1rem' : '0',
+                                                    padding: '0.5rem'
+                                                }}
+                                                onClick={() => setLandSectionExpanded(!landSectionExpanded)}
+                                            >
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
                                                 <div style={{
                                                     background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
                                                     color: 'white',
-                                                    width: '36px',
-                                                    height: '36px',
+                                                    width: '38px',
+                                                    height: '38px',
                                                     borderRadius: '50%',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     fontWeight: 700,
-                                                    fontSize: '1.15rem'
+                                                    fontSize: '1.2rem'
                                                 }}>
                                                     2
                                                 </div>
-                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                <label style={{fontWeight: 700, fontSize: '1.2rem', color: 'var(--text-primary)', margin: 0}}>
                                                     🏔️ Count Actual LANDS in Your Deck
                                                 </label>
+                                                </div>
+                                                <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
+                                                    {landSectionExpanded ? '▼' : '▶'}
+                                                </div>
                                             </div>
+
+                                            {/* Collapsible Content */}
+                                            {landSectionExpanded && (
+                                            <>
                                             <div style={{
                                                 background: 'rgba(0, 115, 62, 0.15)',
                                                 border: '1px solid rgba(0, 115, 62, 0.3)',
@@ -9715,7 +9730,7 @@ return (
                                                                 >
                                                                     −
                                                                 </button>
-                                                                <input 
+                                                                <input
                                                                     type="number"
                                                                     className="small-input"
                                                                     style={{flex: 1, textAlign: 'center'}}
@@ -9750,7 +9765,7 @@ return (
                                                                 </button>
                                                             </div>
                                                         ) : (
-                                                            <input 
+                                                            <input
                                                                 type="number"
                                                                 className="small-input"
                                                                 style={{width: '100%'}}
@@ -9762,13 +9777,20 @@ return (
                                                     </div>
                                                 ))}
                                             </div>
+                                            </>
+                                            )}
                                         </div>
 
-                                        {/* Calculate Button */}
                                         {/* STEP 2: Count Mana Pips */}
                                         <div style={{
+                                            background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
+                                            border: '3px solid rgba(66, 135, 245, 0.4)',
+                                            borderRadius: '12px',
+                                            padding: '1rem',
+                                            marginBottom: '2rem'
+                                        }}>
                                             {/* Clickable Header */}
-                                            <div 
+                                            <div
                                                 style={{
                                                     display: 'flex',
                                                     justifyContent: 'space-between',
@@ -9780,12 +9802,6 @@ return (
                                                 onClick={() => setPipSectionExpanded(!pipSectionExpanded)}
                                             >
                                                 <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '0.8rem',
-                                                marginBottom: '0.5rem'
-                                            }}>
                                                 <div style={{
                                                     background: 'linear-gradient(135deg, #4287f5 0%, #886aea 100%)',
                                                     color: 'white',
@@ -10077,9 +10093,9 @@ return (
                                                     </div>
                                                 ))}
                                             </div>
-                                        </div>
                                         </>
                                         )}
+                                        </div>
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
                                             <button 
                                                 className="btn btn-primary"
@@ -12986,38 +13002,53 @@ return (
                                             </div>
                                         </div>
 
-                                        {/* STEP 1: Dual Lands */}
+                                        {/* STEP 1: Dual Lands - EXPANDABLE */}
                                         <div style={{
                                             background: 'linear-gradient(135deg, rgba(0, 115, 62, 0.12) 0%, rgba(34, 139, 34, 0.12) 100%)',
                                             border: '3px solid rgba(0, 115, 62, 0.4)',
                                             borderRadius: '12px',
-                                            padding: '1.5rem',
+                                            padding: '1rem',
                                             marginBottom: '1.5rem'
                                         }}>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '0.8rem',
-                                                marginBottom: '0.5rem'
-                                            }}>
+                                            {/* Clickable Header */}
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    cursor: 'pointer',
+                                                    marginBottom: landSectionExpanded ? '1rem' : '0',
+                                                    padding: '0.5rem'
+                                                }}
+                                                onClick={() => setLandSectionExpanded(!landSectionExpanded)}
+                                            >
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
                                                 <div style={{
                                                     background: 'linear-gradient(135deg, #00733e 0%, #228b22 100%)',
                                                     color: 'white',
-                                                    width: '36px',
-                                                    height: '36px',
+                                                    width: '38px',
+                                                    height: '38px',
                                                     borderRadius: '50%',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     fontWeight: 700,
-                                                    fontSize: '1.15rem'
+                                                    fontSize: '1.2rem'
                                                 }}>
                                                     2
                                                 </div>
-                                                <label style={{fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', margin: 0}}>
+                                                <label style={{fontWeight: 700, fontSize: '1.2rem', color: 'var(--text-primary)', margin: 0}}>
                                                     🏔️ Count Actual LANDS in Your Deck
                                                 </label>
+                                                </div>
+                                                <div style={{fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: 'bold'}}>
+                                                    {landSectionExpanded ? '▼' : '▶'}
+                                                </div>
                                             </div>
+
+                                            {/* Collapsible Content */}
+                                            {landSectionExpanded && (
+                                            <>
                                             <div style={{
                                                 background: 'rgba(0, 115, 62, 0.15)',
                                                 border: '1px solid rgba(0, 115, 62, 0.3)',
@@ -13072,7 +13103,7 @@ return (
                                                                 >
                                                                     −
                                                                 </button>
-                                                                <input 
+                                                                <input
                                                                     type="number"
                                                                     className="small-input"
                                                                     style={{flex: 1, textAlign: 'center'}}
@@ -13107,7 +13138,7 @@ return (
                                                                 </button>
                                                             </div>
                                                         ) : (
-                                                            <input 
+                                                            <input
                                                                 type="number"
                                                                 className="small-input"
                                                                 style={{width: '100%'}}
@@ -13119,13 +13150,20 @@ return (
                                                     </div>
                                                 ))}
                                             </div>
+                                            </>
+                                            )}
                                         </div>
 
-                                        {/* Calculate Button */}
                                         {/* STEP 2: Count Mana Pips */}
                                         <div style={{
+                                            background: 'linear-gradient(135deg, rgba(66, 135, 245, 0.12) 0%, rgba(136, 106, 234, 0.12) 100%)',
+                                            border: '3px solid rgba(66, 135, 245, 0.4)',
+                                            borderRadius: '12px',
+                                            padding: '1rem',
+                                            marginBottom: '2rem'
+                                        }}>
                                             {/* Clickable Header */}
-                                            <div 
+                                            <div
                                                 style={{
                                                     display: 'flex',
                                                     justifyContent: 'space-between',
@@ -13137,12 +13175,6 @@ return (
                                                 onClick={() => setPipSectionExpanded(!pipSectionExpanded)}
                                             >
                                                 <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '0.8rem',
-                                                marginBottom: '0.5rem'
-                                            }}>
                                                 <div style={{
                                                     background: 'linear-gradient(135deg, #4287f5 0%, #886aea 100%)',
                                                     color: 'white',
@@ -13434,9 +13466,9 @@ return (
                                                     </div>
                                                 ))}
                                             </div>
-                                        </div>
                                         </>
                                         )}
+                                        </div>
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
                                             <button 
                                                 className="btn btn-primary"
@@ -13907,5 +13939,5 @@ return (
     </script>
 
 
-</body>
-</html>
+
+</body></html>
