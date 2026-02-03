@@ -209,7 +209,6 @@
                 width: 100%;
                 border-left: none;
                 border-top: 2px solid var(--border-color);
-                max-height: 400px;
             }
         }
 
@@ -758,7 +757,6 @@
                 width: 100%;
                 border-left: none;
                 border-top: 2px solid var(--border-color);
-                max-height: 400px;
             }
         }
 
@@ -1106,7 +1104,9 @@
                         subcategories: [
                             { id: 'dorks', name: 'Mana Dorks', defaultValue: 0, description: 'Creatures that tap for mana (Birds of Paradise, Llanowar Elves, Faeburrow Elder)' },
                             { id: 'land-creatures', name: 'Land Fetch Creatures', defaultValue: 0, description: 'Creatures that search for lands (Wood Elves, Farhaven Elf, Solemn Simulacrum)' },
-                            { id: 'treasure-creatures', name: 'Treasure Makers', defaultValue: 0, description: 'Creatures that create treasure tokens (Dockside Extortionist, Pitiless Plunderer)' }
+                            { id: 'treasure-creatures', name: 'Treasure Makers', defaultValue: 0, description: 'Creatures that create treasure tokens (Dockside Extortionist, Pitiless Plunderer)' },
+                            { id: 'sac-ramp-creatures', name: 'Sac for Ramp', defaultValue: 0, description: 'Creatures you sacrifice for mana (Cathodion, Soldevi Adnate, Blood Pet)' },
+                            { id: 'cost-reducer-creatures', name: 'Cost Reducers', defaultValue: 0, description: 'Reduce spell costs (Goblin Electromancer, Sapphire Medallion creatures, Urza\'s Incubator)' }
                         ]
                     },
                     {
@@ -1116,8 +1116,12 @@
                             { id: 'draw-etb', name: 'Draw on ETB', defaultValue: 0, description: 'Draw cards when creature enters (Mulldrifter, Wall of Omens, Elvish Visionary)' },
                             { id: 'draw-death', name: 'Draw on Death', defaultValue: 0, description: 'Draw when creature or others die (Grim Haruspex, Midnight Reaper, Skullclamp targets)' },
                             { id: 'draw-attack', name: 'Draw on Attack/Damage', defaultValue: 0, description: 'Draw when attacking or dealing damage (Tymna, Edric, Bident of Thassa creatures)' },
+                            { id: 'draw-repeatable-creatures', name: 'Repeatable Draw', defaultValue: 0, description: 'Tap or trigger to draw repeatedly (Arcanis, Azami, Beast Whisperer, Consecrated Sphinx)' },
                             { id: 'tutor-creatures', name: 'Tutor Creatures', defaultValue: 0, description: 'Search your library for specific cards (Recruiter of the Guard, Imperial Recruiter)' },
-                            { id: 'looting-creatures', name: 'Looting Creatures', defaultValue: 0, description: 'Draw then discard (Merfolk Looter, Looter il-Kor, rummaging effects)' }
+                            { id: 'looting-creatures', name: 'Looting Creatures', defaultValue: 0, description: 'Draw then discard (Merfolk Looter, Looter il-Kor, rummaging effects)' },
+                            { id: 'sac-draw-creatures', name: 'Sacrifice Draw', defaultValue: 0, description: 'Draw when you sacrifice creatures (Dark Prophecy, Harvester of Souls, Moldervine Reclamation)' },
+                            { id: 'sac-exile-play-creatures', name: 'Sac Exile & Play', defaultValue: 0, description: 'Exile top cards and play when sacrificing (Laelia, the Blade Reforged, Prosper effects)' },
+                            { id: 'graveyard-draw-creatures', name: 'Graveyard Draw', defaultValue: 0, description: 'Draw from graveyard interactions (Syr Konrad draw, graveyard count matters)' }
                         ]
                     },
                     {
@@ -1134,8 +1138,25 @@
                         id: 'sac-creatures',
                         name: 'Sacrifice Outlets',
                         subcategories: [
-                            { id: 'free-sac', name: 'Free Sac Outlets', defaultValue: 0, description: 'Sacrifice without mana cost (Viscera Seer, Carrion Feeder, Goblin Bombardment)' },
+                            // General Outlets
+                            { id: 'free-sac', name: 'Free Sac Outlets', defaultValue: 0, description: 'Sacrifice without mana cost (Viscera Seer, Carrion Feeder, Ashnod\'s Altar)' },
                             { id: 'paid-sac', name: 'Paid Sac Outlets', defaultValue: 0, description: 'Sacrifice requiring mana (Yawgmoth, Birthing Pod, High Market)' },
+                            { id: 'sac-repeatable', name: 'Repeatable Sac', defaultValue: 0, description: 'Can sacrifice multiple times per turn (Viscera Seer, Ashnod\'s Altar, Goblin Bombardment)' },
+                            // Resource Generation (grouped)
+                            { id: 'sac-mana', name: 'Sac → Mana', defaultValue: 0, description: 'Sacrifice to generate mana (Ashnod\'s Altar, Phyrexian Altar, Thermopod)' },
+                            { id: 'sac-draw', name: 'Sac → Draw', defaultValue: 0, description: 'Sacrifice to draw cards (Viscera Seer scry, Skullclamp, Altar\'s Reap effects)' },
+                            { id: 'sac-tutor', name: 'Sac → Search', defaultValue: 0, description: 'Sacrifice to tutor (Birthing Pod, Prime Speaker Vannifar, Fiend Artisan)' },
+                            // Damage & Combat (grouped)
+                            { id: 'sac-damage', name: 'Sac → Damage', defaultValue: 0, description: 'Sacrifice to deal damage (Goblin Bombardment, Mayhem Devil, Pashalik Mons)' },
+                            { id: 'sac-pump', name: 'Sac → Pump', defaultValue: 0, description: 'Sacrifice to buff creatures (Carrion Feeder, Nantuko Husk, Bloodthrone Vampire)' },
+                            // Utility Effects (grouped)
+                            { id: 'sac-protect', name: 'Sac → Protection', defaultValue: 0, description: 'Sacrifice to protect or give indestructible (Selfless Spirit, Fanatical Devotion)' },
+                            { id: 'sac-recursion', name: 'Sac → Recursion', defaultValue: 0, description: 'Sacrifice to return cards (Hell\'s Caretaker, Apprentice Necromancer)' },
+                            { id: 'sac-exile', name: 'Sac → Exile', defaultValue: 0, description: 'Sacrifice to exile permanents (Priest of Forgotten Gods, various)' },
+                            // Other Effects (grouped)
+                            { id: 'sac-mill', name: 'Sac → Mill', defaultValue: 0, description: 'Sacrifice to mill (Altar of Dementia, self-mill enablers)' },
+                            { id: 'sac-untap', name: 'Sac → Untap', defaultValue: 0, description: 'Sacrifice to untap permanents (various combo pieces)' },
+                            { id: 'sac-other', name: 'Other Sac Effects', defaultValue: 0, description: 'Other sacrifice effects and payoffs' }
                         ]
                     },
                     {
@@ -1146,17 +1167,8 @@
                             { id: 'protection-creatures', name: 'Protection Creatures', defaultValue: 0, description: 'Protect your board (Selfless Spirit, Dauntless Bodyguard, Spellskite)' },
                             { id: 'recursion-creatures', name: 'Recursion Creatures', defaultValue: 0, description: 'Return cards from graveyard (Eternal Witness, Sun Titan, Karmic Guide)' },
                             { id: 'token-makers', name: 'Token Makers', defaultValue: 0, description: 'Create creature tokens (Avenger of Zendikar, Deep Forest Hermit, Hornet Queen)' },
-                            { id: 'blink-targets', name: 'Blink/Flicker Targets', defaultValue: 0, description: 'High-value ETB creatures for blinking (Mulldrifter, Archaeomancer, any ETB value)' }
-                        ]
-                    },
-                    {
-                        id: 'tribal-creatures',
-                        name: 'Tribal Creatures',
-                        subcategories: [
-                            { id: 'tribal-payoffs', name: 'Tribal Payoffs', defaultValue: 0, description: 'Reward for playing tribe (Door of Destinies, Coat of Arms, tribal anthem effects)' },
-                            { id: 'tribal-lords', name: 'Tribal Lords', defaultValue: 0, description: 'Buff creatures of your tribe (Lord of Atlantis, Elvish Champion, any type lord)' },
-                            { id: 'tribal-support', name: 'Tribal Support', defaultValue: 0, description: 'Help tribal strategy without being the tribe (Kindred Discovery, Vanquisher\'s Banner)' },
-                            { id: 'changeling', name: 'Changelings', defaultValue: 0, description: 'All creature types (Changeling Outcast, Unsettled Mariner, tribal wildcards)' }
+                            { id: 'blink-targets', name: 'Blink/Flicker Targets', defaultValue: 0, description: 'High-value ETB creatures for blinking (Mulldrifter, Archaeomancer, any ETB value)' },
+                            { id: 'blink-enablers', name: 'Blink/Flicker Enablers', defaultValue: 0, description: 'Creatures that blink/flicker others (Restoration Angel, Felidar Guardian, Thassa Deep-Dwelling)' }
                         ]
                     },
                     {
@@ -1166,37 +1178,52 @@
                             { id: 'evasion', name: 'Evasive Creatures', defaultValue: 0, description: 'Flying, unblockable, menace, etc. (Flyers, Invisible Stalker, Etali)' },
                             { id: 'finishers', name: 'Finishers', defaultValue: 0, description: 'Win the game with combat (Craterhoof Behemoth, Triumph of the Hordes carriers)' },
                             { id: 'combat-tricks', name: 'Combat Tricks', defaultValue: 0, description: 'Surprise combat abilities (Mother of Runes, flash creatures, combat effects)' },
-                            { id: 'defenders', name: 'Defenders', defaultValue: 0, description: 'High toughness or defensive abilities (Wall of Roots, Stuffy Doll, Fog Bank)' }
+                            { id: 'defenders', name: 'Defenders', defaultValue: 0, description: 'High toughness or defensive abilities (Wall of Roots, Stuffy Doll, Fog Bank)' },
+                            { id: 'pump-creatures', name: 'Pump Creatures', defaultValue: 0, description: 'Creatures that pump themselves or others (Savannah Lions pumpers, anthem on legs)' },
+                            { id: 'double-damage-creatures', name: 'Double Damage', defaultValue: 0, description: 'Double damage dealers (Fiery Emancipation carriers, Insult/Injury creatures)' }
                         ]
                     },
                     {
                         id: 'synergy-creatures',
-                        name: '🔗 Synergy Pieces',
+                        name: '🔗 Synergy & Tribal',
                         subcategories: [
+                            // === GENERAL SYNERGY ===
                             { id: 'synergy-enablers-creatures', name: 'Synergy Enablers', defaultValue: 0, description: 'Creatures that enable your strategy (Panharmonicon, Doubling Season creatures, cost reducers)' },
                             { id: 'synergy-payoffs-creatures', name: 'Synergy Payoffs', defaultValue: 0, description: 'Creatures that reward your strategy (Craterhoof for tokens, Purphoros for ETBs)' },
+                            { id: 'theme-support-creatures', name: 'Theme Support', defaultValue: 0, description: 'Creatures supporting your theme (graveyard, +1/+1 counters, etc.)' },
+                            // === TRIBAL (grouped together) ===
                             { id: 'tribal-creatures-synergy', name: 'Tribal Creatures', defaultValue: 0, description: 'Creatures of your chosen tribe (Elves, Zombies, Dragons, etc.)' },
-                            { id: 'theme-support-creatures', name: 'Theme Support', defaultValue: 0, description: 'Creatures supporting your theme (graveyard, +1/+1 counters, etc.)' }
+                            { id: 'tribal-lords', name: 'Tribal Lords', defaultValue: 0, description: 'Buff creatures of your tribe (Lord of Atlantis, Elvish Champion, any type lord)' },
+                            { id: 'tribal-payoffs', name: 'Tribal Payoffs', defaultValue: 0, description: 'Reward for playing tribe (Door of Destinies, Coat of Arms, tribal anthem effects)' },
+                            { id: 'tribal-pump', name: 'Tribal Pump/Anthems', defaultValue: 0, description: 'Anthem effects for your tribe (Shared Animosity, tribal-specific buffs)' },
+                            { id: 'changeling', name: 'Changelings', defaultValue: 0, description: 'All creature types (Changeling Outcast, Unsettled Mariner, tribal wildcards)' }
                         ]
                     },
                     {
                         id: 'etb-die-triggers',
                         name: '💥 ETB/Die Triggers',
                         subcategories: [
-                            { id: 'etb-draw', name: 'Draw on ETB', defaultValue: 0, description: 'Draw cards when entering (Mulldrifter, Wall of Omens, Elvish Visionary)' },
-                            { id: 'etb-removal', name: 'Removal on ETB', defaultValue: 0, description: 'Remove permanents when entering (Ravenous Chupacabra, Reclamation Sage)' },
-                            { id: 'etb-ramp', name: 'Ramp on ETB', defaultValue: 0, description: 'Ramp when entering (Wood Elves, Farhaven Elf, Solemn Simulacrum)' },
-                            { id: 'etb-opponent-sac', name: 'Opponent Sac (ETB)', defaultValue: 0, description: 'Force opponents to sacrifice on ETB (Fleshbag Marauder, Plaguecrafter, Demon\'s Disciple)' },
-                            { id: 'etb-opponent-discard', name: 'Opponent Discard (ETB)', defaultValue: 0, description: 'Force opponents to discard on ETB (Liliana\'s Specter, Burglar Rat)' },
-                            { id: 'etb-life-loss', name: 'Opponent Lose Life (ETB)', defaultValue: 0, description: 'Deal damage/drain on ETB (Gray Merchant, Mulldrifter in aristocrats)' },
-                            { id: 'etb-tokens', name: 'Create Tokens (ETB)', defaultValue: 0, description: 'Make tokens when entering (Avenger of Zendikar, Deep Forest Hermit)' },
-                            { id: 'etb-other', name: 'Other ETB Triggers', defaultValue: 0, description: 'Miscellaneous ETB effects (tutors, mill, etc.)' },
-                            { id: 'die-draw', name: 'Draw on Death', defaultValue: 0, description: 'Draw when dying or others die (Grim Haruspex, Midnight Reaper)' },
-                            { id: 'die-opponent-sac', name: 'Opponent Sac (Death)', defaultValue: 0, description: 'Force sac when this dies (Dictate of Erebos creatures, Butcher of Malakir)' },
-                            { id: 'die-life-loss', name: 'Opponent Lose Life (Death)', defaultValue: 0, description: 'Drain when dying (Blood Artist, Zulaport Cutthroat)' },
-                            { id: 'die-tokens', name: 'Create Tokens (Death)', defaultValue: 0, description: 'Make tokens when dying (Hangarback Walker, Bitterblossom)' },
-                            { id: 'die-recursion', name: 'Recursion (Death)', defaultValue: 0, description: 'Return from graveyard (Reassembling Skeleton, Bloodghast)' },
-                            { id: 'die-other', name: 'Other Death Triggers', defaultValue: 0, description: 'Miscellaneous death triggers (various effects)' }
+                            // === ETB TRIGGERS (Value) ===
+                            { id: 'etb-draw', name: 'ETB → Draw', defaultValue: 0, description: 'Draw cards when entering (Mulldrifter, Wall of Omens, Elvish Visionary)' },
+                            { id: 'etb-ramp', name: 'ETB → Ramp', defaultValue: 0, description: 'Ramp when entering (Wood Elves, Farhaven Elf, Solemn Simulacrum)' },
+                            { id: 'etb-tokens', name: 'ETB → Tokens', defaultValue: 0, description: 'Make tokens when entering (Avenger of Zendikar, Deep Forest Hermit)' },
+                            { id: 'etb-removal', name: 'ETB → Removal', defaultValue: 0, description: 'Remove permanents when entering (Ravenous Chupacabra, Reclamation Sage)' },
+                            // === ETB TRIGGERS (Damage/Drain) ===
+                            { id: 'etb-damage', name: 'ETB → Damage (Self)', defaultValue: 0, description: 'Deal damage when this creature enters (Siege-Gang Commander, Flametongue Kavu)' },
+                            { id: 'other-etb-damage', name: 'ETB → Damage (Others)', defaultValue: 0, description: 'Deal damage when OTHER creatures enter (Impact Tremors creatures, Purphoros)' },
+                            { id: 'etb-life-loss', name: 'ETB → Drain', defaultValue: 0, description: 'Deal damage/drain on ETB (Gray Merchant, Mulldrifter in aristocrats)' },
+                            // === ETB TRIGGERS (Disruption) ===
+                            { id: 'etb-opponent-sac', name: 'ETB → Force Sac', defaultValue: 0, description: 'Force opponents to sacrifice on ETB (Fleshbag Marauder, Plaguecrafter, Demon\'s Disciple)' },
+                            { id: 'etb-opponent-discard', name: 'ETB → Force Discard', defaultValue: 0, description: 'Force opponents to discard on ETB (Liliana\'s Specter, Burglar Rat)' },
+                            { id: 'etb-other', name: 'ETB → Other', defaultValue: 0, description: 'Miscellaneous ETB effects (tutors, mill, etc.)' },
+                            // === DEATH TRIGGERS (Value) ===
+                            { id: 'die-draw', name: 'Death → Draw', defaultValue: 0, description: 'Draw when dying or others die (Grim Haruspex, Midnight Reaper)' },
+                            { id: 'die-tokens', name: 'Death → Tokens', defaultValue: 0, description: 'Make tokens when dying (Hangarback Walker, Bitterblossom)' },
+                            { id: 'die-recursion', name: 'Death → Recursion', defaultValue: 0, description: 'Return from graveyard (Reassembling Skeleton, Bloodghast)' },
+                            // === DEATH TRIGGERS (Damage/Disruption) ===
+                            { id: 'die-life-loss', name: 'Death → Drain', defaultValue: 0, description: 'Drain when dying (Blood Artist, Zulaport Cutthroat)' },
+                            { id: 'die-opponent-sac', name: 'Death → Force Sac', defaultValue: 0, description: 'Force sac when this dies (Dictate of Erebos creatures, Butcher of Malakir)' },
+                            { id: 'die-other', name: 'Death → Other', defaultValue: 0, description: 'Miscellaneous death triggers (various effects)' }
                         ]
                     },
                     {
@@ -1210,7 +1237,8 @@
                             { id: 'drain-attack', name: 'Drain (Attack)', defaultValue: 0, description: 'Drain when attacking (lifelink, Pontiff of Blight)' },
                             { id: 'drain-death', name: 'Drain (Death)', defaultValue: 0, description: 'Drain when creatures die (Blood Artist, Zulaport Cutthroat)' },
                             { id: 'drain-repeatable', name: 'Repeatable Drain', defaultValue: 0, description: 'Activated drain abilities (Exquisite Blood triggers, repeated pings)' },
-                            { id: 'direct-damage', name: 'Direct Damage', defaultValue: 0, description: 'Creatures that ping/burn (Prodigal Pyromancer, Goblin Sharpshooter)' }
+                            { id: 'direct-damage-creatures', name: 'Direct Damage', defaultValue: 0, description: 'Creatures that ping/burn (Prodigal Pyromancer, Goblin Sharpshooter)' },
+                            { id: 'creature-based-damage', name: 'Creature-Based Damage', defaultValue: 0, description: 'Damage based on creature count/power (Purphoros, Terror of the Peaks, Warstorm Surge)' }
                         ]
                     },
                     {
@@ -1223,7 +1251,8 @@
                             { id: 'damage-opponent-discard', name: 'Deal Damage → Opponent Discard', defaultValue: 0, description: 'Opponent discards when you deal damage (Nekusar, Waste Not triggers)' },
                             { id: 'damage-tokens', name: 'Deal Damage → Create Tokens', defaultValue: 0, description: 'Create tokens when dealing damage' },
                             { id: 'damage-life-loss', name: 'Deal Damage → Life Loss', defaultValue: 0, description: 'Additional damage/drain (Purphoros, Syr Konrad, Impact Tremors on ETB)' },
-                            { id: 'damage-other', name: 'Deal Damage → Other Effects', defaultValue: 0, description: 'Other repeatable damage-based triggers' }
+                            { id: 'damage-other', name: 'Deal Damage → Other Effects', defaultValue: 0, description: 'Other repeatable damage-based triggers' },
+                            { id: 'extra-combat-creatures', name: 'Extra Combat', defaultValue: 0, description: 'Grant extra combat phases (Combat Celebrant, Aurelia the Warleader, Moraug)' }
                         ]
                     },
                     {
@@ -1242,18 +1271,45 @@
                         id: 'evasion-keywords',
                         name: '🦅 Evasion & Keywords',
                         subcategories: [
+                            // === EVASION (getting through) ===
                             { id: 'flying', name: 'Flying', defaultValue: 0, description: 'Can only be blocked by flying or reach' },
                             { id: 'menace', name: 'Menace', defaultValue: 0, description: 'Must be blocked by 2+ creatures' },
                             { id: 'trample', name: 'Trample', defaultValue: 0, description: 'Excess damage goes through' },
                             { id: 'unblockable', name: 'Unblockable', defaultValue: 0, description: 'Cannot be blocked' },
+                            { id: 'other-evasion', name: 'Other Evasion', defaultValue: 0, description: 'Shadow, horsemanship, fear, etc.' },
+                            // === OFFENSIVE KEYWORDS ===
                             { id: 'first-strike', name: 'First/Double Strike', defaultValue: 0, description: 'Deals combat damage first' },
                             { id: 'deathtouch', name: 'Deathtouch', defaultValue: 0, description: 'Any damage is lethal' },
-                            { id: 'lifelink', name: 'Lifelink', defaultValue: 0, description: 'Gain life equal to damage' },
-                            { id: 'vigilance', name: 'Vigilance', defaultValue: 0, description: 'Doesn\'t tap to attack' },
                             { id: 'haste', name: 'Haste', defaultValue: 0, description: 'Can attack immediately' },
+                            { id: 'vigilance', name: 'Vigilance', defaultValue: 0, description: 'Doesn\'t tap to attack' },
+                            // === DEFENSIVE/UTILITY KEYWORDS ===
+                            { id: 'lifelink', name: 'Lifelink', defaultValue: 0, description: 'Gain life equal to damage' },
                             { id: 'hexproof', name: 'Hexproof', defaultValue: 0, description: 'Can\'t be targeted' },
                             { id: 'indestructible', name: 'Indestructible', defaultValue: 0, description: 'Cannot be destroyed' },
-                            { id: 'other-evasion', name: 'Other Evasion', defaultValue: 0, description: 'Shadow, horsemanship, fear, etc.' }
+                            // === SPECIAL ===
+                            { id: 'goad-creatures', name: 'Goad', defaultValue: 0, description: 'Force opponents creatures to attack (Grenzo, Karazikar, goad effects)' }
+                        ]
+                    },
+                    {
+                        id: 'lifegain-creatures',
+                        name: '❤️ Lifegain Creatures',
+                        subcategories: [
+                            { id: 'lifegain-etb', name: 'Lifegain on ETB', defaultValue: 0, description: 'Gain life when entering (Thragtusk, Siege Rhino, Kitchen Finks)' },
+                            { id: 'lifegain-repeatable', name: 'Repeatable Lifegain', defaultValue: 0, description: 'Ongoing life gain (Soul Warden, Daxos Blessed by the Sun, Heliod)' },
+                            { id: 'lifegain-attack', name: 'Lifegain on Attack', defaultValue: 0, description: 'Gain life when attacking (Lifelink creatures, Wurmcoil Engine)' },
+                            { id: 'lifegain-payoffs', name: 'Lifegain Payoffs', defaultValue: 0, description: 'Reward gaining life (Ajani\'s Pridemate, Archangel of Thune, Heliod Sun-Crowned)' },
+                            { id: 'lifegain-drain', name: 'Drain Effects', defaultValue: 0, description: 'Gain life while opponents lose (Gray Merchant, Kokusho, Vito)' }
+                        ]
+                    },
+                    {
+                        id: 'counter-creatures',
+                        name: '🎯 +1/+1 Counter Creatures',
+                        subcategories: [
+                            { id: 'counter-etb', name: 'Counters on ETB', defaultValue: 0, description: 'Enter with or distribute counters (Walking Ballista, Hangarback Walker)' },
+                            { id: 'counter-generators', name: 'Counter Generators', defaultValue: 0, description: 'Create counters repeatedly (Mikaeus the Lunarch, Armorcraft Judge, Forgotten Ancient)' },
+                            { id: 'counter-doublers', name: 'Counter Doublers', defaultValue: 0, description: 'Double or multiply counters (Corpsejack Menace, Doubling Season creatures)' },
+                            { id: 'counter-payoffs', name: 'Counter Payoffs', defaultValue: 0, description: 'Benefit from counters (Champion of Lambholt, Fathom Mage, Managorger Hydra)' },
+                            { id: 'counter-movers', name: 'Counter Movers', defaultValue: 0, description: 'Move or redistribute counters (Reyhan, The Ozolith creatures, Bioshift effects)' }
                         ]
                     },
                     {
@@ -1323,7 +1379,10 @@
                             { id: 'counterspells', name: 'Counterspells', defaultValue: 0, description: 'Counter target spell (Counterspell, Swan Song, Arcane Denial, Negate)' },
                             { id: 'protection-spells', name: 'Protection Spells', defaultValue: 0, description: 'Protect your permanents (Heroic Intervention, Teferi\'s Protection, Flawless Maneuver)' },
                             { id: 'redirection', name: 'Redirection', defaultValue: 0, description: 'Change targets of spells/abilities (Deflecting Swat, Bolt Bend, Redirect)' },
-                            { id: 'phasing', name: 'Phasing Effects', defaultValue: 0, description: 'Phase out to protect (Teferi\'s Protection, Ghostway, Eerie Interlude)' }
+                            { id: 'phasing', name: 'Phasing Effects', defaultValue: 0, description: 'Phase out to protect (Teferi\'s Protection, Ghostway, Eerie Interlude)' },
+                            { id: 'blink-spells', name: 'Blink/Flicker Spells', defaultValue: 0, description: 'Exile and return creatures (Ephemerate, Cloudshift, Ghostly Flicker)' },
+                            { id: 'mass-blink', name: 'Mass Blink', defaultValue: 0, description: 'Blink multiple creatures (Eerie Interlude, Ghostway, Semester\'s End)' },
+                            { id: 'repeatable-blink', name: 'Repeatable Blink', defaultValue: 0, description: 'Permanent-based blink effects (Conjurer\'s Closet, Thassa Deep-Dwelling)' }
                         ]
                     },
                     {
@@ -1365,25 +1424,6 @@
                             { id: 'planeswalker-protection', name: 'Protection', defaultValue: 0, description: 'Planeswalkers that protect or control board (Teferi, Narset, Dovin)' },
                             { id: 'planeswalker-finisher', name: 'Finisher', defaultValue: 0, description: 'Planeswalkers with game-ending ultimates (Nicol Bolas, Ugin, big finish walkers)' },
                             { id: 'planeswalker-other', name: 'Utility/Other Walkers', defaultValue: 0, description: 'Miscellaneous or utility planeswalkers (Karn, various)' }
-                        ]
-                    },
-                    {
-                        id: 'combo-pieces',
-                        name: 'Combo Pieces',
-                        subcategories: [
-                            { id: 'combo-enablers', name: 'Combo Enablers', defaultValue: 0, description: 'Cards that set up combos (Intruder Alarm, Ashnod\'s Altar, untappers)' },
-                            { id: 'combo-payoffs', name: 'Combo Payoffs', defaultValue: 0, description: 'Win conditions for combos (Thassa\'s Oracle, Lab Man, drain effects)' },
-                            { id: 'infinite-pieces', name: 'Infinite Combo Pieces', defaultValue: 0, description: 'Create infinite loops (Dramatic Reversal + Isochron Scepter pieces)' }
-                        ]
-                    },
-                    {
-                        id: 'synergy-pieces',
-                        name: '🔗 Synergy Pieces',
-                        subcategories: [
-                            { id: 'synergy-enablers', name: 'Synergy Enablers', defaultValue: 0, description: 'Cards that enable your deck\'s strategy (Doubling Season, Panharmonicon, cost reducers)' },
-                            { id: 'synergy-payoffs', name: 'Synergy Payoffs', defaultValue: 0, description: 'Cards that reward your strategy (Craterhoof for tokens, Purphoros for ETBs)' },
-                            { id: 'tribal-synergy', name: 'Tribal Synergy', defaultValue: 0, description: 'Tribal support cards (Lord effects, tribal anthems, Kindred Discovery)' },
-                            { id: 'theme-support', name: 'Theme Support', defaultValue: 0, description: 'Cards supporting your deck\'s theme (graveyard matters, +1/+1 counters, etc.)' }
                         ]
                     },
                     {
@@ -1433,6 +1473,71 @@
                         ]
                     },
                     {
+                        id: 'enchantments',
+                        name: '✨ Enchantments',
+                        subcategories: [
+                            // === VALUE/RESOURCE ===
+                            { id: 'enchantment-draw', name: 'Card Draw', defaultValue: 0, description: 'Draw card enchantments (Rhystic Study, Sylvan Library, Phyrexian Arena)' },
+                            { id: 'enchantment-ramp', name: 'Ramp', defaultValue: 0, description: 'Mana production (Wild Growth, Utopia Sprawl, Mirari\'s Wake)' },
+                            { id: 'enchantment-tokens', name: 'Token Generation', defaultValue: 0, description: 'Create tokens (Bitterblossom, Assemble the Legion, From Beyond)' },
+                            { id: 'enchantment-recursion', name: 'Recursion', defaultValue: 0, description: 'Return cards from graveyard (Dance of the Dead, Animate Dead, Necromancy)' },
+                            // === CREATURE BUFFS ===
+                            { id: 'enchantment-anthems', name: 'Anthems', defaultValue: 0, description: 'Buff all your creatures (Glorious Anthem, Divine Visitation, Dictate of Heliod)' },
+                            { id: 'enchantment-pump', name: 'Pump/Counters', defaultValue: 0, description: '+1/+1 counter enchantments (Cathars\' Crusade, Hardened Scales, Branching Evolution)' },
+                            // === CONTROL/DISRUPTION ===
+                            { id: 'enchantment-control', name: 'Pillowfort/Control', defaultValue: 0, description: 'Tax or prevent attacks (Ghostly Prison, Propaganda, Sphere of Safety)' },
+                            { id: 'enchantment-stax', name: 'Stax', defaultValue: 0, description: 'Restrict opponents (Blind Obedience, Rule of Law, Overwhelming Splendor)' },
+                            { id: 'enchantment-removal-aura', name: 'Removal Auras', defaultValue: 0, description: 'Neutralize permanents (Oblivion Ring, Darksteel Mutation, Imprisoned in the Moon)' },
+                            // === DAMAGE/LIFE ===
+                            { id: 'enchantment-damage', name: 'Damage/Drain', defaultValue: 0, description: 'Deal damage or drain (Sulfuric Vortex, Impact Tremors, Sanguine Bond)' },
+                            { id: 'enchantment-lifegain', name: 'Lifegain', defaultValue: 0, description: 'Gain life (Whip of Erebos, True Conviction, Righteous Cause)' },
+                            // === PROTECTION ===
+                            { id: 'enchantment-protection', name: 'Protection', defaultValue: 0, description: 'Protect your board (Greater Auramancy, Privileged Position, Sterling Grove)' },
+                            // === SPECIAL TYPES ===
+                            { id: 'enchantment-sagas', name: 'Sagas', defaultValue: 0, description: 'Saga enchantments (Binding of the Old Gods, Kiora Bests the Sea God)' },
+                            { id: 'enchantment-curses', name: 'Curses', defaultValue: 0, description: 'Curse enchantments (Curse of Opulence, Curse of Bounty, Curse of Vitality)' },
+                            { id: 'enchantment-other', name: 'Other Enchantments', defaultValue: 0, description: 'Miscellaneous enchantments' }
+                        ]
+                    },
+                    {
+                        id: 'evasion-keywords-spells',
+                        name: '🦅 Evasion & Keywords',
+                        subcategories: [
+                            { id: 'grant-flying', name: 'Grant Flying', defaultValue: 0, description: 'Give creatures flying (Levitation, Wonder, Archetype of Imagination)' },
+                            { id: 'grant-menace', name: 'Grant Menace', defaultValue: 0, description: 'Give creatures menace (Goblin War Drums, Gruul War Chant)' },
+                            { id: 'grant-trample', name: 'Grant Trample', defaultValue: 0, description: 'Give creatures trample (Primal Rage, Overwhelming Stampede, Nylea)' },
+                            { id: 'grant-unblockable', name: 'Grant Unblockable', defaultValue: 0, description: 'Make creatures unblockable (Thassa God of the Sea, Suspicious Bookcase)' },
+                            { id: 'grant-first-strike', name: 'Grant First/Double Strike', defaultValue: 0, description: 'Give first or double strike (True Conviction, Duelist\'s Heritage)' },
+                            { id: 'grant-deathtouch', name: 'Grant Deathtouch', defaultValue: 0, description: 'Give deathtouch (Bow of Nylea, Archetype of Finality)' },
+                            { id: 'grant-lifelink', name: 'Grant Lifelink', defaultValue: 0, description: 'Give lifelink (True Conviction, Whip of Erebos, Vault of the Archangel)' },
+                            { id: 'grant-vigilance', name: 'Grant Vigilance', defaultValue: 0, description: 'Give vigilance (Serra\'s Blessing, Brave the Sands)' },
+                            { id: 'grant-haste', name: 'Grant Haste', defaultValue: 0, description: 'Give haste (Fervor, Fires of Yavimaya, Swiftfoot Boots)' },
+                            { id: 'grant-hexproof', name: 'Grant Hexproof', defaultValue: 0, description: 'Give hexproof (Asceticism, Archetype of Endurance)' },
+                            { id: 'grant-indestructible', name: 'Grant Indestructible', defaultValue: 0, description: 'Give indestructible (Avacyn Angel of Hope, Eldrazi Monument)' },
+                            { id: 'goad-spells', name: 'Goad', defaultValue: 0, description: 'Force creatures to attack (Disrupt Decorum, Vengeful Ancestor, Kardur)' },
+                            { id: 'other-keywords-spells', name: 'Other Keywords', defaultValue: 0, description: 'Other keyword grants (shadow, horsemanship, etc.)' }
+                        ]
+                    },
+                    {
+                        id: 'damage-spells',
+                        name: '🔥 Damage',
+                        subcategories: [
+                            { id: 'direct-damage-spells', name: 'Direct Damage', defaultValue: 0, description: 'One-shot damage (Lightning Bolt, Flame Rift, Comet Storm)' },
+                            { id: 'recurring-damage', name: 'Recurring Damage', defaultValue: 0, description: 'Repeated damage over time (Sulfuric Vortex, Manabarbs, Zo-Zu)' },
+                            { id: 'creature-count-damage', name: 'Creature-Based Damage', defaultValue: 0, description: 'Damage based on creatures (Goblin War Strike, Mob Justice)' },
+                            { id: 'any-target-damage', name: 'Any Target Damage', defaultValue: 0, description: 'Flexible target damage (Lightning Bolt, Banefire, Fireball)' }
+                        ]
+                    },
+                    {
+                        id: 'tap-untap',
+                        name: '🔄 Tap/Untap',
+                        subcategories: [
+                            { id: 'tap-effects', name: 'Tap Effects', defaultValue: 0, description: 'Tap permanents (Icy Manipulator, Opposition, Glare of Subdual)' },
+                            { id: 'untap-effects', name: 'Untap Effects', defaultValue: 0, description: 'Untap permanents (Seedborn Muse, Dramatic Reversal, Wilderness Reclamation)' },
+                            { id: 'tap-untap-payoffs', name: 'Tap/Untap Payoffs', defaultValue: 0, description: 'Benefit from tapping/untapping (Faeburrow Elder, Emmara, Presence of Gond)' }
+                        ]
+                    },
+                    {
                         id: 'combo-pieces',
                         name: 'Combo Pieces',
                         subcategories: [
@@ -1452,6 +1557,78 @@
                         ]
                     },
                     {
+                        id: 'sac-spells',
+                        name: '💀 Sacrifice Outlets (Spells)',
+                        subcategories: [
+                            // General Outlets
+                            { id: 'free-sac-spells', name: 'Free Sac Outlets', defaultValue: 0, description: 'Sacrifice without mana cost (Altar of Dementia, Phyrexian Altar)' },
+                            { id: 'paid-sac-spells', name: 'Paid Sac Outlets', defaultValue: 0, description: 'Sacrifice requiring mana (various)' },
+                            { id: 'sac-repeatable-spells', name: 'Repeatable Sac', defaultValue: 0, description: 'Ongoing sacrifice effects (Goblin Bombardment, Skullclamp)' },
+                            // Resource Generation
+                            { id: 'sac-mana-spells', name: 'Sac → Mana', defaultValue: 0, description: 'Sacrifice for mana (Ashnod\'s Altar, Phyrexian Altar)' },
+                            { id: 'sac-draw-spells', name: 'Sac → Draw', defaultValue: 0, description: 'Sacrifice to draw (Altar\'s Reap, Village Rites, Deadly Dispute)' },
+                            { id: 'sac-tutor-spells', name: 'Sac → Search', defaultValue: 0, description: 'Sacrifice to tutor (Diabolic Intent, Eldritch Evolution)' },
+                            // Damage & Payoffs
+                            { id: 'sac-damage-spells', name: 'Sac → Damage', defaultValue: 0, description: 'Sacrifice to deal damage (Fling, Goblin Bombardment)' },
+                            { id: 'sac-drain-spells', name: 'Sac → Drain', defaultValue: 0, description: 'Sacrifice to drain life (Devouring Greed)' }
+                        ]
+                    },
+                    {
+                        id: 'etb-spells',
+                        name: '💥 ETB Triggers (Spells)',
+                        subcategories: [
+                            { id: 'etb-draw-spells', name: 'ETB → Draw', defaultValue: 0, description: 'Draw when permanents enter (Guardian Project, Beast Whisperer enchant)' },
+                            { id: 'etb-damage-spells', name: 'ETB → Damage', defaultValue: 0, description: 'Deal damage when creatures enter (Impact Tremors, Warstorm Surge)' },
+                            { id: 'etb-tokens-spells', name: 'ETB → Tokens', defaultValue: 0, description: 'Create tokens when permanents enter (Parallel Lives, Doubling Season)' },
+                            { id: 'etb-counters-spells', name: 'ETB → Counters', defaultValue: 0, description: 'Add counters on ETB (Cathars\' Crusade, Hardened Scales)' },
+                            { id: 'etb-lifegain-spells', name: 'ETB → Lifegain', defaultValue: 0, description: 'Gain life when creatures enter (Soul Warden enchant effects)' },
+                            { id: 'etb-other-spells', name: 'ETB → Other', defaultValue: 0, description: 'Other ETB triggers (Panharmonicon, various)' }
+                        ]
+                    },
+                    {
+                        id: 'death-spells',
+                        name: '☠️ Death Triggers (Spells)',
+                        subcategories: [
+                            { id: 'death-draw-spells', name: 'Death → Draw', defaultValue: 0, description: 'Draw when creatures die (Skullclamp, Dark Prophecy)' },
+                            { id: 'death-damage-spells', name: 'Death → Damage', defaultValue: 0, description: 'Deal damage when creatures die (Stalking Vengeance, Vicious Shadows)' },
+                            { id: 'death-tokens-spells', name: 'Death → Tokens', defaultValue: 0, description: 'Create tokens when creatures die (Open the Graves, Ogre Slumlord)' },
+                            { id: 'death-drain-spells', name: 'Death → Drain', defaultValue: 0, description: 'Drain when creatures die (Blood Artist enchant, Bastion of Remembrance)' },
+                            { id: 'death-recursion-spells', name: 'Death → Recursion', defaultValue: 0, description: 'Return creatures when they die (Gift of Immortality, Nim Deathmantle)' },
+                            { id: 'death-sac-trigger-spells', name: 'Death → Force Sac', defaultValue: 0, description: 'Opponents sacrifice when creatures die (Dictate of Erebos, Grave Pact)' }
+                        ]
+                    },
+                    {
+                        id: 'discard-spells',
+                        name: '🃏 Discard (Spells)',
+                        subcategories: [
+                            { id: 'discard-oneshot', name: 'One-Shot Discard', defaultValue: 0, description: 'Single discard effect (Duress, Thoughtseize, Mind Rot)' },
+                            { id: 'discard-repeatable', name: 'Repeatable Discard', defaultValue: 0, description: 'Ongoing discard (Bottomless Pit, Oppression, Necrogen Mists)' },
+                            { id: 'discard-wheels', name: 'Wheel Effects', defaultValue: 0, description: 'Everyone discards and draws (Wheel of Fortune, Windfall)' },
+                            { id: 'discard-payoffs-spells', name: 'Discard Payoffs', defaultValue: 0, description: 'Benefit from discarding (Waste Not, Faith of the Devoted)' }
+                        ]
+                    },
+                    {
+                        id: 'lifegain-spells',
+                        name: '❤️ Lifegain (Spells)',
+                        subcategories: [
+                            { id: 'lifegain-oneshot', name: 'One-Shot Lifegain', defaultValue: 0, description: 'Single life gain (Swords to Plowshares gain, various)' },
+                            { id: 'lifegain-repeatable-spells', name: 'Repeatable Lifegain', defaultValue: 0, description: 'Ongoing life gain (Whip of Erebos, True Conviction)' },
+                            { id: 'lifegain-payoffs-spells', name: 'Lifegain Payoffs', defaultValue: 0, description: 'Benefit from gaining life (Sanguine Bond, Vito, Crested Sunmare enchant)' },
+                            { id: 'lifegain-doublers', name: 'Lifegain Doublers', defaultValue: 0, description: 'Double or increase life gain (Boon Reflection, Alhammarret\'s Archive)' },
+                            { id: 'drain-spells', name: 'Drain Effects', defaultValue: 0, description: 'Gain life while opponents lose (Exsanguinate, Gary effects)' }
+                        ]
+                    },
+                    {
+                        id: 'counter-spells-cat',
+                        name: '🎯 +1/+1 Counters (Spells)',
+                        subcategories: [
+                            { id: 'counter-distributors', name: 'Counter Distributors', defaultValue: 0, description: 'Put counters on creatures (Inspiring Call, Collective Effort)' },
+                            { id: 'counter-doublers-spells', name: 'Counter Doublers', defaultValue: 0, description: 'Double counters (Doubling Season, Hardened Scales, Branching Evolution)' },
+                            { id: 'counter-payoffs-spells', name: 'Counter Payoffs', defaultValue: 0, description: 'Benefit from counters (Inspiring Call, Armorcraft Judge enchant)' },
+                            { id: 'counter-removal', name: 'Counter-Based Removal', defaultValue: 0, description: 'Remove counters or use them (Black Sun\'s Zenith, Retribution of the Ancients)' }
+                        ]
+                    },
+                    {
                         id: 'spells-other',
                         name: 'Other Spells',
                         subcategories: [
@@ -1460,6 +1637,46 @@
                     }
                 ]
             }
+        };
+
+        // Migration mapping for old category IDs to new ones
+        const CATEGORY_MIGRATION_MAP = {
+            // Old Tribal Creatures category -> New Synergy Pieces locations
+            'tribal-payoffs': 'tribal-payoffs',           // Same ID, now in Synergy
+            'tribal-lords': 'tribal-lords',               // Same ID, now in Synergy
+            'tribal-support': 'tribal-synergy',           // Renamed
+            'changeling': 'changeling',                   // Same ID, now in Synergy
+
+            // Old direct-damage -> new direct-damage-creatures
+            'direct-damage': 'direct-damage-creatures',
+
+            // Map any old sac categories that might exist
+            'aristocrats': 'sac-damage',                  // Aristocrats usually deal damage on sac
+        };
+
+        // Function to migrate old deck data to new category structure
+        const migrateDeckCategories = (categories) => {
+            if (!categories) return categories;
+
+            const migrated = { ...categories };
+            let hasMigrations = false;
+
+            // Apply migrations
+            Object.entries(CATEGORY_MIGRATION_MAP).forEach(([oldId, newId]) => {
+                if (migrated[oldId] && oldId !== newId) {
+                    // Add old value to new ID (in case both exist, sum them)
+                    migrated[newId] = (migrated[newId] || 0) + migrated[oldId];
+                    // Keep old ID for backwards compatibility but mark migration happened
+                    hasMigrations = true;
+                    console.log(`📦 Migrated category: ${oldId} -> ${newId} (${migrated[oldId]} cards)`);
+                }
+            });
+
+            if (hasMigrations) {
+                console.log('✅ Deck category migration complete');
+            }
+
+            return migrated;
         };
 
         // CMC Explanation constant
@@ -2068,7 +2285,7 @@
                                 <ul style={{marginLeft: '1.5rem', marginTop: '0.5rem', marginBottom: 0, color: 'var(--text-secondary)', lineHeight: '1.8'}}>
                                     <li><strong>Tri-lands:</strong> If your deck has exactly 3 colors, enter tri-lands below. They'll be subtracted from your total land count.</li>
                                     <li><strong>4-5 Color Decks:</strong> This calculator is designed for 1-3 color decks only. Results for 4+ color decks will be inaccurate and are not supported.</li>
-                                    <li><strong>Utility Lands:</strong> "Remaining Slots" in results are for Command Tower, utility lands, colorless lands, etc.</li>
+                                    <li><strong>Remaining Slots:</strong> After calculating basics needed, leftover slots can be used for extra basics of any color or utility lands.</li>
                                 </ul>
                             </div>
                         </div>
@@ -2162,7 +2379,7 @@
 
                     <div style={{marginBottom: '1.5rem'}}>
                         <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
-                            Tri-Lands
+                            Tri-Lands & Sacrifice Lands
                         </label>
                         {window.innerWidth <= 768 ? (
                             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
@@ -2241,9 +2458,14 @@
                                 style={{width: '100px'}}
                             />
                         )}
-                        <small style={{color: 'var(--text-muted)', marginLeft: window.innerWidth <= 768 ? '0' : '1rem', display: 'block', marginTop: window.innerWidth <= 768 ? '0.3rem' : '0'}}>
-                            3+ color lands
-                        </small>
+                        <div style={{marginLeft: window.innerWidth <= 768 ? '0' : '1rem', marginTop: '0.5rem'}}>
+                            <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
+                                <strong>Include:</strong> Triomes, Panoramas, Evolving Wilds, Terramorphic Expanse, Fabled Passage, Prismatic Vista - any land that can fetch ANY basic land type
+                            </small>
+                            <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic', fontSize: '0.8rem'}}>
+                                💡 These subtract from total but provide 3+ colors
+                            </small>
+                        </div>
                         {(() => {
                             // Calculate deck colors from current pip counts
                             const colors = ['W', 'U', 'B', 'R', 'G'];
@@ -2346,9 +2568,14 @@
                                 style={{width: '100px'}}
                             />
                         )}
-                        <small style={{color: 'var(--text-muted)', marginLeft: window.innerWidth <= 768 ? '0' : '1rem', display: 'block', marginTop: window.innerWidth <= 768 ? '0.3rem' : '0'}}>
-                            Colorless, sac lands, etc.
-                        </small>
+                        <div style={{marginLeft: window.innerWidth <= 768 ? '0' : '1rem', marginTop: '0.5rem'}}>
+                            <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
+                                <strong>Include:</strong> Reliquary Tower, Wastes, Ancient Tomb, Strip Mine - lands that DON'T produce colored mana. (Note: Command Tower DOES produce colors!)
+                            </small>
+                            <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic', fontSize: '0.8rem'}}>
+                                💡 These take up land slots but don't help your color requirements
+                            </small>
+                        </div>
                     </div>
 
                     {/* STEP 1: Dual Lands */}
@@ -2845,52 +3072,6 @@
                         </button>
                     </div>
 
-                    {/* Mobile Info Button */}
-                    {window.innerWidth <= 768 && (
-                        <div style={{marginTop: '1rem', marginBottom: '1rem'}}>
-                            <button
-                                className="btn btn-secondary"
-                                onClick={() => setShowMobileAbout(!showMobileAbout)}
-                                style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
-                            >
-                                <span>ℹ️ How This Calculator Works</span>
-                                <span style={{fontSize: '1.2rem'}}>{showMobileAbout ? '▼' : '▶'}</span>
-                            </button>
-                            
-                            {showMobileAbout && (
-                                <div style={{
-                                    marginTop: '1rem',
-                                    padding: '1rem',
-                                    background: 'var(--bg-secondary)',
-                                    borderRadius: '8px',
-                                    border: '1px solid var(--border-color)'
-                                }}>
-                                    <h4 style={{color: 'var(--gold)', marginBottom: '0.5rem'}}>📖 How This Calculator Works</h4>
-                                    
-                                    <div style={{marginBottom: '1rem'}}>
-                                        <p style={{marginBottom: '0.5rem', fontSize: '0.85rem', lineHeight: '1.6'}}>
-                                            This calculator uses <strong style={{color: 'var(--gold)'}}>pip distribution</strong> to determine your optimal mana base:
-                                        </p>
-                                    </div>
-                                    
-                                    <ul style={{paddingLeft: '1.2rem', lineHeight: '1.7', fontSize: '0.85rem', marginBottom: '1rem'}}>
-                                        <li><strong>Step 1:</strong> Counts all colored mana symbols (pips) in your deck. {'{W}{W}'} = 2 pips, {'{2}{R}'} = 1 pip.</li>
-                                        <li><strong>Step 2:</strong> Calculates the percentage each color represents. (e.g., 20 white pips out of 50 total = 40%)</li>
-                                        <li><strong>Step 3:</strong> Distributes your total lands proportionally. (40% of 36 lands = 14-15 white sources needed)</li>
-                                        <li><strong>Step 4:</strong> Subtracts dual/tri-lands from basic land requirements. (If you have 4 W/U duals, you need 4 fewer Plains)</li>
-                                        <li><strong>Tri-Lands:</strong> In 3-color decks, each tri-land counts as 1 source for all 3 colors automatically!</li>
-                                    </ul>
-                                    
-                                    <div style={{background: 'rgba(212, 175, 55, 0.1)', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--gold)'}}>
-                                        <p style={{margin: 0, fontSize: '0.85rem', lineHeight: '1.5'}}>
-                                            <strong style={{color: 'var(--gold)'}}>⚠️ Important:</strong> Designed for 1-3 color decks. Results for 4+ color decks will be inaccurate and are not supported.
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
                     {showResults && manaCalculation && (
                         <div className="mana-results">
                             <div style={{fontWeight: 600, fontSize: '1.3rem', marginBottom: '1rem', color: 'var(--gold)', textAlign: 'center'}}>
@@ -2925,7 +3106,7 @@
                                 </div>
                                 {manaCalculation.triLands > 0 && (
                                     <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
-                                        <span>Tri-Lands (Triomes):</span>
+                                        <span>Tri/Fetch-Any Lands:</span>
                                         <strong>{manaCalculation.triLands}</strong>
                                     </div>
                                 )}
@@ -2943,7 +3124,7 @@
                                     <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
                                         <span>Remaining Slots:</span>
                                         <strong>{totalLands - manaCalculation.totalOccupiedSlots - manaCalculation.totalBasicsNeeded}</strong>
-                                        <small style={{color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(for utility lands)</small>
+                                        <small style={{color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(extra basics or flex slots)</small>
                                     </div>
                                 )}
                                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -3333,24 +3514,28 @@ const saveDeckToFirebase = async (deck) => {
             // Load user's decks from Firebase
             const loadDecksFromFirebase = async (userId) => {
                 if (!userId) return;
-                
+
                 try {
                     const snapshot = await db.collection("decks")
                         .where("userId", "==", userId)
                         .orderBy("updatedAt", "desc")
                         .get();
-                    
+
                     const firebaseDecks = [];
                     snapshot.forEach((doc) => {
-                        firebaseDecks.push({
-                            
-                            ...doc.data(),
-                            id: doc.id
-                        });
+                        const deckData = doc.data();
+                        // Apply category migration to each deck
+                        const migratedDeck = {
+                            ...deckData,
+                            id: doc.id,
+                            categories: migrateDeckCategories(deckData.categories),
+                            sideboard: migrateDeckCategories(deckData.sideboard)
+                        };
+                        firebaseDecks.push(migratedDeck);
                     });
-                    
+
                     setDecks(firebaseDecks);
-                    console.log("Loaded", firebaseDecks.length, "decks from Firebase");
+                    console.log("Loaded", firebaseDecks.length, "decks from Firebase (with migrations applied)");
                 } catch (error) {
                     console.error("Error loading decks:", error);
                 }
@@ -4084,7 +4269,7 @@ return (
                                     )}
 
                                     {/* About Mana Calculator - Expandable button */}
-                                    <button 
+                                    <button
                                         onClick={() => setShowManaCalcAbout(!showManaCalcAbout)}
                                         style={{
                                             width: '100%',
@@ -4104,7 +4289,7 @@ return (
                                         <span>⚗️ About Mana Calculator</span>
                                         <span>{showManaCalcAbout ? '▼' : '▶'}</span>
                                     </button>
-                                    
+
                                     {showManaCalcAbout && (
                                         <div style={{
                                             padding: '1.2rem',
@@ -4813,6 +4998,9 @@ return (
                                         lands: updatedDeck.lands || 0,
                                         creatures: updatedDeck.creatures || 0,
                                         noncreature: updatedDeck.noncreature || 0,
+                                        // Save multi-function adjustments
+                                        multiFunctionCreatures: multiFunctionCreatures,
+                                        multiFunctionNoncreature: multiFunctionNoncreature,
                                         updatedAt: new Date(),
                                         // Keep createdAt if it exists, otherwise set it
                                         createdAt: deckToEdit.createdAt || new Date()
@@ -5742,20 +5930,69 @@ return (
                                     // Calculate Synergy Highlights
                                     const synergyEnablers = (cats['synergy-enablers'] || 0) + (cats['synergy-enablers-creatures'] || 0);
                                     const synergyPayoffs = (cats['synergy-payoffs'] || 0) + (cats['synergy-payoffs-creatures'] || 0);
-                                    const etbTriggers = (cats['etb-draw'] || 0) + (cats['etb-removal'] || 0) + (cats['etb-ramp'] || 0) + 
-                                        (cats['etb-opponent-sac'] || 0) + (cats['etb-opponent-discard'] || 0) + (cats['etb-life-loss'] || 0) + 
-                                        (cats['etb-tokens'] || 0) + (cats['etb-other'] || 0);
-                                    const deathTriggers = (cats['die-draw'] || 0) + (cats['die-opponent-sac'] || 0) + (cats['die-life-loss'] || 0) + 
+                                    const etbTriggers = (cats['etb-draw'] || 0) + (cats['etb-removal'] || 0) + (cats['etb-ramp'] || 0) +
+                                        (cats['etb-opponent-sac'] || 0) + (cats['etb-opponent-discard'] || 0) + (cats['etb-life-loss'] || 0) +
+                                        (cats['etb-tokens'] || 0) + (cats['etb-other'] || 0) + (cats['etb-damage'] || 0) + (cats['other-etb-damage'] || 0);
+                                    const deathTriggers = (cats['die-draw'] || 0) + (cats['die-opponent-sac'] || 0) + (cats['die-life-loss'] || 0) +
                                         (cats['die-tokens'] || 0) + (cats['die-recursion'] || 0) + (cats['die-other'] || 0);
-                                    const combatTriggers = (cats['damage-draw'] || 0) + (cats['damage-opponent-sac'] || 0) + (cats['damage-opponent-discard'] || 0) + 
-                                        (cats['damage-tokens'] || 0) + (cats['damage-life-loss'] || 0) + (cats['damage-other'] || 0);
-                                    
+                                    const combatTriggers = (cats['damage-draw'] || 0) + (cats['damage-opponent-sac'] || 0) + (cats['damage-opponent-discard'] || 0) +
+                                        (cats['damage-tokens'] || 0) + (cats['damage-life-loss'] || 0) + (cats['damage-other'] || 0) + (cats['extra-combat-creatures'] || 0);
+
                                     // Calculate Threat Analysis
                                     const bigBeaters = cats['big-beaters'] || 0;
                                     const finishers = cats['finisher-threats'] || 0;
                                     const unblockableCreatures = cats['unblockable-threats'] || 0;
+
+                                    // NEW: Calculate Total Tokens
+                                    const totalTokens =
+                                        (cats['token-makers'] || 0) +
+                                        (cats['token-spells'] || 0) +
+                                        (cats['planeswalker-tokens'] || 0) +
+                                        (cats['artifact-tokens'] || 0) +
+                                        (cats['etb-tokens'] || 0) +
+                                        (cats['die-tokens'] || 0) +
+                                        (cats['damage-tokens'] || 0) +
+                                        (cats['enchantment-tokens'] || 0);
+
+                                    // NEW: Calculate Total Sacrifice
+                                    const totalSacrifice =
+                                        (cats['free-sac'] || 0) +
+                                        (cats['paid-sac'] || 0) +
+                                        (cats['sac-mana'] || 0) +
+                                        (cats['sac-draw'] || 0) +
+                                        (cats['sac-damage'] || 0) +
+                                        (cats['sac-pump'] || 0) +
+                                        (cats['sac-tutor'] || 0) +
+                                        (cats['sac-mill'] || 0) +
+                                        (cats['sac-recursion'] || 0);
+
+                                    // NEW: Calculate Total Tribal
+                                    const totalTribal =
+                                        (cats['tribal-creatures-synergy'] || 0) +
+                                        (cats['tribal-lords'] || 0) +
+                                        (cats['tribal-payoffs'] || 0) +
+                                        (cats['tribal-pump'] || 0) +
+                                        (cats['changeling'] || 0) +
+                                        (cats['tribal-synergy'] || 0);
+
+                                    // NEW: Calculate Total Graveyard
+                                    const totalGraveyard =
+                                        (cats['recursion-creatures'] || 0) +
+                                        (cats['reanimation'] || 0) +
+                                        (cats['graveyard-recursion'] || 0) +
+                                        (cats['self-mill'] || 0) +
+                                        (cats['die-recursion'] || 0) +
+                                        (cats['enchantment-recursion'] || 0);
+
+                                    // NEW: Calculate Total Blink
+                                    const totalBlink =
+                                        (cats['blink-enablers'] || 0) +
+                                        (cats['blink-targets'] || 0) +
+                                        (cats['blink-spells'] || 0) +
+                                        (cats['mass-blink'] || 0) +
+                                        (cats['repeatable-blink'] || 0);
                                     
-                                    return (totalDraw > 0 || totalRemoval > 0 || totalRamp > 0 || totalProtection > 0 || totalEvasion > 0) && (
+                                    return (totalDraw > 0 || totalRemoval > 0 || totalRamp > 0 || totalProtection > 0 || totalEvasion > 0 || totalTokens > 0 || totalSacrifice > 0 || totalTribal > 0 || totalGraveyard > 0 || totalBlink > 0) && (
                                         <div style={{
                                             background: 'rgba(66, 135, 245, 0.1)',
                                             border: '1px solid var(--accent-bright)',
@@ -5771,15 +6008,15 @@ return (
                                             }}>
                                                 📊 Deck Analytics
                                             </h4>
-                                            
-                                            {/* Correlation Totals Grid */}
+
+                                            {/* Correlation Totals Grid - Row 1: Core Stats */}
                                             <div style={{
                                                 display: 'grid',
-                                                gridTemplateColumns: window.innerWidth <= 768 
-                                                    ? 'repeat(2, 1fr)' 
+                                                gridTemplateColumns: window.innerWidth <= 768
+                                                    ? 'repeat(3, 1fr)'
                                                     : 'repeat(5, 1fr)',
                                                 gap: window.innerWidth <= 768 ? '0.5rem' : '1rem',
-                                                marginBottom: '1.5rem'
+                                                marginBottom: '0.75rem'
                                             }}>
                                                 {totalDraw > 0 && (
                                                     <div style={{
@@ -5896,7 +6133,134 @@ return (
                                                     </div>
                                                 )}
                                             </div>
-                                            
+
+                                            {/* Row 2: Secondary Stats */}
+                                            {(totalTokens > 0 || totalSacrifice > 0 || totalTribal > 0 || totalGraveyard > 0 || totalBlink > 0) && (
+                                                <div style={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: window.innerWidth <= 768
+                                                        ? 'repeat(3, 1fr)'
+                                                        : 'repeat(5, 1fr)',
+                                                    gap: window.innerWidth <= 768 ? '0.5rem' : '1rem',
+                                                    marginBottom: '1.5rem'
+                                                }}>
+                                                    {totalTokens > 0 && (
+                                                        <div style={{
+                                                            textAlign: 'center',
+                                                            padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                            background: 'var(--bg-secondary)',
+                                                            borderRadius: '8px'
+                                                        }}>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                                fontWeight: 700,
+                                                                color: 'var(--gold)'
+                                                            }}>
+                                                                {totalTokens}
+                                                            </div>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                                color: 'var(--text-muted)'
+                                                            }}>
+                                                                Tokens
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {totalSacrifice > 0 && (
+                                                        <div style={{
+                                                            textAlign: 'center',
+                                                            padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                            background: 'var(--bg-secondary)',
+                                                            borderRadius: '8px'
+                                                        }}>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                                fontWeight: 700,
+                                                                color: 'var(--gold)'
+                                                            }}>
+                                                                {totalSacrifice}
+                                                            </div>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                                color: 'var(--text-muted)'
+                                                            }}>
+                                                                Sacrifice
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {totalTribal > 0 && (
+                                                        <div style={{
+                                                            textAlign: 'center',
+                                                            padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                            background: 'var(--bg-secondary)',
+                                                            borderRadius: '8px'
+                                                        }}>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                                fontWeight: 700,
+                                                                color: 'var(--gold)'
+                                                            }}>
+                                                                {totalTribal}
+                                                            </div>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                                color: 'var(--text-muted)'
+                                                            }}>
+                                                                Tribal
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {totalGraveyard > 0 && (
+                                                        <div style={{
+                                                            textAlign: 'center',
+                                                            padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                            background: 'var(--bg-secondary)',
+                                                            borderRadius: '8px'
+                                                        }}>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                                fontWeight: 700,
+                                                                color: 'var(--gold)'
+                                                            }}>
+                                                                {totalGraveyard}
+                                                            </div>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                                color: 'var(--text-muted)'
+                                                            }}>
+                                                                Graveyard
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {totalBlink > 0 && (
+                                                        <div style={{
+                                                            textAlign: 'center',
+                                                            padding: window.innerWidth <= 768 ? '0.75rem' : '1rem',
+                                                            background: 'var(--bg-secondary)',
+                                                            borderRadius: '8px'
+                                                        }}>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '1.5rem' : '2rem',
+                                                                fontWeight: 700,
+                                                                color: 'var(--gold)'
+                                                            }}>
+                                                                {totalBlink}
+                                                            </div>
+                                                            <div style={{
+                                                                fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.85rem',
+                                                                color: 'var(--text-muted)'
+                                                            }}>
+                                                                Blink
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
                                             {/* Synergy & Threats - Two Column Layout */}
                                             <div style={{
                                                 display: 'grid',
@@ -5978,53 +6342,149 @@ return (
                                         </div>
                                     );
                                 })()}
-                                {/* Subtype Breakdown - Like Homepage Example */}
-                                {selectedDeck.categories && Object.keys(selectedDeck.categories).length > 0 && (
-                                    <div style={{
-                                        background: 'rgba(212, 175, 55, 0.1)',
-                                        border: '1px solid rgba(212, 175, 55, 0.3)',
-                                        borderRadius: '8px',
-                                        padding: '1.5rem',
-                                        marginBottom: '2rem'
-                                    }}>
-                                        <h4 style={{
-                                            color: 'var(--accent-bright)',
-                                            marginBottom: '1rem',
-                                            fontSize: '1.1rem',
-                                            fontWeight: 600
-                                        }}>
-                                            📊 Subtype Breakdown
-                                        </h4>
+                                {/* Subtype Breakdown - Consolidated Similar Categories */}
+                                {selectedDeck.categories && Object.keys(selectedDeck.categories).length > 0 && (() => {
+                                    const cats = selectedDeck.categories;
+
+                                    // Define consolidated category groups
+                                    const consolidatedCategories = [
+                                        {
+                                            name: 'Token Makers',
+                                            total: (cats['token-makers'] || 0) + (cats['token-spells'] || 0) + (cats['planeswalker-tokens'] || 0) +
+                                                   (cats['artifact-tokens'] || 0) + (cats['etb-tokens'] || 0) + (cats['die-tokens'] || 0) +
+                                                   (cats['damage-tokens'] || 0) + (cats['enchantment-tokens'] || 0)
+                                        },
+                                        {
+                                            name: 'Card Draw',
+                                            total: (cats['draw-etb'] || 0) + (cats['draw-death'] || 0) + (cats['draw-attack'] || 0) +
+                                                   (cats['looting-creatures'] || 0) + (cats['sac-draw-creatures'] || 0) + (cats['cantrips'] || 0) +
+                                                   (cats['raw-draw'] || 0) + (cats['draw-engines'] || 0) + (cats['wheeling'] || 0) +
+                                                   (cats['impulse-draw'] || 0) + (cats['enchantment-draw'] || 0) + (cats['artifact-draw-repeatable'] || 0) +
+                                                   (cats['artifact-draw-oneshot'] || 0) + (cats['planeswalker-draw'] || 0) + (cats['etb-draw'] || 0) +
+                                                   (cats['die-draw'] || 0) + (cats['damage-draw'] || 0) + (cats['sac-draw'] || 0)
+                                        },
+                                        {
+                                            name: 'Ramp',
+                                            total: (cats['dorks'] || 0) + (cats['land-creatures'] || 0) + (cats['treasure-creatures'] || 0) +
+                                                   (cats['sac-ramp-creatures'] || 0) + (cats['cost-reducer-creatures'] || 0) + (cats['fast-mana'] || 0) +
+                                                   (cats['efficient-ramp'] || 0) + (cats['expensive-ramp'] || 0) + (cats['land-ramp'] || 0) +
+                                                   (cats['rituals'] || 0) + (cats['enchantment-ramp'] || 0) + (cats['etb-ramp'] || 0) + (cats['sac-mana'] || 0)
+                                        },
+                                        {
+                                            name: 'Removal',
+                                            total: (cats['etb-removal'] || 0) + (cats['fight-creatures'] || 0) + (cats['exile-creatures'] || 0) +
+                                                   (cats['bounce-creatures'] || 0) + (cats['creature-removal'] || 0) + (cats['artifact-enchantment-removal'] || 0) +
+                                                   (cats['artifact-removal'] || 0) + (cats['enchantment-removal'] || 0) + (cats['planeswalker-removal'] || 0) +
+                                                   (cats['land-removal'] || 0) + (cats['flexible-removal'] || 0) + (cats['destroy-wipes'] || 0) +
+                                                   (cats['exile-wipes'] || 0) + (cats['asymmetric'] || 0) + (cats['enchantment-removal-aura'] || 0)
+                                        },
+                                        {
+                                            name: 'Sacrifice',
+                                            total: (cats['free-sac'] || 0) + (cats['paid-sac'] || 0) + (cats['sac-mana'] || 0) + (cats['sac-draw'] || 0) +
+                                                   (cats['sac-damage'] || 0) + (cats['sac-pump'] || 0) + (cats['sac-tutor'] || 0) + (cats['sac-mill'] || 0) +
+                                                   (cats['sac-recursion'] || 0) + (cats['sac-protect'] || 0) + (cats['sac-exile'] || 0) + (cats['sac-untap'] || 0)
+                                        },
+                                        {
+                                            name: 'Tribal',
+                                            total: (cats['tribal-creatures-synergy'] || 0) + (cats['tribal-lords'] || 0) + (cats['tribal-payoffs'] || 0) +
+                                                   (cats['tribal-pump'] || 0) + (cats['changeling'] || 0) + (cats['tribal-synergy'] || 0)
+                                        },
+                                        {
+                                            name: 'Graveyard',
+                                            total: (cats['recursion-creatures'] || 0) + (cats['reanimation'] || 0) + (cats['graveyard-recursion'] || 0) +
+                                                   (cats['self-mill'] || 0) + (cats['die-recursion'] || 0) + (cats['enchantment-recursion'] || 0) +
+                                                   (cats['sac-recursion'] || 0) + (cats['graveyard-draw-creatures'] || 0)
+                                        },
+                                        {
+                                            name: 'Blink/Flicker',
+                                            total: (cats['blink-enablers'] || 0) + (cats['blink-targets'] || 0) + (cats['blink-spells'] || 0) +
+                                                   (cats['mass-blink'] || 0) + (cats['repeatable-blink'] || 0)
+                                        },
+                                        {
+                                            name: 'ETB Triggers',
+                                            total: (cats['etb-draw'] || 0) + (cats['etb-removal'] || 0) + (cats['etb-ramp'] || 0) + (cats['etb-damage'] || 0) +
+                                                   (cats['other-etb-damage'] || 0) + (cats['etb-opponent-sac'] || 0) + (cats['etb-opponent-discard'] || 0) +
+                                                   (cats['etb-life-loss'] || 0) + (cats['etb-tokens'] || 0) + (cats['etb-other'] || 0)
+                                        },
+                                        {
+                                            name: 'Death Triggers',
+                                            total: (cats['die-draw'] || 0) + (cats['die-opponent-sac'] || 0) + (cats['die-life-loss'] || 0) +
+                                                   (cats['die-tokens'] || 0) + (cats['die-recursion'] || 0) + (cats['die-other'] || 0) + (cats['draw-death'] || 0)
+                                        },
+                                        {
+                                            name: 'Protection',
+                                            total: (cats['protection-creatures'] || 0) + (cats['counterspells'] || 0) + (cats['protection-spells'] || 0) +
+                                                   (cats['redirection'] || 0) + (cats['phasing'] || 0) + (cats['protection-equipment-hexproof'] || 0) +
+                                                   (cats['protection-equipment-indestructible'] || 0) + (cats['protection-auras-hexproof'] || 0) +
+                                                   (cats['protection-auras-indestructible'] || 0) + (cats['artifact-protection'] || 0) + (cats['enchantment-protection'] || 0)
+                                        },
+                                        {
+                                            name: 'Evasion',
+                                            total: (cats['flying'] || 0) + (cats['menace'] || 0) + (cats['trample'] || 0) + (cats['unblockable'] || 0) +
+                                                   (cats['other-evasion'] || 0) + (cats['evasion-equipment-flying'] || 0) + (cats['evasion-equipment-unblockable'] || 0) +
+                                                   (cats['evasion-auras-flying'] || 0) + (cats['evasion-auras-unblockable'] || 0)
+                                        },
+                                        {
+                                            name: 'Tutors',
+                                            total: (cats['tutors'] || 0) + (cats['tutor-creatures'] || 0) + (cats['sac-tutor'] || 0)
+                                        },
+                                        {
+                                            name: 'Direct Damage',
+                                            total: (cats['direct-damage-creatures'] || 0) + (cats['creature-based-damage'] || 0) + (cats['etb-damage'] || 0) +
+                                                   (cats['other-etb-damage'] || 0) + (cats['direct-damage-spells'] || 0) + (cats['recurring-damage'] || 0) +
+                                                   (cats['enchantment-damage'] || 0) + (cats['sac-damage'] || 0)
+                                        },
+                                        {
+                                            name: 'Lifegain/Drain',
+                                            total: (cats['lifelink'] || 0) + (cats['drain-etb'] || 0) + (cats['drain-attack'] || 0) + (cats['drain-death'] || 0) +
+                                                   (cats['drain-repeatable'] || 0) + (cats['etb-life-loss'] || 0) + (cats['die-life-loss'] || 0) +
+                                                   (cats['enchantment-lifegain'] || 0)
+                                        },
+                                        {
+                                            name: 'Synergy Pieces',
+                                            total: (cats['synergy-enablers'] || 0) + (cats['synergy-payoffs'] || 0) + (cats['synergy-enablers-creatures'] || 0) +
+                                                   (cats['synergy-payoffs-creatures'] || 0) + (cats['theme-support'] || 0) + (cats['theme-support-creatures'] || 0)
+                                        }
+                                    ];
+
+                                    // Filter to only show categories with values > 0, sort by total descending
+                                    const displayCategories = consolidatedCategories
+                                        .filter(cat => cat.total > 0)
+                                        .sort((a, b) => b.total - a.total)
+                                        .slice(0, 12);
+
+                                    return displayCategories.length > 0 && (
                                         <div style={{
-                                            display: 'grid',
-                                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                                            gap: '0.8rem',
-                                            fontSize: '0.95rem'
+                                            background: 'rgba(212, 175, 55, 0.1)',
+                                            border: '1px solid rgba(212, 175, 55, 0.3)',
+                                            borderRadius: '8px',
+                                            padding: '1.5rem',
+                                            marginBottom: '2rem'
                                         }}>
-                                            {Object.entries(selectedDeck.categories)
-                                                .filter(([key, value]) => value > 0 && !key.includes('-quick'))
-                                                .slice(0, 12)
-                                                .map(([key, value]) => {
-                                                    // Find the display name
-                                                    let displayName = key;
-                                                    Object.values(DECK_CATEGORIES).forEach(majorGroup => {
-                                                        majorGroup.categories.forEach(category => {
-                                                            category.subcategories.forEach(sub => {
-                                                                if (sub.id === key) displayName = sub.name;
-                                                            });
-                                                        });
-                                                    });
-                                                    
-                                                    return (
-                                                        <div key={key} style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px'}}>
-                                                            <span style={{color: 'var(--text-secondary)'}}>{displayName}:</span>
-                                                            <strong style={{color: 'var(--accent-bright)'}}>{value}</strong>
-                                                        </div>
-                                                    );
-                                                })}
+                                            <h4 style={{
+                                                color: 'var(--accent-bright)',
+                                                marginBottom: '1rem',
+                                                fontSize: '1.1rem',
+                                                fontWeight: 600
+                                            }}>
+                                                📊 Subtype Breakdown
+                                            </h4>
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                                gap: '0.8rem',
+                                                fontSize: '0.95rem'
+                                            }}>
+                                                {displayCategories.map(cat => (
+                                                    <div key={cat.name} style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px'}}>
+                                                        <span style={{color: 'var(--text-secondary)'}}>{cat.name}:</span>
+                                                        <strong style={{color: 'var(--accent-bright)'}}>{cat.total}</strong>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    );
+                                })()}
 
                                 {/* Action Buttons */}
                                 <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem', flexDirection: 'column'}}>
@@ -7204,6 +7664,7 @@ return (
             
             // Mana calculator collapse state
             const [manaCalcOpen, setManaCalcOpen] = useState(false);
+            const [showManaCalcHelp, setShowManaCalcHelp] = useState(false);
             const [analyticsExpanded, setAnalyticsExpanded] = useState(false);
             const [multiFunctionOpen, setMultiFunctionOpen] = useState(false);
             const [multiFunctionCreatures, setMultiFunctionCreatures] = useState({
@@ -7238,11 +7699,11 @@ return (
             
             // Category section collapse states
             const [categoryOpen, setCategoryOpen] = useState({
-                creatures: true,
+                creatures: window.innerWidth > 768,
                 noncreature: false,
                 lands: false
             });
-            const [statsExpanded, setStatsExpanded] = useState(true);
+            const [statsExpanded, setStatsExpanded] = useState(false);
             const [pipSectionExpanded, setPipSectionExpanded] = useState(false);
             const [landSectionExpanded, setLandSectionExpanded] = useState(false);
 
@@ -7381,13 +7842,26 @@ return (
                     sacrifice: [],
                     graveyardInteraction: [],
                     winConditions: [],
-                    // New correlations
+                    blink: [],
+                    damage: [],
+                    tribal: [],
+                    enchantments: [],
+                    tapUntap: [],
+                    goad: [],
+                    // Correlations for summary
                     correlations: {
                         totalDraw: 0,
                         totalRemoval: 0,
                         totalRamp: 0,
                         totalProtection: 0,
-                        totalEvasion: 0
+                        totalEvasion: 0,
+                        totalTokens: 0,
+                        totalSacrifice: 0,
+                        totalTribal: 0,
+                        totalGraveyard: 0,
+                        totalBlink: 0,
+                        totalDamage: 0,
+                        totalEnchantments: 0
                     }
                 };
 
@@ -7558,6 +8032,75 @@ return (
                 addCount(analytics.winConditions, 'Combo Payoffs', deckData.categories['combo-payoffs'] || 0);
                 addCount(analytics.winConditions, 'Infinite Combo Pieces', deckData.categories['infinite-pieces'] || 0);
                 addCount(analytics.winConditions, 'Finisher Planeswalkers', deckData.categories['planeswalker-finisher'] || 0);
+
+                // BLINK/FLICKER
+                addCount(analytics.blink, 'Blink Enablers (Creatures)', deckData.categories['blink-enablers'] || 0);
+                addCount(analytics.blink, 'Blink Targets', deckData.categories['blink-targets'] || 0);
+                addCount(analytics.blink, 'Blink Spells', deckData.categories['blink-spells'] || 0);
+                addCount(analytics.blink, 'Mass Blink', deckData.categories['mass-blink'] || 0);
+                addCount(analytics.blink, 'Repeatable Blink', deckData.categories['repeatable-blink'] || 0);
+                analytics.correlations.totalBlink = analytics.blink.reduce((sum, x) => sum + x.count, 0);
+
+                // DAMAGE
+                addCount(analytics.damage, 'Direct Damage (Creatures)', deckData.categories['direct-damage-creatures'] || 0);
+                addCount(analytics.damage, 'Creature-Based Damage', deckData.categories['creature-based-damage'] || 0);
+                addCount(analytics.damage, 'ETB Damage', deckData.categories['etb-damage'] || 0);
+                addCount(analytics.damage, 'Other ETB Damage', deckData.categories['other-etb-damage'] || 0);
+                addCount(analytics.damage, 'Direct Damage (Spells)', deckData.categories['direct-damage-spells'] || 0);
+                addCount(analytics.damage, 'Recurring Damage', deckData.categories['recurring-damage'] || 0);
+                addCount(analytics.damage, 'Enchantment Damage', deckData.categories['enchantment-damage'] || 0);
+                analytics.correlations.totalDamage = analytics.damage.reduce((sum, x) => sum + x.count, 0);
+
+                // TRIBAL
+                addCount(analytics.tribal, 'Tribal Creatures', deckData.categories['tribal-creatures-synergy'] || 0);
+                addCount(analytics.tribal, 'Tribal Lords', deckData.categories['tribal-lords'] || 0);
+                addCount(analytics.tribal, 'Tribal Payoffs', deckData.categories['tribal-payoffs'] || 0);
+                addCount(analytics.tribal, 'Tribal Pump', deckData.categories['tribal-pump'] || 0);
+                addCount(analytics.tribal, 'Changelings', deckData.categories['changeling'] || 0);
+                addCount(analytics.tribal, 'Tribal Synergy (Spells)', deckData.categories['tribal-synergy'] || 0);
+                analytics.correlations.totalTribal = analytics.tribal.reduce((sum, x) => sum + x.count, 0);
+
+                // ENCHANTMENTS (consolidated)
+                addCount(analytics.enchantments, 'Draw Enchantments', deckData.categories['enchantment-draw'] || 0);
+                addCount(analytics.enchantments, 'Anthem Enchantments', deckData.categories['enchantment-anthems'] || 0);
+                addCount(analytics.enchantments, 'Pump/Counter Enchantments', deckData.categories['enchantment-pump'] || 0);
+                addCount(analytics.enchantments, 'Recursion Enchantments', deckData.categories['enchantment-recursion'] || 0);
+                addCount(analytics.enchantments, 'Pillowfort/Control', deckData.categories['enchantment-control'] || 0);
+                addCount(analytics.enchantments, 'Stax Enchantments', deckData.categories['enchantment-stax'] || 0);
+                addCount(analytics.enchantments, 'Ramp Enchantments', deckData.categories['enchantment-ramp'] || 0);
+                addCount(analytics.enchantments, 'Token Enchantments', deckData.categories['enchantment-tokens'] || 0);
+                addCount(analytics.enchantments, 'Sagas', deckData.categories['enchantment-sagas'] || 0);
+                addCount(analytics.enchantments, 'Curses', deckData.categories['enchantment-curses'] || 0);
+                analytics.correlations.totalEnchantments = analytics.enchantments.reduce((sum, x) => sum + x.count, 0);
+
+                // TAP/UNTAP
+                addCount(analytics.tapUntap, 'Tap Effects', deckData.categories['tap-effects'] || 0);
+                addCount(analytics.tapUntap, 'Untap Effects', deckData.categories['untap-effects'] || 0);
+                addCount(analytics.tapUntap, 'Tap/Untap Payoffs', deckData.categories['tap-untap-payoffs'] || 0);
+
+                // GOAD
+                addCount(analytics.goad, 'Goad Creatures', deckData.categories['goad-creatures'] || 0);
+                addCount(analytics.goad, 'Goad Spells', deckData.categories['goad-spells'] || 0);
+
+                // Calculate additional correlations
+                analytics.correlations.totalTokens = analytics.tokens.repeatable.reduce((sum, x) => sum + x.count, 0) +
+                                                     analytics.tokens.oneShot.reduce((sum, x) => sum + x.count, 0) +
+                                                     (deckData.categories['etb-tokens'] || 0) +
+                                                     (deckData.categories['die-tokens'] || 0) +
+                                                     (deckData.categories['damage-tokens'] || 0) +
+                                                     (deckData.categories['enchantment-tokens'] || 0);
+
+                analytics.correlations.totalSacrifice = analytics.sacrifice.reduce((sum, x) => sum + x.count, 0) +
+                                                        (deckData.categories['sac-mana'] || 0) +
+                                                        (deckData.categories['sac-draw'] || 0) +
+                                                        (deckData.categories['sac-damage'] || 0) +
+                                                        (deckData.categories['sac-pump'] || 0) +
+                                                        (deckData.categories['sac-tutor'] || 0);
+
+                analytics.correlations.totalGraveyard = analytics.graveyardInteraction.reduce((sum, x) => sum + x.count, 0) +
+                                                        analytics.recursion.reduce((sum, x) => sum + x.count, 0) +
+                                                        (deckData.categories['die-recursion'] || 0) +
+                                                        (deckData.categories['enchantment-recursion'] || 0);
 
             // Sideboard totals calculation
             const sideboardTotals = useMemo(() => {
@@ -9359,10 +9902,108 @@ return (
                                     
                                     {manaCalcOpen && (
                                 <div className="mana-calculator" style={{marginTop: '1rem'}}>
-                                    <div className="calculator-title">⚗️ Mana Base Calculator</div>
-                                    <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem'}}>
+                                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
+                                        <div className="calculator-title" style={{margin: 0}}>⚗️ Mana Base Calculator</div>
+                                        <button
+                                            className="btn btn-secondary"
+                                            onClick={() => setShowManaCalcHelp(!showManaCalcHelp)}
+                                            style={{
+                                                padding: '0.4rem 0.8rem',
+                                                fontSize: '0.85rem',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '0.4rem'
+                                            }}
+                                        >
+                                            {showManaCalcHelp ? '▼ Hide Help' : 'ℹ️ Help'}
+                                        </button>
+                                    </div>
+                                    <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem'}}>
                                         Build your optimal mana base based on your deck's color requirements!
                                     </div>
+
+                                    {/* Expandable Help Section */}
+                                    {showManaCalcHelp && (
+                                        <div style={{
+                                            background: 'var(--bg-secondary)',
+                                            border: '2px solid var(--border-color)',
+                                            borderRadius: '12px',
+                                            padding: '1.5rem',
+                                            marginBottom: '1.5rem',
+                                            fontSize: '0.95rem',
+                                            lineHeight: '1.6'
+                                        }}>
+                                            <h3 style={{
+                                                fontFamily: 'Pirata One, cursive',
+                                                color: 'var(--gold)',
+                                                marginTop: 0,
+                                                marginBottom: '1rem',
+                                                fontSize: '1.3rem'
+                                            }}>
+                                                📚 How to Use the Mana Calculator
+                                            </h3>
+
+                                            <div style={{
+                                                color: 'var(--gold)',
+                                                marginBottom: '1.5rem',
+                                                padding: '0.8rem',
+                                                background: 'rgba(212, 175, 55, 0.1)',
+                                                borderLeft: '3px solid var(--gold)',
+                                                fontWeight: 600
+                                            }}>
+                                                ⚡ Quick Start Guide
+                                            </div>
+
+                                            <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
+                                                <strong>Step 1: Enter Your Total Lands</strong><br/>
+                                                <span style={{color: 'var(--text-secondary)'}}>
+                                                    Start with how many lands you want (usually 36-40). Tri-lands and utility lands will be subtracted from this total.
+                                                </span>
+                                            </div>
+
+                                            <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
+                                                <strong>Step 2: Count Mana Pips from Spells</strong><br/>
+                                                <span style={{color: 'var(--text-secondary)'}}>
+                                                    Count colored mana symbols in your spells. The calculator weights them: {'{W}{W}'} counts more than {'{1}{W}'}.
+                                                </span>
+                                            </div>
+
+                                            <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
+                                                <strong>Step 3: Count Your Dual Lands</strong><br/>
+                                                <span style={{color: 'var(--text-secondary)'}}>
+                                                    Enter your dual lands (shocklands, fetchlands, etc.).
+                                                </span>
+                                            </div>
+
+                                            <div style={{
+                                                background: 'rgba(212, 175, 55, 0.15)',
+                                                border: '1px solid var(--gold)',
+                                                borderRadius: '8px',
+                                                padding: '1rem',
+                                                marginTop: '1rem'
+                                            }}>
+                                                <strong style={{color: 'var(--gold)'}}>💡 Result:</strong>
+                                                <p style={{margin: '0.5rem 0 0 0', color: 'var(--text-secondary)'}}>
+                                                    The calculator tells you exactly how many basic lands of each color you need to reliably cast your spells!
+                                                </p>
+                                            </div>
+
+                                            <div style={{
+                                                background: 'rgba(66, 135, 245, 0.1)',
+                                                border: '1px solid rgba(66, 135, 245, 0.3)',
+                                                borderRadius: '8px',
+                                                padding: '1rem',
+                                                marginTop: '1rem'
+                                            }}>
+                                                <strong style={{color: 'var(--accent-bright)'}}>📝 Important Notes:</strong>
+                                                <ul style={{marginLeft: '1.5rem', marginTop: '0.5rem', marginBottom: 0, color: 'var(--text-secondary)', lineHeight: '1.8'}}>
+                                                    <li><strong>Tri-lands:</strong> If your deck has exactly 3 colors, enter tri-lands below. They'll be subtracted from your total land count.</li>
+                                                    <li><strong>4-5 Color Decks:</strong> This calculator is designed for 1-3 color decks only. Results for 4+ color decks will be inaccurate and are not supported.</li>
+                                                    <li><strong>Remaining Slots:</strong> After calculating basics needed, leftover slots can be used for extra basics of any color or utility lands.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    )}
 
                                         <div style={{marginBottom: '1.5rem'}}>
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
@@ -9451,7 +10092,7 @@ return (
 
                                         <div style={{marginBottom: '1.5rem'}}>
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
-                                                Tri-Lands (Triomes & 3+ color lands)
+                                                Tri-Lands & Sacrifice Lands
                                             </label>
                                             {window.innerWidth <= 768 ? (
                                                 <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
@@ -9531,7 +10172,7 @@ return (
                                             )}
                                             <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
                                                 <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
-                                                    <strong>Include:</strong> Triomes (Ketria, Savai, etc.), Panoramas, sac lands that search for 3+ basic types
+                                                    <strong>Include:</strong> Triomes, Panoramas, Evolving Wilds, Terramorphic Expanse, Fabled Passage, Prismatic Vista - any land that can fetch ANY basic land type
                                                 </small>
                                                 <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic', fontSize: '0.8rem'}}>
                                                     💡 These subtract from total but provide 3+ colors
@@ -9541,7 +10182,7 @@ return (
 
                                         <div style={{marginBottom: '1.5rem'}}>
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
-                                                Other Lands (Colorless & Utility)
+                                                Colorless & Utility Lands
                                             </label>
                                             {window.innerWidth <= 768 ? (
                                                 <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
@@ -9621,10 +10262,10 @@ return (
                                             )}
                                             <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
                                                 <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
-                                                    <strong>Include:</strong> Command Tower, Reliquary Tower, Wastes, utility lands
+                                                    <strong>Include:</strong> Reliquary Tower, Wastes, Ancient Tomb, Strip Mine - lands that DON'T produce colored mana. (Note: Command Tower DOES produce colors!)
                                                 </small>
                                                 <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic', fontSize: '0.8rem'}}>
-                                                    💡 Subtract from total but don't provide colored mana
+                                                    💡 These take up land slots but don't help your color requirements
                                                 </small>
                                             </div>
                                         </div>
@@ -10148,7 +10789,7 @@ return (
                                                     </div>
                                                     {manaCalculation.triLands > 0 && (
                                                         <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
-                                                            <span>Tri-Lands (Triomes):</span>
+                                                            <span>Tri/Fetch-Any Lands:</span>
                                                             <strong>{manaCalculation.triLands}</strong>
                                                         </div>
                                                     )}
@@ -10248,33 +10889,93 @@ return (
 
                             </div>
 
-                            <div className="stats-panel">
-                                <div 
+                            {/* Mobile fullscreen backdrop */}
+                            {window.innerWidth <= 768 && statsExpanded && (
+                                <div style={{
+                                    position: 'fixed',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    width: '100vw',
+                                    height: '100vh',
+                                    background: '#1a1612',
+                                    zIndex: 99998
+                                }} onClick={() => setStatsExpanded(false)} />
+                            )}
+                            <div className="stats-panel" style={window.innerWidth <= 768 && statsExpanded ? {
+                                position: 'fixed',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                width: '100vw',
+                                height: '100vh',
+                                zIndex: 99999,
+                                background: '#1a1612',
+                                padding: 0,
+                                margin: 0,
+                                borderLeft: 'none',
+                                borderTop: 'none',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                overflow: 'hidden'
+                            } : (window.innerWidth <= 768 ? {
+                                position: 'fixed',
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                width: '100%',
+                                padding: 0,
+                                margin: 0,
+                                borderTop: '3px solid var(--gold)',
+                                borderLeft: 'none',
+                                zIndex: 1000,
+                                background: 'var(--bg-secondary)'
+                            } : {})}>
+                                {/* Header - Sticky on mobile fullscreen, compact button when collapsed */}
+                                <div
                                     style={{
-                                        display: 'flex', 
-                                        justifyContent: 'space-between', 
-                                        alignItems: 'center', 
-                                        marginBottom: '1rem', 
-                                        cursor: window.innerWidth <= 768 ? 'pointer' : 'default', 
-                                        padding: window.innerWidth <= 768 ? '1rem' : '0', 
-                                        background: window.innerWidth <= 768 ? 'rgba(212, 175, 55, 0.15)' : 'transparent', 
-                                        borderRadius: '8px',
-                                        border: window.innerWidth <= 768 ? '2px solid var(--gold)' : 'none'
-                                    }} 
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        cursor: window.innerWidth <= 768 ? 'pointer' : 'default',
+                                        padding: window.innerWidth <= 768 ? (statsExpanded ? '1rem 1.5rem' : '0.7rem 1rem') : '0',
+                                        marginBottom: window.innerWidth <= 768 ? 0 : '1rem',
+                                        background: window.innerWidth <= 768 && statsExpanded ? 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)' : (window.innerWidth <= 768 ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(139, 111, 71, 0.25) 100%)' : 'transparent'),
+                                        borderRadius: 0,
+                                        borderBottom: window.innerWidth <= 768 && statsExpanded ? '4px solid var(--gold)' : 'none',
+                                        boxShadow: window.innerWidth <= 768 && statsExpanded ? '0 4px 20px rgba(0,0,0,0.5)' : 'none',
+                                        flexShrink: 0
+                                    }}
                                     onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}
                                 >
-                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: '1.3rem'}}>
-                                        Live Deck Stats {window.innerWidth <= 768 && `(Tap to ${statsExpanded ? 'collapse' : 'expand'})`}
+                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: window.innerWidth <= 768 && !statsExpanded ? '1.1rem' : '1.4rem'}}>
+                                        📊 Live Deck Stats {window.innerWidth <= 768 && !statsExpanded && <span style={{fontSize: '0.9rem', opacity: 0.8}}>(Tap to expand)</span>}
                                     </h3>
                                     {window.innerWidth <= 768 && (
-                                        <span style={{fontSize: '1.5rem', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▲</span>
+                                        statsExpanded ? (
+                                            <span style={{
+                                                fontSize: '2rem',
+                                                color: '#ff4444',
+                                                fontWeight: 'bold',
+                                                padding: '0.3rem 0.8rem',
+                                                cursor: 'pointer',
+                                                background: 'rgba(255, 68, 68, 0.15)',
+                                                borderRadius: '8px',
+                                                border: '2px solid #ff4444'
+                                            }}>✕</span>
+                                        ) : (
+                                            <span style={{fontSize: '1.3rem', color: 'var(--gold)'}}>▲</span>
+                                        )
                                     )}
                                 </div>
                                 {(window.innerWidth > 768 || statsExpanded) && (
                                 <div style={{
-                                    maxHeight: window.innerWidth <= 768 ? '60vh' : 'none',
+                                    flex: window.innerWidth <= 768 && statsExpanded ? 1 : 'none',
                                     overflowY: window.innerWidth <= 768 ? 'auto' : 'visible',
-                                    padding: window.innerWidth <= 768 ? '0.5rem' : '0'
+                                    padding: window.innerWidth <= 768 ? '1.5rem' : '0',
+                                    background: window.innerWidth <= 768 && statsExpanded ? 'var(--bg-primary)' : 'transparent'
                                 }}>
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
@@ -10597,27 +11298,33 @@ return (
             
             // Mana calculator collapse state
             const [manaCalcOpen, setManaCalcOpen] = useState(false);
-            
+            const [showManaCalcHelp, setShowManaCalcHelp] = useState(false);
+
             const [analyticsExpanded, setAnalyticsExpanded] = useState(false);
             const [multiFunctionOpen, setMultiFunctionOpen] = useState(false);
-            const [multiFunctionCreatures, setMultiFunctionCreatures] = useState({
-                twoFunctions: 0,
-                threeFunctions: 0,
-                fourFunctions: 0
-            });
-            const [multiFunctionNoncreature, setMultiFunctionNoncreature] = useState({
-                twoFunctions: 0,
-                threeFunctions: 0,
-                fourFunctions: 0
-            });
-            
+            // Load multi-function adjustments from deck prop if available
+            const [multiFunctionCreatures, setMultiFunctionCreatures] = useState(
+                deck?.multiFunctionCreatures || {
+                    twoFunctions: 0,
+                    threeFunctions: 0,
+                    fourFunctions: 0
+                }
+            );
+            const [multiFunctionNoncreature, setMultiFunctionNoncreature] = useState(
+                deck?.multiFunctionNoncreature || {
+                    twoFunctions: 0,
+                    threeFunctions: 0,
+                    fourFunctions: 0
+                }
+            );
+
             // Category section collapse states
             const [categoryOpen, setCategoryOpen] = useState({
-                creatures: true,
+                creatures: window.innerWidth > 768,
                 noncreature: false,
                 lands: false
             });
-            const [statsExpanded, setStatsExpanded] = useState(true);
+            const [statsExpanded, setStatsExpanded] = useState(false);
             const [pipSectionExpanded, setPipSectionExpanded] = useState(false);
             const [landSectionExpanded, setLandSectionExpanded] = useState(false);
 
@@ -10632,7 +11339,7 @@ return (
                         });
                     });
                 });
-                
+
                 // Don't overwrite sideboard - it's already loaded from deck prop!
                 // setSideboardCategories is initialized from deck?.sideboard in state
             }, []);
@@ -10774,13 +11481,26 @@ return (
                     sacrifice: [],
                     graveyardInteraction: [],
                     winConditions: [],
-                    // New correlations
+                    blink: [],
+                    damage: [],
+                    tribal: [],
+                    enchantments: [],
+                    tapUntap: [],
+                    goad: [],
+                    // Correlations for summary
                     correlations: {
                         totalDraw: 0,
                         totalRemoval: 0,
                         totalRamp: 0,
                         totalProtection: 0,
-                        totalEvasion: 0
+                        totalEvasion: 0,
+                        totalTokens: 0,
+                        totalSacrifice: 0,
+                        totalTribal: 0,
+                        totalGraveyard: 0,
+                        totalBlink: 0,
+                        totalDamage: 0,
+                        totalEnchantments: 0
                     }
                 };
 
@@ -12732,10 +13452,108 @@ return (
                                     
                                     {manaCalcOpen && (
                                 <div className="mana-calculator" style={{marginTop: '1rem'}}>
-                                    <div className="calculator-title">⚗️ Mana Base Calculator</div>
-                                    <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem'}}>
+                                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
+                                        <div className="calculator-title" style={{margin: 0}}>⚗️ Mana Base Calculator</div>
+                                        <button
+                                            className="btn btn-secondary"
+                                            onClick={() => setShowManaCalcHelp(!showManaCalcHelp)}
+                                            style={{
+                                                padding: '0.4rem 0.8rem',
+                                                fontSize: '0.85rem',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '0.4rem'
+                                            }}
+                                        >
+                                            {showManaCalcHelp ? '▼ Hide Help' : 'ℹ️ Help'}
+                                        </button>
+                                    </div>
+                                    <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem'}}>
                                         Build your optimal mana base based on your deck's color requirements!
                                     </div>
+
+                                    {/* Expandable Help Section */}
+                                    {showManaCalcHelp && (
+                                        <div style={{
+                                            background: 'var(--bg-secondary)',
+                                            border: '2px solid var(--border-color)',
+                                            borderRadius: '12px',
+                                            padding: '1.5rem',
+                                            marginBottom: '1.5rem',
+                                            fontSize: '0.95rem',
+                                            lineHeight: '1.6'
+                                        }}>
+                                            <h3 style={{
+                                                fontFamily: 'Pirata One, cursive',
+                                                color: 'var(--gold)',
+                                                marginTop: 0,
+                                                marginBottom: '1rem',
+                                                fontSize: '1.3rem'
+                                            }}>
+                                                📚 How to Use the Mana Calculator
+                                            </h3>
+
+                                            <div style={{
+                                                color: 'var(--gold)',
+                                                marginBottom: '1.5rem',
+                                                padding: '0.8rem',
+                                                background: 'rgba(212, 175, 55, 0.1)',
+                                                borderLeft: '3px solid var(--gold)',
+                                                fontWeight: 600
+                                            }}>
+                                                ⚡ Quick Start Guide
+                                            </div>
+
+                                            <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
+                                                <strong>Step 1: Enter Your Total Lands</strong><br/>
+                                                <span style={{color: 'var(--text-secondary)'}}>
+                                                    Start with how many lands you want (usually 36-40). Tri-lands and utility lands will be subtracted from this total.
+                                                </span>
+                                            </div>
+
+                                            <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
+                                                <strong>Step 2: Count Mana Pips from Spells</strong><br/>
+                                                <span style={{color: 'var(--text-secondary)'}}>
+                                                    Count colored mana symbols in your spells. The calculator weights them: {'{W}{W}'} counts more than {'{1}{W}'}.
+                                                </span>
+                                            </div>
+
+                                            <div style={{color: 'var(--text-primary)', marginBottom: '1rem'}}>
+                                                <strong>Step 3: Count Your Dual Lands</strong><br/>
+                                                <span style={{color: 'var(--text-secondary)'}}>
+                                                    Enter your dual lands (shocklands, fetchlands, etc.).
+                                                </span>
+                                            </div>
+
+                                            <div style={{
+                                                background: 'rgba(212, 175, 55, 0.15)',
+                                                border: '1px solid var(--gold)',
+                                                borderRadius: '8px',
+                                                padding: '1rem',
+                                                marginTop: '1rem'
+                                            }}>
+                                                <strong style={{color: 'var(--gold)'}}>💡 Result:</strong>
+                                                <p style={{margin: '0.5rem 0 0 0', color: 'var(--text-secondary)'}}>
+                                                    The calculator tells you exactly how many basic lands of each color you need to reliably cast your spells!
+                                                </p>
+                                            </div>
+
+                                            <div style={{
+                                                background: 'rgba(66, 135, 245, 0.1)',
+                                                border: '1px solid rgba(66, 135, 245, 0.3)',
+                                                borderRadius: '8px',
+                                                padding: '1rem',
+                                                marginTop: '1rem'
+                                            }}>
+                                                <strong style={{color: 'var(--accent-bright)'}}>📝 Important Notes:</strong>
+                                                <ul style={{marginLeft: '1.5rem', marginTop: '0.5rem', marginBottom: 0, color: 'var(--text-secondary)', lineHeight: '1.8'}}>
+                                                    <li><strong>Tri-lands:</strong> If your deck has exactly 3 colors, enter tri-lands below. They'll be subtracted from your total land count.</li>
+                                                    <li><strong>4-5 Color Decks:</strong> This calculator is designed for 1-3 color decks only. Results for 4+ color decks will be inaccurate and are not supported.</li>
+                                                    <li><strong>Remaining Slots:</strong> After calculating basics needed, leftover slots can be used for extra basics of any color or utility lands.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    )}
 
                                         <div style={{marginBottom: '1.5rem'}}>
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
@@ -12824,7 +13642,7 @@ return (
 
                                         <div style={{marginBottom: '1.5rem'}}>
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
-                                                Tri-Lands (Triomes & 3+ color lands)
+                                                Tri-Lands & Sacrifice Lands
                                             </label>
                                             {window.innerWidth <= 768 ? (
                                                 <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
@@ -12904,7 +13722,7 @@ return (
                                             )}
                                             <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
                                                 <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
-                                                    <strong>Include:</strong> Triomes (Ketria, Savai, etc.), Panoramas, sac lands that search for 3+ basic types
+                                                    <strong>Include:</strong> Triomes, Panoramas, Evolving Wilds, Terramorphic Expanse, Fabled Passage, Prismatic Vista - any land that can fetch ANY basic land type
                                                 </small>
                                                 <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic', fontSize: '0.8rem'}}>
                                                     💡 These subtract from total but provide 3+ colors
@@ -12914,7 +13732,7 @@ return (
 
                                         <div style={{marginBottom: '1.5rem'}}>
                                             <label style={{fontWeight: 600, marginBottom: '0.5rem', display: 'block'}}>
-                                                Other Lands (Colorless & Utility)
+                                                Colorless & Utility Lands
                                             </label>
                                             {window.innerWidth <= 768 ? (
                                                 <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
@@ -12994,10 +13812,10 @@ return (
                                             )}
                                             <div style={{marginLeft: '1rem', marginTop: '0.5rem'}}>
                                                 <small style={{color: 'var(--text-secondary)', display: 'block', lineHeight: '1.5', marginBottom: '0.3rem', fontSize: '0.8rem'}}>
-                                                    <strong>Include:</strong> Command Tower, Reliquary Tower, Wastes, utility lands
+                                                    <strong>Include:</strong> Reliquary Tower, Wastes, Ancient Tomb, Strip Mine - lands that DON'T produce colored mana. (Note: Command Tower DOES produce colors!)
                                                 </small>
                                                 <small style={{color: 'var(--accent-bright)', display: 'block', fontStyle: 'italic', fontSize: '0.8rem'}}>
-                                                    💡 Subtract from total but don't provide colored mana
+                                                    💡 These take up land slots but don't help your color requirements
                                                 </small>
                                             </div>
                                         </div>
@@ -13521,7 +14339,7 @@ return (
                                                     </div>
                                                     {manaCalculation.triLands > 0 && (
                                                         <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
-                                                            <span>Tri-Lands (Triomes):</span>
+                                                            <span>Tri/Fetch-Any Lands:</span>
                                                             <strong>{manaCalculation.triLands}</strong>
                                                         </div>
                                                     )}
@@ -13635,33 +14453,93 @@ return (
                             </div>
 
 
-                            <div className="stats-panel">
-                                <div 
+                            {/* Mobile fullscreen backdrop */}
+                            {window.innerWidth <= 768 && statsExpanded && (
+                                <div style={{
+                                    position: 'fixed',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    width: '100vw',
+                                    height: '100vh',
+                                    background: '#1a1612',
+                                    zIndex: 99998
+                                }} onClick={() => setStatsExpanded(false)} />
+                            )}
+                            <div className="stats-panel" style={window.innerWidth <= 768 && statsExpanded ? {
+                                position: 'fixed',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                width: '100vw',
+                                height: '100vh',
+                                zIndex: 99999,
+                                background: '#1a1612',
+                                padding: 0,
+                                margin: 0,
+                                borderLeft: 'none',
+                                borderTop: 'none',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                overflow: 'hidden'
+                            } : (window.innerWidth <= 768 ? {
+                                position: 'fixed',
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                width: '100%',
+                                padding: 0,
+                                margin: 0,
+                                borderTop: '3px solid var(--gold)',
+                                borderLeft: 'none',
+                                zIndex: 1000,
+                                background: 'var(--bg-secondary)'
+                            } : {})}>
+                                {/* Header - Sticky on mobile fullscreen, compact button when collapsed */}
+                                <div
                                     style={{
-                                        display: 'flex', 
-                                        justifyContent: 'space-between', 
-                                        alignItems: 'center', 
-                                        marginBottom: '1rem', 
-                                        cursor: window.innerWidth <= 768 ? 'pointer' : 'default', 
-                                        padding: window.innerWidth <= 768 ? '1rem' : '0', 
-                                        background: window.innerWidth <= 768 ? 'rgba(212, 175, 55, 0.15)' : 'transparent', 
-                                        borderRadius: '8px',
-                                        border: window.innerWidth <= 768 ? '2px solid var(--gold)' : 'none'
-                                    }} 
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        cursor: window.innerWidth <= 768 ? 'pointer' : 'default',
+                                        padding: window.innerWidth <= 768 ? (statsExpanded ? '1rem 1.5rem' : '0.7rem 1rem') : '0',
+                                        marginBottom: window.innerWidth <= 768 ? 0 : '1rem',
+                                        background: window.innerWidth <= 768 && statsExpanded ? 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)' : (window.innerWidth <= 768 ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(139, 111, 71, 0.25) 100%)' : 'transparent'),
+                                        borderRadius: 0,
+                                        borderBottom: window.innerWidth <= 768 && statsExpanded ? '4px solid var(--gold)' : 'none',
+                                        boxShadow: window.innerWidth <= 768 && statsExpanded ? '0 4px 20px rgba(0,0,0,0.5)' : 'none',
+                                        flexShrink: 0
+                                    }}
                                     onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}
                                 >
-                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: '1.3rem'}}>
-                                        Live Deck Stats {window.innerWidth <= 768 && `(Tap to ${statsExpanded ? 'collapse' : 'expand'})`}
+                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: window.innerWidth <= 768 && !statsExpanded ? '1.1rem' : '1.4rem'}}>
+                                        📊 Live Deck Stats {window.innerWidth <= 768 && !statsExpanded && <span style={{fontSize: '0.9rem', opacity: 0.8}}>(Tap to expand)</span>}
                                     </h3>
                                     {window.innerWidth <= 768 && (
-                                        <span style={{fontSize: '1.5rem', color: 'var(--gold)', transition: 'transform 0.3s', transform: statsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'}}>▲</span>
+                                        statsExpanded ? (
+                                            <span style={{
+                                                fontSize: '2rem',
+                                                color: '#ff4444',
+                                                fontWeight: 'bold',
+                                                padding: '0.3rem 0.8rem',
+                                                cursor: 'pointer',
+                                                background: 'rgba(255, 68, 68, 0.15)',
+                                                borderRadius: '8px',
+                                                border: '2px solid #ff4444'
+                                            }}>✕</span>
+                                        ) : (
+                                            <span style={{fontSize: '1.3rem', color: 'var(--gold)'}}>▲</span>
+                                        )
                                     )}
                                 </div>
                                 {(window.innerWidth > 768 || statsExpanded) && (
                                 <div style={{
-                                    maxHeight: window.innerWidth <= 768 ? '60vh' : 'none',
+                                    flex: window.innerWidth <= 768 && statsExpanded ? 1 : 'none',
                                     overflowY: window.innerWidth <= 768 ? 'auto' : 'visible',
-                                    padding: window.innerWidth <= 768 ? '0.5rem' : '0'
+                                    padding: window.innerWidth <= 768 ? '1.5rem' : '0',
+                                    background: window.innerWidth <= 768 && statsExpanded ? 'var(--bg-primary)' : 'transparent'
                                 }}>
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
