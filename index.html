@@ -8986,7 +8986,7 @@ return (
                                                         </div>
 
                                                         {/* MULTI-FUNCTION ADJUSTMENTS - Inside each category */}
-                                                        {majorGroupId === 'creatures' && totals.creaturesDetailed > 0 && (
+                                                        {majorGroupId === 'creatures' && (totals.creatures > 0 || totals.creaturesDetailed > 0 || deckData.categories['creatures-quick'] > 0) && (
                                                             <div style={{
                                                                 marginTop: '1.5rem',
                                                                 padding: '1rem',
@@ -9032,7 +9032,7 @@ return (
                                                             </div>
                                                         )}
 
-                                                        {majorGroupId === 'noncreature' && totals.noncreatureDetailed > 0 && (
+                                                        {majorGroupId === 'noncreature' && (totals.noncreature > 0 || totals.noncreatureDetailed > 0 || deckData.categories['noncreature-quick'] > 0) && (
                                                             <div style={{
                                                                 marginTop: '1.5rem',
                                                                 padding: '1rem',
@@ -9086,161 +9086,6 @@ return (
 
 
 
-                                {/* MULTI-FUNCTION ADJUSTMENTS - REMOVED (Now inside category sections) */}
-                                <div style={{marginBottom: '2rem'}}>
-                                    <button
-                                        onClick={() => setMultiFunctionOpen(!multiFunctionOpen)}
-                                        className="btn btn-secondary"
-                                        style={{
-                                            width: '100%',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            padding: '1rem 1.5rem',
-                                            fontSize: '1.05rem',
-                                            fontWeight: 600,
-                                            background: 'var(--bg-secondary)',
-                                            border: '2px solid var(--gold)'
-                                        }}
-                                    >
-                                        <span style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
-                                            <span>⚙️</span>
-                                            <span>Multi-Function Adjustments</span>
-                                        </span>
-                                        <span style={{fontSize: '1.2rem', transform: multiFunctionOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s'}}>▲</span>
-                                    </button>
-
-                                    {multiFunctionOpen && (
-                                        <div style={{
-                                            marginTop: '1rem',
-                                            padding: '1.5rem',
-                                            background: 'var(--bg-tertiary)',
-                                            border: '1px solid var(--border-color)',
-                                            borderRadius: '8px'
-                                        }}>
-                                            <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', fontStyle: 'italic'}}>
-                                                Some spells do multiple things! Enter counts here to prevent double-counting in your totals.
-                                            </div>
-
-                                            {/* CREATURES ADJUSTMENTS */}
-                                            {totals.creaturesDetailed > 0 && (
-                                                <div style={{
-                                                    marginBottom: totals.noncreatureDetailed > 0 ? '2rem' : '0',
-                                                    padding: '1rem',
-                                                    background: 'rgba(66, 135, 245, 0.1)',
-                                                    border: '1px solid var(--accent-bright)',
-                                                    borderRadius: '8px'
-                                                }}>
-                                                    <h4 style={{color: 'var(--accent-bright)', marginBottom: '1rem', fontSize: '1.1rem'}}>
-                                                        🧟 Creature Adjustments
-                                                    </h4>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 2 functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, prev.twoFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionCreatures.twoFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: prev.twoFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Mulldrifter)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 3 functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, prev.threeFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionCreatures.threeFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Prime Speaker Zegana)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 4+ functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionCreatures.fourFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: prev.fourFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Kenrith)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
-                                                        <div>Subcategory Sum: {totals.creaturesDetailed}</div>
-                                                        <div>Adjustments: -{totals.creaturesMultiAdj}</div>
-                                                        <div style={{fontWeight: 600, color: 'var(--accent-bright)', marginTop: '0.3rem'}}>
-                                                            Adjusted Total: {totals.creaturesDetailed - totals.creaturesMultiAdj}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* NON-CREATURE ADJUSTMENTS */}
-                                            {totals.noncreatureDetailed > 0 && (
-                                                <div style={{
-                                                    padding: '1rem',
-                                                    background: 'rgba(245, 135, 66, 0.1)',
-                                                    border: '1px solid #f5a742',
-                                                    borderRadius: '8px'
-                                                }}>
-                                                    <h4 style={{color: '#f5a742', marginBottom: '1rem', fontSize: '1.1rem'}}>
-                                                        ⚡ Non-Creature Adjustments
-                                                    </h4>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 2 functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, prev.twoFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionNoncreature.twoFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: prev.twoFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Beast Within)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 3 functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, prev.threeFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionNoncreature.threeFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Anguished Unmaking)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 4+ functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionNoncreature.fourFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: prev.fourFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Cryptic Command)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
-                                                        <div>Subcategory Sum: {totals.noncreatureDetailed}</div>
-                                                        <div>Adjustments: -{totals.noncreatureMultiAdj}</div>
-                                                        <div style={{fontWeight: 600, color: '#f5a742', marginTop: '0.3rem'}}>
-                                                            Adjusted Total: {totals.noncreatureDetailed - totals.noncreatureMultiAdj}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
                                 {/* SIDEBOARD SECTION */}
                                 <div style={{marginBottom: '2rem'}}>
                                     <button
@@ -9601,7 +9446,7 @@ return (
                                     )}
                                 </div>
 
-                                {/* MANA BASE CALCULATOR - COLLAPSIBLE */}
+                                {/* MANA BASE CALCULATOR */}
                                 <div style={{marginBottom: '2rem'}}>
                                     <button
                                         onClick={() => setManaCalcOpen(!manaCalcOpen)}
@@ -12236,7 +12081,7 @@ return (
                                                         </div>
 
                                                         {/* MULTI-FUNCTION ADJUSTMENTS - Inside each category */}
-                                                        {majorGroupId === 'creatures' && totals.creaturesDetailed > 0 && (
+                                                        {majorGroupId === 'creatures' && (totals.creatures > 0 || totals.creaturesDetailed > 0 || deckData.categories['creatures-quick'] > 0) && (
                                                             <div style={{
                                                                 marginTop: '1.5rem',
                                                                 padding: '1rem',
@@ -12282,7 +12127,7 @@ return (
                                                             </div>
                                                         )}
 
-                                                        {majorGroupId === 'noncreature' && totals.noncreatureDetailed > 0 && (
+                                                        {majorGroupId === 'noncreature' && (totals.noncreature > 0 || totals.noncreatureDetailed > 0 || deckData.categories['noncreature-quick'] > 0) && (
                                                             <div style={{
                                                                 marginTop: '1.5rem',
                                                                 padding: '1rem',
@@ -12336,161 +12181,6 @@ return (
 
 
 
-                                {/* MULTI-FUNCTION ADJUSTMENTS - REMOVED (Now inside category sections) */}
-                                <div style={{marginBottom: '2rem'}}>
-                                    <button
-                                        onClick={() => setMultiFunctionOpen(!multiFunctionOpen)}
-                                        className="btn btn-secondary"
-                                        style={{
-                                            width: '100%',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            padding: '1rem 1.5rem',
-                                            fontSize: '1.05rem',
-                                            fontWeight: 600,
-                                            background: 'var(--bg-secondary)',
-                                            border: '2px solid var(--gold)'
-                                        }}
-                                    >
-                                        <span style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
-                                            <span>⚙️</span>
-                                            <span>Multi-Function Adjustments</span>
-                                        </span>
-                                        <span style={{fontSize: '1.2rem', transform: multiFunctionOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s'}}>▲</span>
-                                    </button>
-
-                                    {multiFunctionOpen && (
-                                        <div style={{
-                                            marginTop: '1rem',
-                                            padding: '1.5rem',
-                                            background: 'var(--bg-tertiary)',
-                                            border: '1px solid var(--border-color)',
-                                            borderRadius: '8px'
-                                        }}>
-                                            <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', fontStyle: 'italic'}}>
-                                                Some spells do multiple things! Enter counts here to prevent double-counting in your totals.
-                                            </div>
-
-                                            {/* CREATURES ADJUSTMENTS */}
-                                            {totals.creaturesDetailed > 0 && (
-                                                <div style={{
-                                                    marginBottom: totals.noncreatureDetailed > 0 ? '2rem' : '0',
-                                                    padding: '1rem',
-                                                    background: 'rgba(66, 135, 245, 0.1)',
-                                                    border: '1px solid var(--accent-bright)',
-                                                    borderRadius: '8px'
-                                                }}>
-                                                    <h4 style={{color: 'var(--accent-bright)', marginBottom: '1rem', fontSize: '1.1rem'}}>
-                                                        🧟 Creature Adjustments
-                                                    </h4>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 2 functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, prev.twoFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionCreatures.twoFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: prev.twoFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Mulldrifter)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 3 functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, prev.threeFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionCreatures.threeFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Prime Speaker Zegana)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 4+ functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionCreatures.fourFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: prev.fourFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Kenrith)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
-                                                        <div>Subcategory Sum: {totals.creaturesDetailed}</div>
-                                                        <div>Adjustments: -{totals.creaturesMultiAdj}</div>
-                                                        <div style={{fontWeight: 600, color: 'var(--accent-bright)', marginTop: '0.3rem'}}>
-                                                            Adjusted Total: {totals.creaturesDetailed - totals.creaturesMultiAdj}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* NON-CREATURE ADJUSTMENTS */}
-                                            {totals.noncreatureDetailed > 0 && (
-                                                <div style={{
-                                                    padding: '1rem',
-                                                    background: 'rgba(245, 135, 66, 0.1)',
-                                                    border: '1px solid #f5a742',
-                                                    borderRadius: '8px'
-                                                }}>
-                                                    <h4 style={{color: '#f5a742', marginBottom: '1rem', fontSize: '1.1rem'}}>
-                                                        ⚡ Non-Creature Adjustments
-                                                    </h4>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 2 functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, prev.twoFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionNoncreature.twoFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: prev.twoFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Beast Within)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 3 functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, prev.threeFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionNoncreature.threeFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Anguished Unmaking)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginBottom: '0.75rem'}}>
-                                                        <div style={{fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-primary)'}}>
-                                                            Cards with 4+ functions:
-                                                        </div>
-                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap'}}>
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
-                                                            <input type="number" value={multiFunctionNoncreature.fourFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '70px', padding: '0.4rem', fontSize: '0.9rem', borderRadius: '4px', border: '2px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '40px'}} />
-                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: prev.fourFunctions + 1}))} style={{width: '40px', height: '40px', fontSize: '1.1rem', padding: 0, background: 'var(--bg-secondary)', border: '2px solid var(--gold)', borderRadius: '6px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
-                                                            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem'}}>(e.g., Cryptic Command)</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div style={{marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
-                                                        <div>Subcategory Sum: {totals.noncreatureDetailed}</div>
-                                                        <div>Adjustments: -{totals.noncreatureMultiAdj}</div>
-                                                        <div style={{fontWeight: 600, color: '#f5a742', marginTop: '0.3rem'}}>
-                                                            Adjusted Total: {totals.noncreatureDetailed - totals.noncreatureMultiAdj}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
                                 {/* SIDEBOARD SECTION */}
                                 <div style={{marginBottom: '2rem'}}>
                                     <button
@@ -12851,7 +12541,7 @@ return (
                                     )}
                                 </div>
 
-                                {/* MANA BASE CALCULATOR - COLLAPSIBLE */}
+                                {/* MANA BASE CALCULATOR */}
                                 <div style={{marginBottom: '2rem'}}>
                                     <button
                                         onClick={() => setManaCalcOpen(!manaCalcOpen)}
