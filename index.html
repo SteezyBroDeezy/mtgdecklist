@@ -1884,6 +1884,37 @@
                 const totalBasicsNeeded = Object.values(recommendations)
                     .reduce((sum, rec) => sum + rec.basicsNeeded, 0);
 
+                // Distribute remaining slots to basics proportionally
+                const remainingSlots = availableForBasics - totalBasicsNeeded;
+                if (remainingSlots > 0) {
+                    // Sort colors by their percentage (highest first) for distribution
+                    const colorsWithPips = colors.filter(c => totalPips[c] > 0);
+                    let slotsToDistribute = remainingSlots;
+
+                    // Distribute proportionally based on pip percentage
+                    colorsWithPips.forEach(color => {
+                        if (slotsToDistribute > 0) {
+                            const share = Math.round((totalPips[color] / grandTotal) * remainingSlots);
+                            const actualShare = Math.min(share, slotsToDistribute);
+                            recommendations[color].basicsNeeded += actualShare;
+                            slotsToDistribute -= actualShare;
+                        }
+                    });
+
+                    // If there are still slots left due to rounding, give to highest pip color
+                    while (slotsToDistribute > 0 && colorsWithPips.length > 0) {
+                        const highestPipColor = colorsWithPips.reduce((a, b) =>
+                            totalPips[a] > totalPips[b] ? a : b
+                        );
+                        recommendations[highestPipColor].basicsNeeded += 1;
+                        slotsToDistribute -= 1;
+                    }
+                }
+
+                // Recalculate total basics after distribution
+                const finalTotalBasics = Object.values(recommendations)
+                    .reduce((sum, rec) => sum + rec.basicsNeeded, 0);
+
                 const result = {
                     recommendations,
                     totalPips: grandTotal,
@@ -1892,9 +1923,9 @@
                     otherLands: otherLands,
                     totalMultiLands: totalMultiLands,
                     totalOccupiedSlots: totalOccupiedSlots,
-                    totalBasicsNeeded,
+                    totalBasicsNeeded: finalTotalBasics,
                     availableForBasics,
-                    isValid: totalBasicsNeeded <= availableForBasics
+                    isValid: finalTotalBasics <= availableForBasics
                 };
 
                 // Pick a random funny quote
@@ -2033,7 +2064,7 @@
                                 <ul style={{marginLeft: '1.5rem', marginTop: '0.5rem', marginBottom: 0, color: 'var(--text-secondary)', lineHeight: '1.8'}}>
                                     <li><strong>Tri-lands:</strong> If your deck has exactly 3 colors, enter tri-lands below. They'll be subtracted from your total land count.</li>
                                     <li><strong>4-5 Color Decks:</strong> This calculator is designed for 1-3 color decks only. Results for 4+ color decks will be inaccurate and are not supported.</li>
-                                    <li><strong>Remaining Slots:</strong> After calculating basics needed, leftover slots can be used for extra basics of any color or utility lands.</li>
+                                    <li><strong>Full Basic Land Coverage:</strong> The calculator distributes ALL remaining land slots to basic lands proportionally based on your color needs.</li>
                                 </ul>
                             </div>
                         </div>
@@ -4765,8 +4796,8 @@ return (
                                         creatures: updatedDeck.creatures || 0,
                                         noncreature: updatedDeck.noncreature || 0,
                                         // Save multi-function adjustments
-                                        multiFunctionCreatures: multiFunctionCreatures,
-                                        multiFunctionNoncreature: multiFunctionNoncreature,
+                                        multiFunctionCreatures: updatedDeck.multiFunctionCreatures || { twoFunctions: 0, threeFunctions: 0, fourFunctions: 0 },
+                                        multiFunctionNoncreature: updatedDeck.multiFunctionNoncreature || { twoFunctions: 0, threeFunctions: 0, fourFunctions: 0 },
                                         updatedAt: new Date(),
                                         // Keep createdAt if it exists, otherwise set it
                                         createdAt: deckToEdit.createdAt || new Date()
@@ -8212,6 +8243,37 @@ return (
                 const totalBasicsNeeded = Object.values(recommendations)
                     .reduce((sum, rec) => sum + rec.basicsNeeded, 0);
 
+                // Distribute remaining slots to basics proportionally
+                const remainingSlots = availableForBasics - totalBasicsNeeded;
+                if (remainingSlots > 0) {
+                    // Sort colors by their percentage (highest first) for distribution
+                    const colorsWithPips = colors.filter(c => totalPips[c] > 0);
+                    let slotsToDistribute = remainingSlots;
+
+                    // Distribute proportionally based on pip percentage
+                    colorsWithPips.forEach(color => {
+                        if (slotsToDistribute > 0) {
+                            const share = Math.round((totalPips[color] / grandTotal) * remainingSlots);
+                            const actualShare = Math.min(share, slotsToDistribute);
+                            recommendations[color].basicsNeeded += actualShare;
+                            slotsToDistribute -= actualShare;
+                        }
+                    });
+
+                    // If there are still slots left due to rounding, give to highest pip color
+                    while (slotsToDistribute > 0 && colorsWithPips.length > 0) {
+                        const highestPipColor = colorsWithPips.reduce((a, b) =>
+                            totalPips[a] > totalPips[b] ? a : b
+                        );
+                        recommendations[highestPipColor].basicsNeeded += 1;
+                        slotsToDistribute -= 1;
+                    }
+                }
+
+                // Recalculate total basics after distribution
+                const finalTotalBasics = Object.values(recommendations)
+                    .reduce((sum, rec) => sum + rec.basicsNeeded, 0);
+
                 const result = {
                     recommendations,
                     totalPips: grandTotal,
@@ -8220,9 +8282,9 @@ return (
                     otherLands: otherLands,
                     totalMultiLands: totalMultiLands,
                     totalOccupiedSlots: totalOccupiedSlots,
-                    totalBasicsNeeded,
+                    totalBasicsNeeded: finalTotalBasics,
                     availableForBasics,
-                    isValid: totalBasicsNeeded <= availableForBasics
+                    isValid: finalTotalBasics <= availableForBasics
                 };
 
                 // Pick a random funny quote
@@ -9203,225 +9265,183 @@ return (
 
                                             {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => (
                                                 <div key={majorGroupId} style={{marginBottom: '1.5rem'}}>
-                                                    <h4 style={{
-                                                        color: 'var(--accent-bright)',
+                                                    {/* Major Group Header with Quick Total */}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
                                                         marginBottom: '1rem',
-                                                        fontSize: '1rem',
-                                                        fontWeight: 600,
-                                                        textTransform: 'uppercase',
-                                                        letterSpacing: '0.5px'
+                                                        padding: '0.75rem 1rem',
+                                                        background: 'rgba(212, 175, 55, 0.15)',
+                                                        border: '2px dashed var(--gold)',
+                                                        borderRadius: '8px'
                                                     }}>
-                                                        {majorGroup.name}
-                                                    </h4>
-                                                    
-                                                    {majorGroup.categories.map(category => (
-                                                        <div key={category.id} style={{marginBottom: '1rem'}}>
-                                                            <div style={{
-                                                                fontWeight: 600,
-                                                                marginBottom: '0.5rem',
-                                                                color: 'var(--text-primary)',
-                                                                fontSize: '0.9rem'
-                                                            }}>
-                                                                {category.name}
-                                                            </div>
-                                                            <div style={{
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                gap: '0.8rem',
-                                                                marginBottom: '0.5rem',
-                                                                padding: '0.5rem',
-                                                                background: 'var(--bg-secondary)',
-                                                                borderRadius: '4px'
-                                                            }}>
-                                                                <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Quick:</span>
-                                                                {window.innerWidth <= 768 ? (
-                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                const currentValue = parseInt(sideboardQuickInputs[category.id]) || 0;
-                                                                                if (currentValue > 0) {
-                                                                                    setSideboardQuickInputs(prev => ({...prev, [category.id]: currentValue - 1}));
-                                                                                }
-                                                                            }}
-                                                                            style={{
-                                                                                width: '28px',
-                                                                                height: '28px',
-                                                                                fontSize: '1rem',
-                                                                                padding: 0,
-                                                                                background: 'var(--bg-primary)',
-                                                                                border: '1px solid var(--border-color)',
-                                                                                borderRadius: '4px',
-                                                                                color: 'var(--text-primary)',
-                                                                                cursor: 'pointer',
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                fontWeight: 'bold'
-                                                                            }}
-                                                                        >
-                                                                            −
-                                                                        </button>
-                                                                        <input
-                                                                            type="number"
-                                                                            placeholder="0"
-                                                                            value={sideboardQuickInputs[category.id] || ''}
-                                                                            onChange={(e) => {
-                                                                                const val = parseInt(e.target.value) || 0;
-                                                                                setSideboardQuickInputs(prev => ({...prev, [category.id]: val}));
-                                                                            }}
-                                                                            min="0"
-                                                                            style={{
-                                                                                width: '50px',
-                                                                                padding: '0.3rem',
-                                                                                fontSize: '0.85rem',
-                                                                                borderRadius: '4px',
-                                                                                border: '1px solid var(--accent)',
-                                                                                background: 'var(--bg-tertiary)',
-                                                                                color: 'var(--text-primary)',
-                                                                                textAlign: 'center'
-                                                                            }}
-                                                                        />
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                const currentValue = parseInt(sideboardQuickInputs[category.id]) || 0;
-                                                                                setSideboardQuickInputs(prev => ({...prev, [category.id]: currentValue + 1}));
-                                                                            }}
-                                                                            style={{
-                                                                                width: '28px',
-                                                                                height: '28px',
-                                                                                fontSize: '1rem',
-                                                                                padding: 0,
-                                                                                background: 'var(--bg-primary)',
-                                                                                border: '1px solid var(--border-color)',
-                                                                                borderRadius: '4px',
-                                                                                color: 'var(--text-primary)',
-                                                                                cursor: 'pointer',
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                fontWeight: 'bold'
-                                                                            }}
-                                                                        >
-                                                                            +
-                                                                        </button>
-                                                                    </div>
-                                                                ) : (
+                                                        <h4 style={{
+                                                            color: 'var(--gold)',
+                                                            fontSize: '1rem',
+                                                            fontWeight: 600,
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '0.5px',
+                                                            margin: 0
+                                                        }}>
+                                                            {majorGroup.name}
+                                                        </h4>
+                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                            <span style={{fontSize: '0.8rem', color: 'var(--gold)', fontWeight: 600}}>⚡ Quick:</span>
+                                                            {window.innerWidth <= 768 ? (
+                                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            const currentValue = parseInt(sideboardQuickInputs[majorGroupId]) || 0;
+                                                                            if (currentValue > 0) {
+                                                                                setSideboardQuickInputs(prev => ({...prev, [majorGroupId]: currentValue - 1}));
+                                                                            }
+                                                                        }}
+                                                                        style={{
+                                                                            width: '32px',
+                                                                            height: '32px',
+                                                                            fontSize: '1rem',
+                                                                            padding: 0,
+                                                                            background: 'var(--bg-secondary)',
+                                                                            border: '2px solid var(--gold)',
+                                                                            borderRadius: '4px',
+                                                                            color: 'var(--gold)',
+                                                                            cursor: 'pointer',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            fontWeight: 'bold'
+                                                                        }}
+                                                                    >
+                                                                        −
+                                                                    </button>
                                                                     <input
                                                                         type="number"
                                                                         placeholder="0"
-                                                                        value={sideboardQuickInputs[category.id] || ''}
+                                                                        value={sideboardQuickInputs[majorGroupId] || ''}
                                                                         onChange={(e) => {
                                                                             const val = parseInt(e.target.value) || 0;
-                                                                            setSideboardQuickInputs(prev => ({...prev, [category.id]: val}));
+                                                                            setSideboardQuickInputs(prev => ({...prev, [majorGroupId]: val}));
                                                                         }}
                                                                         min="0"
                                                                         style={{
-                                                                            width: '60px',
+                                                                            width: '55px',
                                                                             padding: '0.3rem',
-                                                                            fontSize: '0.85rem',
+                                                                            fontSize: '0.9rem',
                                                                             borderRadius: '4px',
-                                                                            border: '1px solid var(--accent)',
-                                                                            background: 'var(--bg-tertiary)',
+                                                                            border: '2px solid var(--gold)',
+                                                                            background: 'var(--bg-secondary)',
                                                                             color: 'var(--text-primary)',
-                                                                            textAlign: 'center'
+                                                                            textAlign: 'center',
+                                                                            height: '32px'
                                                                         }}
                                                                     />
-                                                                )}
-                                                            </div>
-                                                            <div style={{
-                                                                display: 'grid',
-                                                                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                                                                gap: '0.5rem'
-                                                            }}>
-                                                                {category.subcategories.map(sub => (
-                                                                    <div key={sub.id} style={{
-                                                                        display: 'flex',
-                                                                        justifyContent: 'space-between',
-                                                                        alignItems: 'center',
-                                                                        padding: '0.5rem',
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            const currentValue = parseInt(sideboardQuickInputs[majorGroupId]) || 0;
+                                                                            setSideboardQuickInputs(prev => ({...prev, [majorGroupId]: currentValue + 1}));
+                                                                        }}
+                                                                        style={{
+                                                                            width: '32px',
+                                                                            height: '32px',
+                                                                            fontSize: '1rem',
+                                                                            padding: 0,
+                                                                            background: 'var(--bg-secondary)',
+                                                                            border: '2px solid var(--gold)',
+                                                                            borderRadius: '4px',
+                                                                            color: 'var(--gold)',
+                                                                            cursor: 'pointer',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            fontWeight: 'bold'
+                                                                        }}
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder="0"
+                                                                    value={sideboardQuickInputs[majorGroupId] || ''}
+                                                                    onChange={(e) => {
+                                                                        const val = parseInt(e.target.value) || 0;
+                                                                        setSideboardQuickInputs(prev => ({...prev, [majorGroupId]: val}));
+                                                                    }}
+                                                                    min="0"
+                                                                    style={{
+                                                                        width: '70px',
+                                                                        padding: '0.4rem',
+                                                                        fontSize: '0.9rem',
+                                                                        borderRadius: '4px',
+                                                                        border: '2px solid var(--gold)',
                                                                         background: 'var(--bg-secondary)',
-                                                                        borderRadius: '4px'
+                                                                        color: 'var(--text-primary)',
+                                                                        textAlign: 'center'
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Subcategories - 2 per row */}
+                                                    <div style={{
+                                                        display: 'grid',
+                                                        gridTemplateColumns: 'repeat(2, 1fr)',
+                                                        gap: '0.5rem'
+                                                    }}>
+                                                        {majorGroup.categories.flatMap(category =>
+                                                            category.subcategories.map(sub => (
+                                                                <div key={sub.id} style={{
+                                                                    display: 'flex',
+                                                                    justifyContent: 'space-between',
+                                                                    alignItems: 'center',
+                                                                    padding: '0.5rem 0.75rem',
+                                                                    background: 'var(--bg-secondary)',
+                                                                    borderRadius: '6px',
+                                                                    border: (sideboardCategories[sub.id] || 0) > 0 ? '2px solid var(--accent)' : '1px solid var(--border-color)'
+                                                                }}>
+                                                                    <label style={{
+                                                                        fontSize: '0.85rem',
+                                                                        color: 'var(--text-secondary)',
+                                                                        flex: 1
                                                                     }}>
-                                                                        <label style={{
-                                                                            fontSize: '0.85rem',
-                                                                            color: 'var(--text-secondary)',
-                                                                            flex: 1
-                                                                        }}>
-                                                                            {sub.name}
-                                                                        </label>
-                                                                        {window.innerWidth <= 768 ? (
-                                                                            <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
-                                                                                <button
-                                                                                    type="button"
-                                                                                    onClick={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        const currentValue = parseInt(sideboardCategories[sub.id]) || 0;
-                                                                                        if (currentValue > 0) {
-                                                                                            updateSideboardCategory(sub.id, currentValue - 1);
-                                                                                        }
-                                                                                    }}
-                                                                                    style={{
-                                                                                        width: '28px',
-                                                                                        height: '28px',
-                                                                                        fontSize: '1rem',
-                                                                                        padding: 0,
-                                                                                        background: 'var(--bg-primary)',
-                                                                                        border: '1px solid var(--border-color)',
-                                                                                        borderRadius: '4px',
-                                                                                        color: 'var(--text-primary)',
-                                                                                        cursor: 'pointer',
-                                                                                        display: 'flex',
-                                                                                        alignItems: 'center',
-                                                                                        justifyContent: 'center',
-                                                                                        fontWeight: 'bold'
-                                                                                    }}
-                                                                                >
-                                                                                    −
-                                                                                </button>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    className="small-input"
-                                                                                    value={sideboardCategories[sub.id] || 0}
-                                                                                    onChange={(e) => updateSideboardCategory(sub.id, e.target.value)}
-                                                                                    min="0"
-                                                                                    style={{
-                                                                                        width: '50px',
-                                                                                        padding: '0.3rem',
-                                                                                        fontSize: '0.85rem',
-                                                                                        textAlign: 'center'
-                                                                                    }}
-                                                                                />
-                                                                                <button
-                                                                                    type="button"
-                                                                                    onClick={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        const currentValue = parseInt(sideboardCategories[sub.id]) || 0;
-                                                                                        updateSideboardCategory(sub.id, currentValue + 1);
-                                                                                    }}
-                                                                                    style={{
-                                                                                        width: '28px',
-                                                                                        height: '28px',
-                                                                                        fontSize: '1rem',
-                                                                                        padding: 0,
-                                                                                        background: 'var(--bg-primary)',
-                                                                                        border: '1px solid var(--border-color)',
-                                                                                        borderRadius: '4px',
-                                                                                        color: 'var(--text-primary)',
-                                                                                        cursor: 'pointer',
-                                                                                        display: 'flex',
-                                                                                        alignItems: 'center',
-                                                                                        justifyContent: 'center',
-                                                                                        fontWeight: 'bold'
-                                                                                    }}
-                                                                                >
-                                                                                    +
-                                                                                </button>
-                                                                            </div>
-                                                                        ) : (
+                                                                        {sub.name}
+                                                                    </label>
+                                                                    {window.innerWidth <= 768 ? (
+                                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    const currentValue = parseInt(sideboardCategories[sub.id]) || 0;
+                                                                                    if (currentValue > 0) {
+                                                                                        updateSideboardCategory(sub.id, currentValue - 1);
+                                                                                    }
+                                                                                }}
+                                                                                style={{
+                                                                                    width: '28px',
+                                                                                    height: '28px',
+                                                                                    fontSize: '1rem',
+                                                                                    padding: 0,
+                                                                                    background: 'var(--bg-primary)',
+                                                                                    border: '1px solid var(--border-color)',
+                                                                                    borderRadius: '4px',
+                                                                                    color: 'var(--text-primary)',
+                                                                                    cursor: 'pointer',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center',
+                                                                                    fontWeight: 'bold'
+                                                                                }}
+                                                                            >
+                                                                                −
+                                                                            </button>
                                                                             <input
                                                                                 type="number"
                                                                                 className="small-input"
@@ -9429,17 +9449,56 @@ return (
                                                                                 onChange={(e) => updateSideboardCategory(sub.id, e.target.value)}
                                                                                 min="0"
                                                                                 style={{
-                                                                                    width: '60px',
+                                                                                    width: '50px',
                                                                                     padding: '0.3rem',
-                                                                                    fontSize: '0.85rem'
+                                                                                    fontSize: '0.85rem',
+                                                                                    textAlign: 'center'
                                                                                 }}
                                                                             />
-                                                                        )}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    const currentValue = parseInt(sideboardCategories[sub.id]) || 0;
+                                                                                    updateSideboardCategory(sub.id, currentValue + 1);
+                                                                                }}
+                                                                                style={{
+                                                                                    width: '28px',
+                                                                                    height: '28px',
+                                                                                    fontSize: '1rem',
+                                                                                    padding: 0,
+                                                                                    background: 'var(--bg-primary)',
+                                                                                    border: '1px solid var(--border-color)',
+                                                                                    borderRadius: '4px',
+                                                                                    color: 'var(--text-primary)',
+                                                                                    cursor: 'pointer',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center',
+                                                                                    fontWeight: 'bold'
+                                                                                }}
+                                                                            >
+                                                                                +
+                                                                            </button>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <input
+                                                                            type="number"
+                                                                            className="small-input"
+                                                                            value={sideboardCategories[sub.id] || 0}
+                                                                            onChange={(e) => updateSideboardCategory(sub.id, e.target.value)}
+                                                                            min="0"
+                                                                            style={{
+                                                                                width: '60px',
+                                                                                padding: '0.3rem',
+                                                                                fontSize: '0.85rem'
+                                                                            }}
+                                                                        />
+                                                                    )}
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
@@ -9570,7 +9629,7 @@ return (
                                                 <ul style={{marginLeft: '1.5rem', marginTop: '0.5rem', marginBottom: 0, color: 'var(--text-secondary)', lineHeight: '1.8'}}>
                                                     <li><strong>Tri-lands:</strong> If your deck has exactly 3 colors, enter tri-lands below. They'll be subtracted from your total land count.</li>
                                                     <li><strong>4-5 Color Decks:</strong> This calculator is designed for 1-3 color decks only. Results for 4+ color decks will be inaccurate and are not supported.</li>
-                                                    <li><strong>Remaining Slots:</strong> After calculating basics needed, leftover slots can be used for extra basics of any color or utility lands.</li>
+                                                    <li><strong>Full Basic Land Coverage:</strong> The calculator distributes ALL remaining land slots to basic lands proportionally based on your color needs.</li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -11304,6 +11363,37 @@ return (
                 const totalBasicsNeeded = Object.values(recommendations)
                     .reduce((sum, rec) => sum + rec.basicsNeeded, 0);
 
+                // Distribute remaining slots to basics proportionally
+                const remainingSlots = availableForBasics - totalBasicsNeeded;
+                if (remainingSlots > 0) {
+                    // Sort colors by their percentage (highest first) for distribution
+                    const colorsWithPips = colors.filter(c => totalPips[c] > 0);
+                    let slotsToDistribute = remainingSlots;
+
+                    // Distribute proportionally based on pip percentage
+                    colorsWithPips.forEach(color => {
+                        if (slotsToDistribute > 0) {
+                            const share = Math.round((totalPips[color] / grandTotal) * remainingSlots);
+                            const actualShare = Math.min(share, slotsToDistribute);
+                            recommendations[color].basicsNeeded += actualShare;
+                            slotsToDistribute -= actualShare;
+                        }
+                    });
+
+                    // If there are still slots left due to rounding, give to highest pip color
+                    while (slotsToDistribute > 0 && colorsWithPips.length > 0) {
+                        const highestPipColor = colorsWithPips.reduce((a, b) =>
+                            totalPips[a] > totalPips[b] ? a : b
+                        );
+                        recommendations[highestPipColor].basicsNeeded += 1;
+                        slotsToDistribute -= 1;
+                    }
+                }
+
+                // Recalculate total basics after distribution
+                const finalTotalBasics = Object.values(recommendations)
+                    .reduce((sum, rec) => sum + rec.basicsNeeded, 0);
+
                 const result = {
                     recommendations,
                     totalPips: grandTotal,
@@ -11312,9 +11402,9 @@ return (
                     otherLands: otherLands,
                     totalMultiLands: totalMultiLands,
                     totalOccupiedSlots: totalOccupiedSlots,
-                    totalBasicsNeeded,
+                    totalBasicsNeeded: finalTotalBasics,
                     availableForBasics,
-                    isValid: totalBasicsNeeded <= availableForBasics
+                    isValid: finalTotalBasics <= availableForBasics
                 };
 
                 // Pick a random funny quote
@@ -12298,225 +12388,183 @@ return (
 
                                             {Object.entries(DECK_CATEGORIES).map(([majorGroupId, majorGroup]) => (
                                                 <div key={majorGroupId} style={{marginBottom: '1.5rem'}}>
-                                                    <h4 style={{
-                                                        color: 'var(--accent-bright)',
+                                                    {/* Major Group Header with Quick Total */}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
                                                         marginBottom: '1rem',
-                                                        fontSize: '1rem',
-                                                        fontWeight: 600,
-                                                        textTransform: 'uppercase',
-                                                        letterSpacing: '0.5px'
+                                                        padding: '0.75rem 1rem',
+                                                        background: 'rgba(212, 175, 55, 0.15)',
+                                                        border: '2px dashed var(--gold)',
+                                                        borderRadius: '8px'
                                                     }}>
-                                                        {majorGroup.name}
-                                                    </h4>
-                                                    
-                                                    {majorGroup.categories.map(category => (
-                                                        <div key={category.id} style={{marginBottom: '1rem'}}>
-                                                            <div style={{
-                                                                fontWeight: 600,
-                                                                marginBottom: '0.5rem',
-                                                                color: 'var(--text-primary)',
-                                                                fontSize: '0.9rem'
-                                                            }}>
-                                                                {category.name}
-                                                            </div>
-                                                            <div style={{
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                gap: '0.8rem',
-                                                                marginBottom: '0.5rem',
-                                                                padding: '0.5rem',
-                                                                background: 'var(--bg-secondary)',
-                                                                borderRadius: '4px'
-                                                            }}>
-                                                                <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Quick:</span>
-                                                                {window.innerWidth <= 768 ? (
-                                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                const currentValue = parseInt(sideboardQuickInputs[category.id]) || 0;
-                                                                                if (currentValue > 0) {
-                                                                                    setSideboardQuickInputs(prev => ({...prev, [category.id]: currentValue - 1}));
-                                                                                }
-                                                                            }}
-                                                                            style={{
-                                                                                width: '28px',
-                                                                                height: '28px',
-                                                                                fontSize: '1rem',
-                                                                                padding: 0,
-                                                                                background: 'var(--bg-primary)',
-                                                                                border: '1px solid var(--border-color)',
-                                                                                borderRadius: '4px',
-                                                                                color: 'var(--text-primary)',
-                                                                                cursor: 'pointer',
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                fontWeight: 'bold'
-                                                                            }}
-                                                                        >
-                                                                            −
-                                                                        </button>
-                                                                        <input
-                                                                            type="number"
-                                                                            placeholder="0"
-                                                                            value={sideboardQuickInputs[category.id] || ''}
-                                                                            onChange={(e) => {
-                                                                                const val = parseInt(e.target.value) || 0;
-                                                                                setSideboardQuickInputs(prev => ({...prev, [category.id]: val}));
-                                                                            }}
-                                                                            min="0"
-                                                                            style={{
-                                                                                width: '50px',
-                                                                                padding: '0.3rem',
-                                                                                fontSize: '0.85rem',
-                                                                                borderRadius: '4px',
-                                                                                border: '1px solid var(--accent)',
-                                                                                background: 'var(--bg-tertiary)',
-                                                                                color: 'var(--text-primary)',
-                                                                                textAlign: 'center'
-                                                                            }}
-                                                                        />
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                const currentValue = parseInt(sideboardQuickInputs[category.id]) || 0;
-                                                                                setSideboardQuickInputs(prev => ({...prev, [category.id]: currentValue + 1}));
-                                                                            }}
-                                                                            style={{
-                                                                                width: '28px',
-                                                                                height: '28px',
-                                                                                fontSize: '1rem',
-                                                                                padding: 0,
-                                                                                background: 'var(--bg-primary)',
-                                                                                border: '1px solid var(--border-color)',
-                                                                                borderRadius: '4px',
-                                                                                color: 'var(--text-primary)',
-                                                                                cursor: 'pointer',
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                fontWeight: 'bold'
-                                                                            }}
-                                                                        >
-                                                                            +
-                                                                        </button>
-                                                                    </div>
-                                                                ) : (
+                                                        <h4 style={{
+                                                            color: 'var(--gold)',
+                                                            fontSize: '1rem',
+                                                            fontWeight: 600,
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '0.5px',
+                                                            margin: 0
+                                                        }}>
+                                                            {majorGroup.name}
+                                                        </h4>
+                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                            <span style={{fontSize: '0.8rem', color: 'var(--gold)', fontWeight: 600}}>⚡ Quick:</span>
+                                                            {window.innerWidth <= 768 ? (
+                                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            const currentValue = parseInt(sideboardQuickInputs[majorGroupId]) || 0;
+                                                                            if (currentValue > 0) {
+                                                                                setSideboardQuickInputs(prev => ({...prev, [majorGroupId]: currentValue - 1}));
+                                                                            }
+                                                                        }}
+                                                                        style={{
+                                                                            width: '32px',
+                                                                            height: '32px',
+                                                                            fontSize: '1rem',
+                                                                            padding: 0,
+                                                                            background: 'var(--bg-secondary)',
+                                                                            border: '2px solid var(--gold)',
+                                                                            borderRadius: '4px',
+                                                                            color: 'var(--gold)',
+                                                                            cursor: 'pointer',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            fontWeight: 'bold'
+                                                                        }}
+                                                                    >
+                                                                        −
+                                                                    </button>
                                                                     <input
                                                                         type="number"
                                                                         placeholder="0"
-                                                                        value={sideboardQuickInputs[category.id] || ''}
+                                                                        value={sideboardQuickInputs[majorGroupId] || ''}
                                                                         onChange={(e) => {
                                                                             const val = parseInt(e.target.value) || 0;
-                                                                            setSideboardQuickInputs(prev => ({...prev, [category.id]: val}));
+                                                                            setSideboardQuickInputs(prev => ({...prev, [majorGroupId]: val}));
                                                                         }}
                                                                         min="0"
                                                                         style={{
-                                                                            width: '60px',
+                                                                            width: '55px',
                                                                             padding: '0.3rem',
-                                                                            fontSize: '0.85rem',
+                                                                            fontSize: '0.9rem',
                                                                             borderRadius: '4px',
-                                                                            border: '1px solid var(--accent)',
-                                                                            background: 'var(--bg-tertiary)',
+                                                                            border: '2px solid var(--gold)',
+                                                                            background: 'var(--bg-secondary)',
                                                                             color: 'var(--text-primary)',
-                                                                            textAlign: 'center'
+                                                                            textAlign: 'center',
+                                                                            height: '32px'
                                                                         }}
                                                                     />
-                                                                )}
-                                                            </div>
-                                                            <div style={{
-                                                                display: 'grid',
-                                                                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                                                                gap: '0.5rem'
-                                                            }}>
-                                                                {category.subcategories.map(sub => (
-                                                                    <div key={sub.id} style={{
-                                                                        display: 'flex',
-                                                                        justifyContent: 'space-between',
-                                                                        alignItems: 'center',
-                                                                        padding: '0.5rem',
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            const currentValue = parseInt(sideboardQuickInputs[majorGroupId]) || 0;
+                                                                            setSideboardQuickInputs(prev => ({...prev, [majorGroupId]: currentValue + 1}));
+                                                                        }}
+                                                                        style={{
+                                                                            width: '32px',
+                                                                            height: '32px',
+                                                                            fontSize: '1rem',
+                                                                            padding: 0,
+                                                                            background: 'var(--bg-secondary)',
+                                                                            border: '2px solid var(--gold)',
+                                                                            borderRadius: '4px',
+                                                                            color: 'var(--gold)',
+                                                                            cursor: 'pointer',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            fontWeight: 'bold'
+                                                                        }}
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder="0"
+                                                                    value={sideboardQuickInputs[majorGroupId] || ''}
+                                                                    onChange={(e) => {
+                                                                        const val = parseInt(e.target.value) || 0;
+                                                                        setSideboardQuickInputs(prev => ({...prev, [majorGroupId]: val}));
+                                                                    }}
+                                                                    min="0"
+                                                                    style={{
+                                                                        width: '70px',
+                                                                        padding: '0.4rem',
+                                                                        fontSize: '0.9rem',
+                                                                        borderRadius: '4px',
+                                                                        border: '2px solid var(--gold)',
                                                                         background: 'var(--bg-secondary)',
-                                                                        borderRadius: '4px'
+                                                                        color: 'var(--text-primary)',
+                                                                        textAlign: 'center'
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Subcategories - 2 per row */}
+                                                    <div style={{
+                                                        display: 'grid',
+                                                        gridTemplateColumns: 'repeat(2, 1fr)',
+                                                        gap: '0.5rem'
+                                                    }}>
+                                                        {majorGroup.categories.flatMap(category =>
+                                                            category.subcategories.map(sub => (
+                                                                <div key={sub.id} style={{
+                                                                    display: 'flex',
+                                                                    justifyContent: 'space-between',
+                                                                    alignItems: 'center',
+                                                                    padding: '0.5rem 0.75rem',
+                                                                    background: 'var(--bg-secondary)',
+                                                                    borderRadius: '6px',
+                                                                    border: (sideboardCategories[sub.id] || 0) > 0 ? '2px solid var(--accent)' : '1px solid var(--border-color)'
+                                                                }}>
+                                                                    <label style={{
+                                                                        fontSize: '0.85rem',
+                                                                        color: 'var(--text-secondary)',
+                                                                        flex: 1
                                                                     }}>
-                                                                        <label style={{
-                                                                            fontSize: '0.85rem',
-                                                                            color: 'var(--text-secondary)',
-                                                                            flex: 1
-                                                                        }}>
-                                                                            {sub.name}
-                                                                        </label>
-                                                                        {window.innerWidth <= 768 ? (
-                                                                            <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
-                                                                                <button
-                                                                                    type="button"
-                                                                                    onClick={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        const currentValue = parseInt(sideboardCategories[sub.id]) || 0;
-                                                                                        if (currentValue > 0) {
-                                                                                            updateSideboardCategory(sub.id, currentValue - 1);
-                                                                                        }
-                                                                                    }}
-                                                                                    style={{
-                                                                                        width: '28px',
-                                                                                        height: '28px',
-                                                                                        fontSize: '1rem',
-                                                                                        padding: 0,
-                                                                                        background: 'var(--bg-primary)',
-                                                                                        border: '1px solid var(--border-color)',
-                                                                                        borderRadius: '4px',
-                                                                                        color: 'var(--text-primary)',
-                                                                                        cursor: 'pointer',
-                                                                                        display: 'flex',
-                                                                                        alignItems: 'center',
-                                                                                        justifyContent: 'center',
-                                                                                        fontWeight: 'bold'
-                                                                                    }}
-                                                                                >
-                                                                                    −
-                                                                                </button>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    className="small-input"
-                                                                                    value={sideboardCategories[sub.id] || 0}
-                                                                                    onChange={(e) => updateSideboardCategory(sub.id, e.target.value)}
-                                                                                    min="0"
-                                                                                    style={{
-                                                                                        width: '50px',
-                                                                                        padding: '0.3rem',
-                                                                                        fontSize: '0.85rem',
-                                                                                        textAlign: 'center'
-                                                                                    }}
-                                                                                />
-                                                                                <button
-                                                                                    type="button"
-                                                                                    onClick={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        const currentValue = parseInt(sideboardCategories[sub.id]) || 0;
-                                                                                        updateSideboardCategory(sub.id, currentValue + 1);
-                                                                                    }}
-                                                                                    style={{
-                                                                                        width: '28px',
-                                                                                        height: '28px',
-                                                                                        fontSize: '1rem',
-                                                                                        padding: 0,
-                                                                                        background: 'var(--bg-primary)',
-                                                                                        border: '1px solid var(--border-color)',
-                                                                                        borderRadius: '4px',
-                                                                                        color: 'var(--text-primary)',
-                                                                                        cursor: 'pointer',
-                                                                                        display: 'flex',
-                                                                                        alignItems: 'center',
-                                                                                        justifyContent: 'center',
-                                                                                        fontWeight: 'bold'
-                                                                                    }}
-                                                                                >
-                                                                                    +
-                                                                                </button>
-                                                                            </div>
-                                                                        ) : (
+                                                                        {sub.name}
+                                                                    </label>
+                                                                    {window.innerWidth <= 768 ? (
+                                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    const currentValue = parseInt(sideboardCategories[sub.id]) || 0;
+                                                                                    if (currentValue > 0) {
+                                                                                        updateSideboardCategory(sub.id, currentValue - 1);
+                                                                                    }
+                                                                                }}
+                                                                                style={{
+                                                                                    width: '28px',
+                                                                                    height: '28px',
+                                                                                    fontSize: '1rem',
+                                                                                    padding: 0,
+                                                                                    background: 'var(--bg-primary)',
+                                                                                    border: '1px solid var(--border-color)',
+                                                                                    borderRadius: '4px',
+                                                                                    color: 'var(--text-primary)',
+                                                                                    cursor: 'pointer',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center',
+                                                                                    fontWeight: 'bold'
+                                                                                }}
+                                                                            >
+                                                                                −
+                                                                            </button>
                                                                             <input
                                                                                 type="number"
                                                                                 className="small-input"
@@ -12524,17 +12572,56 @@ return (
                                                                                 onChange={(e) => updateSideboardCategory(sub.id, e.target.value)}
                                                                                 min="0"
                                                                                 style={{
-                                                                                    width: '60px',
+                                                                                    width: '50px',
                                                                                     padding: '0.3rem',
-                                                                                    fontSize: '0.85rem'
+                                                                                    fontSize: '0.85rem',
+                                                                                    textAlign: 'center'
                                                                                 }}
                                                                             />
-                                                                        )}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    const currentValue = parseInt(sideboardCategories[sub.id]) || 0;
+                                                                                    updateSideboardCategory(sub.id, currentValue + 1);
+                                                                                }}
+                                                                                style={{
+                                                                                    width: '28px',
+                                                                                    height: '28px',
+                                                                                    fontSize: '1rem',
+                                                                                    padding: 0,
+                                                                                    background: 'var(--bg-primary)',
+                                                                                    border: '1px solid var(--border-color)',
+                                                                                    borderRadius: '4px',
+                                                                                    color: 'var(--text-primary)',
+                                                                                    cursor: 'pointer',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'center',
+                                                                                    fontWeight: 'bold'
+                                                                                }}
+                                                                            >
+                                                                                +
+                                                                            </button>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <input
+                                                                            type="number"
+                                                                            className="small-input"
+                                                                            value={sideboardCategories[sub.id] || 0}
+                                                                            onChange={(e) => updateSideboardCategory(sub.id, e.target.value)}
+                                                                            min="0"
+                                                                            style={{
+                                                                                width: '60px',
+                                                                                padding: '0.3rem',
+                                                                                fontSize: '0.85rem'
+                                                                            }}
+                                                                        />
+                                                                    )}
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
@@ -12665,7 +12752,7 @@ return (
                                                 <ul style={{marginLeft: '1.5rem', marginTop: '0.5rem', marginBottom: 0, color: 'var(--text-secondary)', lineHeight: '1.8'}}>
                                                     <li><strong>Tri-lands:</strong> If your deck has exactly 3 colors, enter tri-lands below. They'll be subtracted from your total land count.</li>
                                                     <li><strong>4-5 Color Decks:</strong> This calculator is designed for 1-3 color decks only. Results for 4+ color decks will be inaccurate and are not supported.</li>
-                                                    <li><strong>Remaining Slots:</strong> After calculating basics needed, leftover slots can be used for extra basics of any color or utility lands.</li>
+                                                    <li><strong>Full Basic Land Coverage:</strong> The calculator distributes ALL remaining land slots to basic lands proportionally based on your color needs.</li>
                                                 </ul>
                                             </div>
                                         </div>
