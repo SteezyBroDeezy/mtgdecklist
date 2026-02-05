@@ -225,11 +225,23 @@
             .desktop-only {
                 display: none !important;
             }
-            
+
             .mobile-only {
                 display: block !important;
             }
-            
+
+            /* Category boxes on mobile - prevent overflow */
+            .modal-body {
+                overflow-x: hidden !important;
+                padding: 1rem !important;
+            }
+
+            /* Ensure all content stays within bounds */
+            .modal-body * {
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
             .pip-counter {
                 grid-template-columns: 1fr;
             }
@@ -9087,7 +9099,7 @@ return (
                                                                 <div style={{fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', fontStyle: 'italic'}}>
                                                                     Creatures doing multiple jobs? Adjust to prevent double-counting.
                                                                 </div>
-                                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem'}}>
+                                                                <div style={{display: 'grid', gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '0.5rem'}}>
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>2 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
@@ -9104,7 +9116,7 @@ return (
                                                                             <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
-                                                                    <div style={{textAlign: 'center'}}>
+                                                                    <div style={{textAlign: 'center', gridColumn: window.innerWidth <= 768 ? '1 / -1' : 'auto'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>4+ Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
                                                                             <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
@@ -9133,7 +9145,7 @@ return (
                                                                 <div style={{fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', fontStyle: 'italic'}}>
                                                                     Spells doing multiple jobs? Adjust to prevent double-counting.
                                                                 </div>
-                                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem'}}>
+                                                                <div style={{display: 'grid', gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '0.5rem'}}>
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>2 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
@@ -9150,7 +9162,7 @@ return (
                                                                             <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
-                                                                    <div style={{textAlign: 'center'}}>
+                                                                    <div style={{textAlign: 'center', gridColumn: window.innerWidth <= 768 ? '1 / -1' : 'auto'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>4+ Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
                                                                             <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
@@ -12210,7 +12222,7 @@ return (
                                                                 <div style={{fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', fontStyle: 'italic'}}>
                                                                     Creatures doing multiple jobs? Adjust to prevent double-counting.
                                                                 </div>
-                                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem'}}>
+                                                                <div style={{display: 'grid', gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '0.5rem'}}>
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>2 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
@@ -12227,7 +12239,7 @@ return (
                                                                             <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
-                                                                    <div style={{textAlign: 'center'}}>
+                                                                    <div style={{textAlign: 'center', gridColumn: window.innerWidth <= 768 ? '1 / -1' : 'auto'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>4+ Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
                                                                             <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
@@ -12256,7 +12268,7 @@ return (
                                                                 <div style={{fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', fontStyle: 'italic'}}>
                                                                     Spells doing multiple jobs? Adjust to prevent double-counting.
                                                                 </div>
-                                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem'}}>
+                                                                <div style={{display: 'grid', gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '0.5rem'}}>
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>2 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
@@ -12273,7 +12285,7 @@ return (
                                                                             <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
-                                                                    <div style={{textAlign: 'center'}}>
+                                                                    <div style={{textAlign: 'center', gridColumn: window.innerWidth <= 768 ? '1 / -1' : 'auto'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>4+ Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
                                                                             <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
