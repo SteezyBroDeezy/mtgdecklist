@@ -5768,9 +5768,52 @@ return (
                                                 <div key={color} className={`mana-pip pip-${color}`}></div>
                                             ))}
                                         </div>
+                                        {/* Synergy Tags Display */}
+                                        {(selectedDeck.synergyTags?.length > 0 || selectedDeck.customTag1 || selectedDeck.customTag2) && (
+                                            <div style={{
+                                                display: 'flex',
+                                                flexWrap: 'wrap',
+                                                gap: '0.4rem',
+                                                marginBottom: '0.75rem'
+                                            }}>
+                                                {selectedDeck.synergyTags?.map((tag, i) => (
+                                                    <span key={i} style={{
+                                                        padding: '0.25rem 0.6rem',
+                                                        borderRadius: '12px',
+                                                        background: 'rgba(212, 175, 55, 0.2)',
+                                                        border: '1px solid var(--gold)',
+                                                        color: 'var(--gold)',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 600
+                                                    }}>{tag}</span>
+                                                ))}
+                                                {selectedDeck.customTag1 && (
+                                                    <span style={{
+                                                        padding: '0.25rem 0.6rem',
+                                                        borderRadius: '12px',
+                                                        background: 'rgba(139, 111, 71, 0.3)',
+                                                        border: '1px solid var(--accent)',
+                                                        color: 'var(--accent-bright)',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 600
+                                                    }}>{selectedDeck.customTag1}</span>
+                                                )}
+                                                {selectedDeck.customTag2 && (
+                                                    <span style={{
+                                                        padding: '0.25rem 0.6rem',
+                                                        borderRadius: '12px',
+                                                        background: 'rgba(139, 111, 71, 0.3)',
+                                                        border: '1px solid var(--accent)',
+                                                        color: 'var(--accent-bright)',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 600
+                                                    }}>{selectedDeck.customTag2}</span>
+                                                )}
+                                            </div>
+                                        )}
                                         <div style={{
-                                            color: 'var(--accent-bright)', 
-                                            fontSize: '0.9rem', 
+                                            color: 'var(--accent-bright)',
+                                            fontSize: '0.9rem',
                                             fontWeight: 600,
                                             textTransform: 'uppercase'
                                         }}>
@@ -5817,24 +5860,6 @@ return (
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* SYNERGY PICKS - Right after main counts */}
-                                {selectedDeck.strategy && (
-                                    <div style={{marginBottom: '1.5rem', textAlign: 'center'}}>
-                                        <div style={{
-                                            display: 'inline-block',
-                                            padding: '0.5rem 1rem',
-                                            background: 'rgba(212, 175, 55, 0.15)',
-                                            border: '1px solid var(--gold)',
-                                            borderRadius: '20px',
-                                            color: 'var(--gold)',
-                                            fontSize: '0.9rem',
-                                            fontWeight: 600
-                                        }}>
-                                            {selectedDeck.strategy}
-                                        </div>
-                                    </div>
-                                )}
 
                                 {/* SUBTYPE BREAKDOWN */}
                                 {selectedDeck.categories && (
