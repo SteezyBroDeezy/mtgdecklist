@@ -1105,7 +1105,12 @@
                         id: 'utility-lands',
                         name: 'Utility Lands',
                         subcategories: [
-                            { id: 'utility', name: 'Utility Lands', defaultValue: 0, description: 'Lands with abilities (Reliquary Tower, Rogue\'s Passage, etc.)' }
+                            { id: 'utility-white', name: 'White Utility', defaultValue: 0, description: 'White-producing utility lands (Eiganjo, Emeria, etc.)' },
+                            { id: 'utility-blue', name: 'Blue Utility', defaultValue: 0, description: 'Blue-producing utility lands (Academy Ruins, Otawara, etc.)' },
+                            { id: 'utility-black', name: 'Black Utility', defaultValue: 0, description: 'Black-producing utility lands (Urborg, Cabal Coffers, etc.)' },
+                            { id: 'utility-red', name: 'Red Utility', defaultValue: 0, description: 'Red-producing utility lands (Valakut, Sokenzan, etc.)' },
+                            { id: 'utility-green', name: 'Green Utility', defaultValue: 0, description: 'Green-producing utility lands (Gaea\'s Cradle, Boseiju, etc.)' },
+                            { id: 'utility-colorless', name: 'Colorless Utility', defaultValue: 0, description: 'Colorless utility lands (Reliquary Tower, Rogue\'s Passage, etc.)' }
                         ]
                     },
                     {
@@ -1140,7 +1145,14 @@
                         id: 'creature-removal',
                         name: '🎯 Removal',
                         subcategories: [
-                            { id: 'removal-creatures', name: 'Removal', defaultValue: 0, description: 'ETB removal, fight, exile, bounce - removes threats' }
+                            { id: 'removal-creatures', name: 'Removal', defaultValue: 0, description: 'ETB removal, fight, exile, bounce - single target removal' }
+                        ]
+                    },
+                    {
+                        id: 'creature-boardwipes',
+                        name: '💥 Board Wipes',
+                        subcategories: [
+                            { id: 'boardwipe-creatures', name: 'Board Wipes', defaultValue: 0, description: 'Mass removal creatures - Massacre Wurm, Elesh Norn, etc.' }
                         ]
                     },
                     {
@@ -1155,6 +1167,20 @@
                         name: '🔗 Synergy',
                         subcategories: [
                             { id: 'synergy-creatures', name: 'Synergy', defaultValue: 0, description: 'Tokens, counters, tribal, sacrifice, ETB, lifegain, recursion - theme pieces' }
+                        ]
+                    },
+                    {
+                        id: 'creature-anthems',
+                        name: '📯 Anthems',
+                        subcategories: [
+                            { id: 'anthem-creatures', name: 'Anthems', defaultValue: 0, description: 'Buff creatures - lords, Elesh Norn, Coat of Arms carriers' }
+                        ]
+                    },
+                    {
+                        id: 'creature-combo',
+                        name: '⚙️ Combo Pieces',
+                        subcategories: [
+                            { id: 'combo-creatures', name: 'Combo Pieces', defaultValue: 0, description: 'Key combo creatures - infinite combo pieces, synergy engines' }
                         ]
                     },
                     {
@@ -1197,7 +1223,14 @@
                         id: 'spell-removal',
                         name: '🎯 Removal',
                         subcategories: [
-                            { id: 'removal-spells', name: 'Removal', defaultValue: 0, description: 'Spot removal, board wipes, all removal' }
+                            { id: 'removal-spells', name: 'Removal', defaultValue: 0, description: 'Spot removal - single target destruction, exile, bounce' }
+                        ]
+                    },
+                    {
+                        id: 'spell-boardwipes',
+                        name: '💥 Board Wipes',
+                        subcategories: [
+                            { id: 'boardwipe-spells', name: 'Board Wipes', defaultValue: 0, description: 'Mass removal - Wrath, Damnation, Cyclonic Rift, etc.' }
                         ]
                     },
                     {
@@ -1212,6 +1245,20 @@
                         name: '🔗 Synergy',
                         subcategories: [
                             { id: 'synergy-spells', name: 'Synergy', defaultValue: 0, description: 'Tokens, counters, tribal, sacrifice, blink, lifegain, recursion - theme pieces' }
+                        ]
+                    },
+                    {
+                        id: 'spell-anthems',
+                        name: '📯 Anthems',
+                        subcategories: [
+                            { id: 'anthem-spells', name: 'Anthems', defaultValue: 0, description: 'Buff effects - Glorious Anthem, Cathars Crusade, etc.' }
+                        ]
+                    },
+                    {
+                        id: 'spell-combo',
+                        name: '⚙️ Combo Pieces',
+                        subcategories: [
+                            { id: 'combo-spells', name: 'Combo Pieces', defaultValue: 0, description: 'Key combo cards - infinite combos, synergy engines' }
                         ]
                     },
                     {
@@ -1362,9 +1409,9 @@
 
             // OLD REMOVAL -> NEW REMOVAL SPELLS
             'spot-removal': 'removal-spells',
-            'board-wipes': 'removal-spells',
+            'board-wipes': 'boardwipe-spells',
             'targeted-removal': 'removal-spells',
-            'mass-removal': 'removal-spells',
+            'mass-removal': 'boardwipe-spells',
             'creature-removal': 'removal-spells',
             'artifact-removal': 'removal-spells',
             'enchantment-removal': 'removal-spells',
@@ -1383,8 +1430,8 @@
             'reanimate-spells': 'synergy-spells',
             'token-spells': 'synergy-spells',
             'token-makers-spells': 'synergy-spells',
-            'anthems': 'synergy-spells',
-            'pump-spells': 'synergy-spells',
+            'anthems': 'anthem-spells',
+            'pump-spells': 'anthem-spells',
             'token-doublers': 'synergy-spells',
             'counter-spells': 'synergy-spells',
             'counter-distribution': 'synergy-spells',
@@ -1400,8 +1447,8 @@
             'panharmonicon': 'synergy-spells',
             'etb-doublers': 'synergy-spells',
             'tribal-spells': 'synergy-spells',
-            'combo-spells': 'synergy-spells',
-            'combo-pieces': 'synergy-spells',
+            'combo-spells': 'combo-spells',
+            'combo-pieces': 'combo-spells',
 
             // OLD FINISHERS -> NEW FINISHER SPELLS
             'finisher-spells': 'finisher-spells',
@@ -5300,7 +5347,7 @@ return (
                                                                               (deck.categories.swamps || 0) + (deck.categories.mountains || 0) +
                                                                               (deck.categories.forests || 0) + (deck.categories.wastes || 0);
                                                                 const duals = (deck.categories.duals || 0) + (deck.categories.trilands || 0) + (deck.categories.fetches || 0);
-                                                                const utility = (deck.categories.utility || 0) + (deck.categories['creature-lands'] || 0) + (deck.categories['mdfc-lands'] || 0);
+                                                                const utility = (deck.categories.utility || 0) + (deck.categories['utility-white'] || 0) + (deck.categories['utility-blue'] || 0) + (deck.categories['utility-black'] || 0) + (deck.categories['utility-red'] || 0) + (deck.categories['utility-green'] || 0) + (deck.categories['utility-colorless'] || 0) + (deck.categories['creature-lands'] || 0) + (deck.categories['mdfc-lands'] || 0);
                                                                 return (
                                                                     <>
                                                                         {basics > 0 && <span>Basic: {basics}</span>}
@@ -5663,7 +5710,7 @@ return (
                                                                               (deck.categories.swamps || 0) + (deck.categories.mountains || 0) +
                                                                               (deck.categories.forests || 0) + (deck.categories.wastes || 0);
                                                                 const duals = (deck.categories.duals || 0) + (deck.categories.trilands || 0) + (deck.categories.fetches || 0);
-                                                                const utility = (deck.categories.utility || 0) + (deck.categories['creature-lands'] || 0) + (deck.categories['mdfc-lands'] || 0);
+                                                                const utility = (deck.categories.utility || 0) + (deck.categories['utility-white'] || 0) + (deck.categories['utility-blue'] || 0) + (deck.categories['utility-black'] || 0) + (deck.categories['utility-red'] || 0) + (deck.categories['utility-green'] || 0) + (deck.categories['utility-colorless'] || 0) + (deck.categories['creature-lands'] || 0) + (deck.categories['mdfc-lands'] || 0);
                                                                 return (
                                                                     <>
                                                                         {basics > 0 && <span>Basic: {basics}</span>}
@@ -5885,13 +5932,16 @@ return (
                                                 {(() => {
                                                     const cats = selectedDeck.categories;
                                                     const items = [
-                                                        {name: 'Ramp', count: (cats['ramp-creatures'] || 0) + (cats['fast-mana'] || 0) + (cats['efficient-ramp'] || 0) + (cats['land-ramp'] || 0) + (cats['artifact-ramp'] || 0)},
-                                                        {name: 'Draw', count: (cats['draw-creatures'] || 0) + (cats['cantrips'] || 0) + (cats['raw-draw'] || 0) + (cats['draw-engines'] || 0) + (cats['wheeling'] || 0) + (cats['impulse-draw'] || 0)},
-                                                        {name: 'Removal', count: (cats['removal-creatures'] || 0) + (cats['creature-removal'] || 0) + (cats['artifact-enchantment-removal'] || 0) + (cats['flexible-removal'] || 0) + (cats['destroy-wipes'] || 0) + (cats['exile-wipes'] || 0)},
-                                                        {name: 'Protection', count: (cats['protection-creatures'] || 0) + (cats['counterspells'] || 0) + (cats['protection-spells'] || 0) + (cats['redirection'] || 0) + (cats['phasing'] || 0)},
-                                                        {name: 'Synergy', count: (cats['synergy-creatures'] || 0) + (cats['synergy-spells'] || 0) + (cats['recursion-spells'] || 0) + (cats['copy-effects'] || 0)},
-                                                        {name: 'Finishers', count: cats['finisher-creatures'] || 0},
-                                                        {name: 'Other', count: cats['other-creatures'] || 0}
+                                                        {name: 'Ramp', count: (cats['ramp-creatures'] || 0) + (cats['ramp-spells'] || 0)},
+                                                        {name: 'Draw', count: (cats['draw-creatures'] || 0) + (cats['draw-spells'] || 0)},
+                                                        {name: 'Removal', count: (cats['removal-creatures'] || 0) + (cats['removal-spells'] || 0)},
+                                                        {name: 'Board Wipes', count: (cats['boardwipe-creatures'] || 0) + (cats['boardwipe-spells'] || 0)},
+                                                                                                                {name: 'Protection', count: (cats['protection-creatures'] || 0) + (cats['protection-spells'] || 0)},
+                                                        {name: 'Synergy', count: (cats['synergy-creatures'] || 0) + (cats['synergy-spells'] || 0)},
+                                                        {name: 'Anthems', count: (cats['anthem-creatures'] || 0) + (cats['anthem-spells'] || 0)},
+                                                        {name: 'Combo', count: (cats['combo-creatures'] || 0) + (cats['combo-spells'] || 0)},
+                                                        {name: 'Finishers', count: (cats['finisher-creatures'] || 0) + (cats['finisher-spells'] || 0)},
+                                                        {name: 'Other', count: (cats['other-creatures'] || 0) + (cats['other-spells'] || 0)}
                                                     ].filter(item => item.count > 0);
 
                                                     return items.map((item, i) => (
@@ -5914,7 +5964,7 @@ return (
                                                     const cats = selectedDeck.categories;
                                                     const basics = (cats.plains || 0) + (cats.islands || 0) + (cats.swamps || 0) + (cats.mountains || 0) + (cats.forests || 0);
                                                     const multicolor = (cats.duals || 0) + (cats.trilands || 0) + (cats.fetches || 0);
-                                                    const utility = cats.utility || 0;
+                                                    const utility = (cats['utility-white'] || 0) + (cats['utility-blue'] || 0) + (cats['utility-black'] || 0) + (cats['utility-red'] || 0) + (cats['utility-green'] || 0) + (cats['utility-colorless'] || 0) + (cats.utility || 0);
                                                     const other = cats['other-lands'] || 0;
 
                                                     const items = [];
@@ -9103,25 +9153,25 @@ return (
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>2 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, prev.twoFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, (parseInt(prev.twoFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionCreatures.twoFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: prev.twoFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, twoFunctions: (parseInt(prev.twoFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>3 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, prev.threeFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, (parseInt(prev.threeFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionCreatures.threeFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, threeFunctions: (parseInt(prev.threeFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                     <div style={{textAlign: 'center', gridColumn: window.innerWidth <= 768 ? '1 / -1' : 'auto'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>4+ Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, (parseInt(prev.fourFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionCreatures.fourFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: prev.fourFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, fourFunctions: (parseInt(prev.fourFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -9149,25 +9199,25 @@ return (
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>2 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, prev.twoFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, (parseInt(prev.twoFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionNoncreature.twoFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid #f5a742', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: prev.twoFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: (parseInt(prev.twoFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>3 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, prev.threeFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, (parseInt(prev.threeFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionNoncreature.threeFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid #f5a742', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: (parseInt(prev.threeFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                     <div style={{textAlign: 'center', gridColumn: window.innerWidth <= 768 ? '1 / -1' : 'auto'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>4+ Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, (parseInt(prev.fourFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionNoncreature.fourFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid #f5a742', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: prev.fourFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: (parseInt(prev.fourFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -10976,20 +11026,16 @@ return (
             const [analyticsExpanded, setAnalyticsExpanded] = useState(false);
             const [multiFunctionOpen, setMultiFunctionOpen] = useState(false);
             // Load multi-function adjustments from deck prop if available
-            const [multiFunctionCreatures, setMultiFunctionCreatures] = useState(
-                deck?.multiFunctionCreatures || {
-                    twoFunctions: 0,
-                    threeFunctions: 0,
-                    fourFunctions: 0
-                }
-            );
-            const [multiFunctionNoncreature, setMultiFunctionNoncreature] = useState(
-                deck?.multiFunctionNoncreature || {
-                    twoFunctions: 0,
-                    threeFunctions: 0,
-                    fourFunctions: 0
-                }
-            );
+            const [multiFunctionCreatures, setMultiFunctionCreatures] = useState({
+                twoFunctions: deck?.multiFunctionCreatures?.twoFunctions || 0,
+                threeFunctions: deck?.multiFunctionCreatures?.threeFunctions || 0,
+                fourFunctions: deck?.multiFunctionCreatures?.fourFunctions || 0
+            });
+            const [multiFunctionNoncreature, setMultiFunctionNoncreature] = useState({
+                twoFunctions: deck?.multiFunctionNoncreature?.twoFunctions || 0,
+                threeFunctions: deck?.multiFunctionNoncreature?.threeFunctions || 0,
+                fourFunctions: deck?.multiFunctionNoncreature?.fourFunctions || 0
+            });
 
             // Category section collapse states
             const [categoryOpen, setCategoryOpen] = useState({
@@ -12226,25 +12272,25 @@ return (
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>2 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, prev.twoFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, (parseInt(prev.twoFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionCreatures.twoFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, twoFunctions: prev.twoFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, twoFunctions: (parseInt(prev.twoFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>3 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, prev.threeFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, (parseInt(prev.threeFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionCreatures.threeFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, threeFunctions: (parseInt(prev.threeFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                     <div style={{textAlign: 'center', gridColumn: window.innerWidth <= 768 ? '1 / -1' : 'auto'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>4+ Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, (parseInt(prev.fourFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionCreatures.fourFunctions} onChange={(e) => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid var(--gold)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionCreatures(prev => ({...prev, fourFunctions: prev.fourFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionCreatures(prev => ({...prev, fourFunctions: (parseInt(prev.fourFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid var(--gold)', borderRadius: '4px', color: 'var(--gold)', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -12272,25 +12318,25 @@ return (
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>2 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, prev.twoFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, (parseInt(prev.twoFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionNoncreature.twoFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid #f5a742', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: prev.twoFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, twoFunctions: (parseInt(prev.twoFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                     <div style={{textAlign: 'center'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>3 Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, prev.threeFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, (parseInt(prev.threeFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionNoncreature.threeFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid #f5a742', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: prev.threeFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, threeFunctions: (parseInt(prev.threeFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                     <div style={{textAlign: 'center', gridColumn: window.innerWidth <= 768 ? '1 / -1' : 'auto'}}>
                                                                         <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.3rem'}}>4+ Functions</div>
                                                                         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem'}}>
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, prev.fourFunctions - 1)}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, (parseInt(prev.fourFunctions) || 0) - 1)})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>−</button>
                                                                             <input type="number" value={multiFunctionNoncreature.fourFunctions} onChange={(e) => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: Math.max(0, parseInt(e.target.value) || 0)}))} style={{width: '45px', padding: '0.3rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid #f5a742', background: 'var(--bg-secondary)', color: 'var(--text-primary)', textAlign: 'center', height: '28px'}} />
-                                                                            <button type="button" onClick={() => setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: prev.fourFunctions + 1}))} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
+                                                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMultiFunctionNoncreature(prev => ({...prev, fourFunctions: (parseInt(prev.fourFunctions) || 0) + 1})); }} style={{width: '28px', height: '28px', fontSize: '1rem', padding: 0, background: 'var(--bg-secondary)', border: '1px solid #f5a742', borderRadius: '4px', color: '#f5a742', cursor: 'pointer', fontWeight: 'bold'}}>+</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
