@@ -4,7 +4,7 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deck Skeleton + Mana Calculator v2.9.0 PIP-SECTIONS-EXPANDABLE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=MedievalSharp&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -50,6 +50,313 @@
             color: var(--text-primary);
             min-height: 100vh;
             background-attachment: fixed;
+        }
+
+        /* Fun Loading Overlay */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 22, 18, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-skull {
+            font-size: 4rem;
+            animation: float 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px var(--gold));
+        }
+
+        .loading-ring {
+            width: 120px;
+            height: 120px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute;
+        }
+
+        .loading-text {
+            margin-top: 2rem;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.5rem;
+            color: var(--gold);
+            background: linear-gradient(90deg, var(--gold), var(--accent-bright), var(--gold));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 2s linear infinite;
+        }
+
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+            margin-left: 4px;
+        }
+
+        /* Confetti Animation */
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes confetti-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s ease-out forwards, confetti-shake 0.5s ease-in-out infinite;
+        }
+
+        .confetti.circle { border-radius: 50%; }
+        .confetti.square { border-radius: 2px; }
+        .confetti.star {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            width: 15px;
+            height: 15px;
+        }
+
+        /* Deck Card Hover Animations */
+        .deck-card-animated {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deck-card-animated::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            transition: left 0.5s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .deck-card-animated:hover::before {
+            left: 100%;
+        }
+
+        .deck-card-animated:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.3), 0 0 20px rgba(212, 175, 55, 0.15);
+            border-color: var(--gold) !important;
+        }
+
+        .deck-card-animated:active {
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        /* Card art background overlay */
+        .deck-card-art-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .deck-card-animated:hover .deck-card-art-bg {
+            opacity: 0.25;
+        }
+
+        .deck-card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        /* Animated Mana Pips */
+        @keyframes manaPulse {
+            0%, 100% { box-shadow: 0 0 5px currentColor, 0 0 10px currentColor; transform: scale(1); }
+            50% { box-shadow: 0 0 15px currentColor, 0 0 25px currentColor; transform: scale(1.1); }
+        }
+
+        .mana-pip-animated {
+            animation: manaPulse 2s ease-in-out infinite;
+        }
+
+        .mana-pip-animated.pip-W { color: #F0E68C; }
+        .mana-pip-animated.pip-U { color: #0E68AB; }
+        .mana-pip-animated.pip-B { color: #4a4a4a; }
+        .mana-pip-animated.pip-R { color: #D3202A; }
+        .mana-pip-animated.pip-G { color: #00733E; }
+
+        /* Stagger animations for multiple pips */
+        .mana-pip-animated:nth-child(1) { animation-delay: 0s; }
+        .mana-pip-animated:nth-child(2) { animation-delay: 0.3s; }
+        .mana-pip-animated:nth-child(3) { animation-delay: 0.6s; }
+        .mana-pip-animated:nth-child(4) { animation-delay: 0.9s; }
+        .mana-pip-animated:nth-child(5) { animation-delay: 1.2s; }
+
+        /* Skeleton Mascot Expressions */
+        .skeleton-mascot {
+            transition: all 0.3s ease;
+        }
+
+        .skeleton-mascot.happy .skull-mouth {
+            d: path('M28 36 Q32 42 36 36');
+        }
+
+        .skeleton-mascot.thinking .skull-eyes {
+            animation: eyeShift 1s ease-in-out infinite;
+        }
+
+        @keyframes eyeShift {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(2px); }
+        }
+
+        /* Magical Particle Effects */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            animation: particleFloat linear infinite;
+        }
+
+        .particle.star {
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--gold);
+        }
+
+        .particle.sparkle {
+            width: 4px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold);
+        }
+
+        /* Deck Card 3D Tilt Effect */
+        .deck-card-tilt {
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        .deck-card-tilt:hover {
+            transform: perspective(1000px) rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) scale(1.02);
+        }
+
+        /* Counter Animation */
+        .counter-animate {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .counter-animate.counting {
+            animation: countPop 0.3s ease;
+        }
+
+        @keyframes countPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); color: var(--gold); }
+            100% { transform: scale(1); }
+        }
+
+        /* Achievement Badges */
+        @keyframes badgeUnlock {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .achievement-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--gold) 0%, #c9a772 100%);
+            border-radius: 20px;
+            color: var(--bg-primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            animation: badgeUnlock 0.5s ease-out;
+        }
+
+        .achievement-badge .badge-icon {
+            font-size: 1.2rem;
         }
 
         .app-header {
@@ -201,7 +508,7 @@
         /* MOBILE RESPONSIVE STYLES */
         /* ============================================ */
         
-        @media (max-width: 1200px) {
+        @media (max-width: 768px) {
             .modal-content-wrapper {
                 flex-direction: column;
             }
@@ -761,7 +1068,7 @@
             cursor: pointer;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 768px) {
             .modal-content-wrapper {
                 flex-direction: column;
             }
@@ -1197,6 +1504,28 @@
                         subcategories: [
                             { id: 'other-creatures', name: 'Other', defaultValue: 0, description: 'Utility, hatebears, evasion, anything else' }
                         ]
+                    },
+                    // === CUSTOM CATEGORIES ===
+                    {
+                        id: 'creature-custom1',
+                        name: '✨ Custom 1',
+                        subcategories: [
+                            { id: 'custom1-creatures', name: 'Custom 1', defaultValue: 0, description: 'Custom category - name it yourself!', isCustom: true, customIndex: 1 }
+                        ]
+                    },
+                    {
+                        id: 'creature-custom2',
+                        name: '✨ Custom 2',
+                        subcategories: [
+                            { id: 'custom2-creatures', name: 'Custom 2', defaultValue: 0, description: 'Custom category - name it yourself!', isCustom: true, customIndex: 2 }
+                        ]
+                    },
+                    {
+                        id: 'creature-custom3',
+                        name: '✨ Custom 3',
+                        subcategories: [
+                            { id: 'custom3-creatures', name: 'Custom 3', defaultValue: 0, description: 'Custom category - name it yourself!', isCustom: true, customIndex: 3 }
+                        ]
                     }
                 ]
             },
@@ -1274,6 +1603,28 @@
                         name: '📦 Other',
                         subcategories: [
                             { id: 'other-spells', name: 'Other', defaultValue: 0, description: 'Equipment, planeswalkers, utility, anything else' }
+                        ]
+                    },
+                    // === CUSTOM CATEGORIES ===
+                    {
+                        id: 'spell-custom1',
+                        name: '✨ Custom 1',
+                        subcategories: [
+                            { id: 'custom1-spells', name: 'Custom 1', defaultValue: 0, description: 'Custom category - name it yourself!', isCustom: true, customIndex: 1 }
+                        ]
+                    },
+                    {
+                        id: 'spell-custom2',
+                        name: '✨ Custom 2',
+                        subcategories: [
+                            { id: 'custom2-spells', name: 'Custom 2', defaultValue: 0, description: 'Custom category - name it yourself!', isCustom: true, customIndex: 2 }
+                        ]
+                    },
+                    {
+                        id: 'spell-custom3',
+                        name: '✨ Custom 3',
+                        subcategories: [
+                            { id: 'custom3-spells', name: 'Custom 3', defaultValue: 0, description: 'Custom category - name it yourself!', isCustom: true, customIndex: 3 }
                         ]
                     }
                 ]
@@ -1826,7 +2177,314 @@
             const [manaCalculation, setManaCalculation] = useState(null);
             const [showResults, setShowResults] = useState(false);
             const [randomQuote, setRandomQuote] = useState('');
+            const [globalLoading, setGlobalLoading] = useState(false);
+            const [loadingMessage, setLoadingMessage] = useState('Summoning...');
 
+            // Theme System
+            const [accentColor, setAccentColor] = useState(() => {
+                return localStorage.getItem('deckBuilderAccent') || 'gold';
+            });
+            const [seasonalTheme, setSeasonalTheme] = useState(() => {
+                return localStorage.getItem('deckBuilderSeason') || 'auto';
+            });
+
+            const ACCENT_COLORS = {
+                gold: { primary: '#d4af37', secondary: '#c9a772', name: 'Gold' },
+                silver: { primary: '#C0C0C0', secondary: '#A8A8A8', name: 'Silver' },
+                copper: { primary: '#B87333', secondary: '#CD7F32', name: 'Copper' },
+                amethyst: { primary: '#9966CC', secondary: '#8A4FFF', name: 'Amethyst' },
+                emerald: { primary: '#50C878', secondary: '#00A86B', name: 'Emerald' },
+                ruby: { primary: '#E0115F', secondary: '#9B111E', name: 'Ruby' },
+                sapphire: { primary: '#0F52BA', secondary: '#082567', name: 'Sapphire' }
+            };
+
+            const SEASONAL_THEMES = {
+                auto: { name: 'Auto (Based on Date)', icon: '🔄' },
+                default: { name: 'Classic', icon: '💀' },
+                halloween: { name: 'Halloween', icon: '🎃', particles: ['🎃', '👻', '🦇', '🕷️'] },
+                winter: { name: 'Winter Frost', icon: '❄️', particles: ['❄️', '✨', '⭐'] },
+                spring: { name: 'Spring Bloom', icon: '🌸', particles: ['🌸', '🌺', '🦋'] },
+                summer: { name: 'Summer Vibes', icon: '☀️', particles: ['☀️', '🌊', '⭐'] }
+            };
+
+            // Get current seasonal theme
+            const getCurrentSeason = () => {
+                if (seasonalTheme !== 'auto') return seasonalTheme;
+                const month = new Date().getMonth();
+                if (month >= 9 && month <= 10) return 'halloween'; // Oct-Nov
+                if (month >= 11 || month <= 1) return 'winter'; // Dec-Feb
+                if (month >= 2 && month <= 4) return 'spring'; // Mar-May
+                if (month >= 5 && month <= 8) return 'summer'; // Jun-Sep
+                return 'default';
+            };
+
+            // Apply accent color to CSS variables
+            useEffect(() => {
+                const color = ACCENT_COLORS[accentColor];
+                if (color) {
+                    document.documentElement.style.setProperty('--gold', color.primary);
+                    document.documentElement.style.setProperty('--accent-bright', color.secondary);
+                    localStorage.setItem('deckBuilderAccent', accentColor);
+                }
+            }, [accentColor]);
+
+            useEffect(() => {
+                localStorage.setItem('deckBuilderSeason', seasonalTheme);
+            }, [seasonalTheme]);
+
+            // Average EDH Deck Stats for Comparison
+            const AVERAGE_DECK_STATS = {
+                lands: 37,
+                creatures: 25,
+                noncreature: 38,
+                ramp: 10,
+                draw: 10,
+                removal: 8,
+                boardWipes: 3,
+                protection: 3
+            };
+
+            // Comparison helper
+            const getComparison = (value, average) => {
+                const diff = value - average;
+                const percent = Math.round((diff / average) * 100);
+                if (Math.abs(percent) < 10) return { status: 'average', icon: '✓', color: 'var(--text-secondary)' };
+                if (diff > 0) return { status: 'high', icon: '↑', color: '#50C878', text: `+${percent}%` };
+                return { status: 'low', icon: '↓', color: '#E0115F', text: `${percent}%` };
+            };
+
+            // Fun loading messages
+            const loadingMessages = [
+                'Summoning creatures...',
+                'Shuffling the library...',
+                'Tapping mana sources...',
+                'Casting spells...',
+                'Drawing cards...',
+                'Consulting the oracle...',
+                'Brewing potions...',
+                'Enchanting artifacts...',
+                'Scrying the future...',
+                'Awakening planeswalkers...'
+            ];
+
+            const showLoading = (customMessage) => {
+                const msg = customMessage || loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+                setLoadingMessage(msg);
+                setGlobalLoading(true);
+                setSkullMood('thinking');
+            };
+
+            const hideLoading = () => {
+                setGlobalLoading(false);
+                setSkullMood('happy');
+                setTimeout(() => setSkullMood('neutral'), 2000);
+            };
+
+            // Confetti celebration state
+            const [showConfetti, setShowConfetti] = useState(false);
+
+            const triggerConfetti = () => {
+                setShowConfetti(true);
+                setTimeout(() => setShowConfetti(false), 3000);
+            };
+
+            // Generate confetti pieces
+            const renderConfetti = () => {
+                if (!showConfetti) return null;
+
+                const colors = ['#d4af37', '#c9a772', '#F0E68C', '#0E4C92', '#D3202A', '#00733E', '#e8dcc4', '#8b6f47'];
+                const shapes = ['circle', 'square', 'star'];
+                const pieces = [];
+
+                for (let i = 0; i < 50; i++) {
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                    const left = Math.random() * 100;
+                    const delay = Math.random() * 0.5;
+                    const size = 8 + Math.random() * 10;
+
+                    pieces.push(
+                        <div
+                            key={i}
+                            className={`confetti ${shape}`}
+                            style={{
+                                left: `${left}%`,
+                                backgroundColor: color,
+                                width: shape === 'star' ? size * 1.2 : size,
+                                height: shape === 'star' ? size * 1.2 : size,
+                                animationDelay: `${delay}s`
+                            }}
+                        />
+                    );
+                }
+
+                return <div className="confetti-container">{pieces}</div>;
+            };
+
+            // Skeleton Mascot State
+            const [skullMood, setSkullMood] = useState('neutral'); // neutral, happy, thinking, excited
+
+            // Magical Particles
+            const [particles, setParticles] = useState([]);
+
+            // Generate floating particles on mount
+            useEffect(() => {
+                const generateParticles = () => {
+                    const newParticles = [];
+                    for (let i = 0; i < 15; i++) {
+                        newParticles.push({
+                            id: i,
+                            left: Math.random() * 100,
+                            duration: 15 + Math.random() * 20,
+                            delay: Math.random() * 10,
+                            type: Math.random() > 0.5 ? 'star' : 'sparkle',
+                            size: 0.5 + Math.random() * 1
+                        });
+                    }
+                    setParticles(newParticles);
+                };
+                generateParticles();
+            }, []);
+
+            const renderParticles = () => (
+                <div className="particles-container">
+                    {particles.map(p => (
+                        <div
+                            key={p.id}
+                            className={`particle ${p.type}`}
+                            style={{
+                                left: `${p.left}%`,
+                                animationDuration: `${p.duration}s`,
+                                animationDelay: `${p.delay}s`,
+                                fontSize: p.type === 'star' ? `${p.size}rem` : undefined,
+                                transform: `scale(${p.size})`
+                            }}
+                        >
+                            {p.type === 'star' ? '✦' : ''}
+                        </div>
+                    ))}
+                </div>
+            );
+
+            // Achievement System
+            const [achievements, setAchievements] = useState(() => {
+                const saved = localStorage.getItem('deckBuilderAchievements');
+                return saved ? JSON.parse(saved) : {
+                    decksCreated: 0,
+                    unlocked: []
+                };
+            });
+            const [showAchievement, setShowAchievement] = useState(null);
+
+            const ACHIEVEMENT_LIST = [
+                { id: 'first_deck', name: 'First Steps', icon: '🎯', requirement: 1, type: 'decksCreated' },
+                { id: 'five_decks', name: 'Deck Builder', icon: '🏗️', requirement: 5, type: 'decksCreated' },
+                { id: 'ten_decks', name: 'Architect', icon: '🏛️', requirement: 10, type: 'decksCreated' },
+                { id: 'twenty_decks', name: 'Master Builder', icon: '👑', requirement: 20, type: 'decksCreated' },
+                { id: 'fifty_decks', name: 'Legendary', icon: '⭐', requirement: 50, type: 'decksCreated' }
+            ];
+
+            const checkAchievements = (newCount) => {
+                ACHIEVEMENT_LIST.forEach(achievement => {
+                    if (achievement.type === 'decksCreated' &&
+                        newCount >= achievement.requirement &&
+                        !achievements.unlocked.includes(achievement.id)) {
+                        // Unlock achievement
+                        const newUnlocked = [...achievements.unlocked, achievement.id];
+                        const newAchievements = { ...achievements, decksCreated: newCount, unlocked: newUnlocked };
+                        setAchievements(newAchievements);
+                        localStorage.setItem('deckBuilderAchievements', JSON.stringify(newAchievements));
+
+                        // Show achievement popup
+                        setShowAchievement(achievement);
+                        setSkullMood('excited');
+                        setTimeout(() => {
+                            setShowAchievement(null);
+                            setSkullMood('neutral');
+                        }, 4000);
+                    }
+                });
+            };
+
+            // Update achievements when decks change
+            useEffect(() => {
+                if (user && decks.length > 0) {
+                    const userDecks = decks.filter(d => d.userId === user.uid && !d.isExample);
+                    if (userDecks.length !== achievements.decksCreated) {
+                        const newAchievements = { ...achievements, decksCreated: userDecks.length };
+                        setAchievements(newAchievements);
+                        localStorage.setItem('deckBuilderAchievements', JSON.stringify(newAchievements));
+                        checkAchievements(userDecks.length);
+                    }
+                }
+            }, [decks, user]);
+
+            // Deck Card Tilt Handler
+            const handleCardTilt = (e, cardElement) => {
+                if (!cardElement) return;
+                const rect = cardElement.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                cardElement.style.setProperty('--rotateX', `${rotateX}deg`);
+                cardElement.style.setProperty('--rotateY', `${rotateY}deg`);
+            };
+
+            const resetCardTilt = (cardElement) => {
+                if (!cardElement) return;
+                cardElement.style.setProperty('--rotateX', '0deg');
+                cardElement.style.setProperty('--rotateY', '0deg');
+            };
+
+            // Animated Skull SVG Component
+            const SkullMascot = ({ size = 40, mood = 'neutral' }) => {
+                const getMouthPath = () => {
+                    switch(mood) {
+                        case 'happy':
+                        case 'excited':
+                            return 'M28 36 Q32 42 36 36'; // Smile
+                        case 'thinking':
+                            return 'M28 38 L36 36'; // Slanted thinking
+                        default:
+                            return 'M28 34 Q32 37 36 34'; // Neutral
+                    }
+                };
+
+                const getEyeStyle = () => {
+                    if (mood === 'thinking') {
+                        return { animation: 'eyeShift 1s ease-in-out infinite' };
+                    }
+                    if (mood === 'excited') {
+                        return { animation: 'pulse 0.5s ease-in-out infinite' };
+                    }
+                    return {};
+                };
+
+                return (
+                    <svg width={size} height={size} viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', transition: 'all 0.3s ease'}}>
+                        <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
+                        <g style={getEyeStyle()}>
+                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
+                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
+                            {mood === 'excited' && (
+                                <>
+                                    <ellipse cx="22" cy="26" rx="2" ry="3" fill="var(--gold)"/>
+                                    <ellipse cx="42" cy="26" rx="2" ry="3" fill="var(--gold)"/>
+                                </>
+                            )}
+                        </g>
+                        <path d={getMouthPath()} fill="none" stroke="#000" strokeWidth="2"/>
+                        <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
+                        <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                        <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                        <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                        <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                    </svg>
+                );
+            };
 
             // Standalone Mana Calculator Component
         function StandaloneManaCalculator() {
@@ -3547,8 +4205,50 @@ const saveDeckToFirebase = async (deck) => {
 return (
 
 
-      
+
                 <>
+                    {/* Magical Floating Particles */}
+                    {renderParticles()}
+
+                    {/* Confetti Celebration */}
+                    {renderConfetti()}
+
+                    {/* Achievement Popup */}
+                    {showAchievement && (
+                        <div style={{
+                            position: 'fixed',
+                            top: '100px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            zIndex: 10001
+                        }}>
+                            <div className="achievement-badge">
+                                <span className="badge-icon">{showAchievement.icon}</span>
+                                <span>Achievement Unlocked: {showAchievement.name}!</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Global Loading Overlay */}
+                    {globalLoading && (
+                        <div className="loading-overlay">
+                            <div style={{position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <div className="loading-ring"></div>
+                                <div className="loading-skull">
+                                    <SkullMascot size={60} mood={skullMood} />
+                                </div>
+                            </div>
+                            <div className="loading-text">
+                                {loadingMessage}
+                                <span className="loading-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
                     {/* MOBILE HEADER - Logo + Title + Buttons */}
                     <header className="app-header mobile-header-only" style={{display: 'none'}}>
                         <style>{`
@@ -4318,8 +5018,24 @@ return (
                                 
                                 {/* Mobile: Expandable info boxes - MOVED DOWN with MORE DETAIL */}
                                 <div className="mobile-only">
+                                    {/* Mobile Tagline - matches desktop styling */}
+                                    <p style={{
+                                        fontSize: '1.2rem',
+                                        color: 'var(--gold)',
+                                        marginBottom: '0.75rem',
+                                        lineHeight: '1.4',
+                                        fontWeight: 600,
+                                        fontFamily: 'MedievalSharp, cursive',
+                                        textAlign: 'center'
+                                    }}>
+                                        ✨ Track Ratios, Not Card Names ✨
+                                    </p>
+                                    <p style={{fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.5', textAlign: 'center'}}>
+                                        The easiest way to track your Commander deck's structure.
+                                    </p>
+
                                     {/* Main Info Button */}
-                                    <button 
+                                    <button
                                         onClick={() => setShowInfoExpanded(!showInfoExpanded)}
                                         style={{
                                             width: '100%',
@@ -4778,8 +5494,25 @@ return (
                                 setDeckToCopy(null);
                             }}
                             onSave={async (deck) => {
-                                const newDeck = { ...deck, id: Date.now() };
-                                
+                                showLoading('Creating your deck...');
+
+                                // Fetch commander art for deck card background
+                                let commanderArt = null;
+                                if (deck.commander && deck.commander.length > 3) {
+                                    try {
+                                        const card = await fetchCardFromScryfall(deck.commander);
+                                        if (card?.image_uris?.art_crop) {
+                                            commanderArt = card.image_uris.art_crop;
+                                        } else if (card?.card_faces?.[0]?.image_uris?.art_crop) {
+                                            commanderArt = card.card_faces[0].image_uris.art_crop;
+                                        }
+                                    } catch (e) {
+                                        console.log('Could not fetch commander art:', e);
+                                    }
+                                }
+
+                                const newDeck = { ...deck, id: Date.now(), commanderArt };
+
                                 // Save to Firebase if logged in
                                 if (user) {
                                     const saved = await saveDeckToFirebase(newDeck);
@@ -4790,7 +5523,9 @@ return (
                                     // Not logged in - just save locally
                                     setDecks([...decks, newDeck]);
                                 }
-                                
+
+                                hideLoading();
+                                triggerConfetti();
                                 setShowCreateModal(false);
                                 setDeckToCopy(null);
                             }}
@@ -4812,6 +5547,8 @@ return (
                                     return;
                                 }
 
+                                showLoading('Saving your changes...');
+
                                 // Use deck.id (from props) as the source of truth
                                 const deckId = deckToEdit.id;
                                 
@@ -4832,7 +5569,7 @@ return (
                                     // First, check if document exists and verify ownership
                                     const deckRef = db.collection("decks").doc(String(deckId));
                                     const deckDoc = await deckRef.get();
-                                    
+
                                     if (deckDoc.exists) {
                                         const existingData = deckDoc.data();
                                         if (existingData.userId && existingData.userId !== user.uid) {
@@ -4840,15 +5577,32 @@ return (
                                             return;
                                         }
                                     }
-                                    
+
+                                    // Fetch commander art if commander changed or no art exists
+                                    let commanderArt = deckToEdit.commanderArt || null;
+                                    if (updatedDeck.commander && updatedDeck.commander !== deckToEdit.commander) {
+                                        try {
+                                            const card = await fetchCardFromScryfall(updatedDeck.commander);
+                                            if (card?.image_uris?.art_crop) {
+                                                commanderArt = card.image_uris.art_crop;
+                                            } else if (card?.card_faces?.[0]?.image_uris?.art_crop) {
+                                                commanderArt = card.card_faces[0].image_uris.art_crop;
+                                            }
+                                        } catch (e) {
+                                            console.log('Could not fetch commander art:', e);
+                                        }
+                                    }
+
                                     // Use set with merge instead of update - handles both create and update cases
                                     await db.collection("decks").doc(String(deckId)).set({
                                         name: updatedDeck.name,
                                         commander: updatedDeck.commander,
+                                        commanderArt: commanderArt,
                                         colors: updatedDeck.colors,
                                         categories: updatedDeck.categories,
                                         sideboard: updatedDeck.sideboard || {},
                                         notableCards: updatedDeck.notableCards || [],
+                                        customCategoryNames: updatedDeck.customCategoryNames || {},
                                         isPublic: updatedDeck.isPublic,
                                         userId: user.uid,
                                         lands: updatedDeck.lands || 0,
@@ -4876,16 +5630,20 @@ return (
                                     // Reload decks from Firebase
                                     await loadDecksFromFirebase(user.uid);
                                     await loadPublicDecks();
-                                    
+
+                                    hideLoading();
+                                    triggerConfetti();
+
                                     // Close modal
                                     setShowEditModal(false);
                                     setDeckToEdit(null);
                                     setSelectedDeck(null);
-                                    
+
                                     alert('✅ Deck updated successfully!');
                                 } catch (error) {
+                                    hideLoading();
                                     console.error('Error updating deck:', error);
-                                    
+
                                     let errorMessage = 'Error updating deck:\n\n';
                                     
                                     if (error.code === 'permission-denied') {
@@ -4919,7 +5677,7 @@ return (
 
                     {/* Settings Modal */}
                     {showSettings && user && (
-                        <SettingsModal 
+                        <SettingsModal
                             onClose={() => setShowSettings(false)}
                             user={user}
                             decks={decks}
@@ -4927,6 +5685,13 @@ return (
                             removeFromPublicDecks={removeFromPublicDecks}
                             loadPublicDecks={loadPublicDecks}
                             onShowBugReport={() => setShowBugReportModal(true)}
+                            accentColor={accentColor}
+                            setAccentColor={setAccentColor}
+                            seasonalTheme={seasonalTheme}
+                            setSeasonalTheme={setSeasonalTheme}
+                            ACCENT_COLORS={ACCENT_COLORS}
+                            SEASONAL_THEMES={SEASONAL_THEMES}
+                            achievements={achievements}
                         />
                     )}
 
@@ -5179,23 +5944,32 @@ return (
                                                 .map((deck) => (
                                                 <div
                                                     key={deck.id}
+                                                    className="deck-card-animated deck-card-tilt"
                                                     style={{
                                                         background: 'var(--gradient-card)',
-                                                        border: deleteMode && selectedDecksToDelete.includes(deck.id) 
-                                                            ? '3px solid var(--red-mana)' 
+                                                        border: deleteMode && selectedDecksToDelete.includes(deck.id)
+                                                            ? '3px solid var(--red-mana)'
                                                             : deck.isExample ? '2px solid var(--gold)' : '2px solid var(--border-color)',
                                                         borderRadius: '12px',
                                                         padding: '1.5rem',
                                                         cursor: deleteMode ? 'default' : 'pointer',
-                                                        transition: 'all 0.3s ease',
-                                                        position: 'relative',
-                                                        ':hover': {
-                                                            borderColor: 'var(--gold)',
-                                                            transform: 'translateY(-2px)'
-                                                        }
+                                                        position: 'relative'
                                                     }}
+                                                    onMouseMove={(e) => handleCardTilt(e, e.currentTarget)}
+                                                    onMouseLeave={(e) => resetCardTilt(e.currentTarget)}
                                                     onClick={() => deleteMode ? toggleDeckSelection(deck.id) : setSelectedDeck(deck)}
                                                 >
+                                                    {/* Commander Art Background */}
+                                                    {deck.commanderArt && (
+                                                        <div
+                                                            className="deck-card-art-bg"
+                                                            style={{
+                                                                backgroundImage: `url(${deck.commanderArt})`,
+                                                                borderRadius: '10px'
+                                                            }}
+                                                        />
+                                                    )}
+                                                    <div className="deck-card-content">
                                                     {deleteMode && (
                                                         <div style={{
                                                             position: 'absolute',
@@ -5254,7 +6028,7 @@ return (
                                                         marginBottom: '0.75rem'
                                                     }}>
                                                         {deck.colors && deck.colors.map(color => (
-                                                            <span key={color} style={{
+                                                            <span key={color} className={`mana-pip-animated pip-${color}`} style={{
                                                                 width: '24px',
                                                                 height: '24px',
                                                                 borderRadius: '50%',
@@ -5364,6 +6138,7 @@ return (
                                                     }}>
                                                         Click to view details
                                                     </div>
+                                                    </div>{/* End deck-card-content */}
                                                 </div>
                                             ))}
                                         </div>
@@ -5584,18 +6359,17 @@ return (
                                             .map((deck) => (
                                                 <div
                                                     key={deck.id}
+                                                    className="deck-card-animated deck-card-tilt"
                                                     style={{
                                                         background: 'var(--gradient-card)',
                                                         border: '2px solid var(--border-color)',
                                                         borderRadius: '12px',
                                                         padding: '1.5rem',
                                                         cursor: 'pointer',
-                                                        transition: 'all 0.3s ease',
-                                                        ':hover': {
-                                                            borderColor: 'var(--gold)',
-                                                            transform: 'translateY(-2px)'
-                                                        }
+                                                        position: 'relative'
                                                     }}
+                                                    onMouseMove={(e) => handleCardTilt(e, e.currentTarget)}
+                                                    onMouseLeave={(e) => resetCardTilt(e.currentTarget)}
                                                     onClick={async () => {
                                                         console.log("🖱️ Deck card clicked, ID:", deck.id);
                                                         // Increment view count when deck is clicked
@@ -5605,6 +6379,17 @@ return (
                                                         setSelectedDeck(deck);
                                                     }}
                                                 >
+                                                    {/* Commander Art Background */}
+                                                    {deck.commanderArt && (
+                                                        <div
+                                                            className="deck-card-art-bg"
+                                                            style={{
+                                                                backgroundImage: `url(${deck.commanderArt})`,
+                                                                borderRadius: '10px'
+                                                            }}
+                                                        />
+                                                    )}
+                                                    <div className="deck-card-content">
                                                     <h3 style={{
                                                         fontFamily: 'Pirata One, cursive',
                                                         color: 'var(--accent-bright)',
@@ -5626,7 +6411,7 @@ return (
                                                         marginBottom: '0.75rem'
                                                     }}>
                                                         {deck.colors && deck.colors.map(color => (
-                                                            <div key={color} className={`mana-pip pip-${color}`}></div>
+                                                            <div key={color} className={`mana-pip mana-pip-animated pip-${color}`}></div>
                                                         ))}
                                                     </div>
 
@@ -5757,6 +6542,7 @@ return (
                                                         <span>🌍 Public Deck</span>
                                                         <span>Click to View</span>
                                                     </div>
+                                                    </div>{/* End deck-card-content */}
                                                 </div>
                                             ))}
                                     </div>
@@ -5810,10 +6596,28 @@ return (
                                 maxWidth: '900px',
                                 width: '100%',
                                 maxHeight: '90vh',
-                                overflow: 'auto'
+                                overflow: 'auto',
+                                position: 'relative'
                             }}
                             onClick={(e) => e.stopPropagation()}
                             >
+                                {/* Commander Art Background */}
+                                {selectedDeck.commanderArt && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        backgroundImage: `url(${selectedDeck.commanderArt})`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        opacity: 0.12,
+                                        borderRadius: '14px',
+                                        pointerEvents: 'none'
+                                    }} />
+                                )}
+                                <div style={{position: 'relative', zIndex: 1}}>
                                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem'}}>
                                     <div>
                                         <h2 style={{fontFamily: 'Pirata One, cursive', fontSize: '2rem', color: 'var(--accent-bright)', marginBottom: '0.5rem'}}>
@@ -5902,22 +6706,90 @@ return (
                                     gap: window.innerWidth <= 768 ? '0.5rem' : '1rem',
                                     marginBottom: '2rem'
                                 }}>
-                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center'}}>
-                                        <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.lands}</div>
-                                        <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>LANDS</div>
-                                    </div>
-                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center'}}>
-                                        <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.creatures}</div>
-                                        <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
-                                            {window.innerWidth <= 768 ? 'CREAT.' : 'CREATURES'}
-                                        </div>
-                                    </div>
-                                    <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center'}}>
-                                        <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.noncreature}</div>
-                                        <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
-                                            {window.innerWidth <= 768 ? 'NON-CREAT.' : 'NON-CREATURE SPELLS'}
-                                        </div>
-                                    </div>
+                                    {/* Lands with comparison */}
+                                    {(() => {
+                                        const landsComp = getComparison(selectedDeck.lands, AVERAGE_DECK_STATS.lands);
+                                        return (
+                                            <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
+                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.lands}</div>
+                                                <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>LANDS</div>
+                                                {landsComp.text && (
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: '0.25rem',
+                                                        right: '0.25rem',
+                                                        fontSize: '0.7rem',
+                                                        color: landsComp.color,
+                                                        fontWeight: 700
+                                                    }}>
+                                                        {landsComp.icon} {landsComp.text}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
+                                    {/* Creatures with comparison */}
+                                    {(() => {
+                                        const creaturesComp = getComparison(selectedDeck.creatures, AVERAGE_DECK_STATS.creatures);
+                                        return (
+                                            <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
+                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.creatures}</div>
+                                                <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
+                                                    {window.innerWidth <= 768 ? 'CREAT.' : 'CREATURES'}
+                                                </div>
+                                                {creaturesComp.text && (
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: '0.25rem',
+                                                        right: '0.25rem',
+                                                        fontSize: '0.7rem',
+                                                        color: creaturesComp.color,
+                                                        fontWeight: 700
+                                                    }}>
+                                                        {creaturesComp.icon} {creaturesComp.text}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
+                                    {/* Non-creature with comparison */}
+                                    {(() => {
+                                        const ncComp = getComparison(selectedDeck.noncreature, AVERAGE_DECK_STATS.noncreature);
+                                        return (
+                                            <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
+                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.noncreature}</div>
+                                                <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
+                                                    {window.innerWidth <= 768 ? 'NON-CREAT.' : 'NON-CREATURE SPELLS'}
+                                                </div>
+                                                {ncComp.text && (
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: '0.25rem',
+                                                        right: '0.25rem',
+                                                        fontSize: '0.7rem',
+                                                        color: ncComp.color,
+                                                        fontWeight: 700
+                                                    }}>
+                                                        {ncComp.icon} {ncComp.text}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+
+                                {/* Comparison Legend */}
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    gap: '1.5rem',
+                                    marginBottom: '1rem',
+                                    fontSize: '0.75rem',
+                                    color: 'var(--text-muted)'
+                                }}>
+                                    <span><span style={{color: '#50C878'}}>↑</span> Above avg</span>
+                                    <span><span style={{color: '#E0115F'}}>↓</span> Below avg</span>
+                                    <span>vs. typical EDH deck</span>
                                 </div>
 
                                 {/* SUBTYPE BREAKDOWN */}
@@ -5931,20 +6803,33 @@ return (
                                             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '0.5rem'}}>
                                                 {(() => {
                                                     const cats = selectedDeck.categories;
+                                                    const customNames = selectedDeck.customCategoryNames || {};
                                                     const items = [
                                                         {name: 'Ramp', count: (cats['ramp-creatures'] || 0) + (cats['ramp-spells'] || 0)},
                                                         {name: 'Draw', count: (cats['draw-creatures'] || 0) + (cats['draw-spells'] || 0)},
                                                         {name: 'Removal', count: (cats['removal-creatures'] || 0) + (cats['removal-spells'] || 0)},
                                                         {name: 'Board Wipes', count: (cats['boardwipe-creatures'] || 0) + (cats['boardwipe-spells'] || 0)},
-                                                                                                                {name: 'Protection', count: (cats['protection-creatures'] || 0) + (cats['protection-spells'] || 0)},
+                                                        {name: 'Protection', count: (cats['protection-creatures'] || 0) + (cats['protection-spells'] || 0)},
                                                         {name: 'Synergy', count: (cats['synergy-creatures'] || 0) + (cats['synergy-spells'] || 0)},
                                                         {name: 'Anthems', count: (cats['anthem-creatures'] || 0) + (cats['anthem-spells'] || 0)},
                                                         {name: 'Combo', count: (cats['combo-creatures'] || 0) + (cats['combo-spells'] || 0)},
                                                         {name: 'Finishers', count: (cats['finisher-creatures'] || 0) + (cats['finisher-spells'] || 0)},
                                                         {name: 'Other', count: (cats['other-creatures'] || 0) + (cats['other-spells'] || 0)}
-                                                    ].filter(item => item.count > 0);
-
-                                                    return items.map((item, i) => (
+                                                    ];
+                                                    // Add custom categories if they have names and counts
+                                                    if (customNames.custom1) {
+                                                        const count = (cats['custom1-creatures'] || 0) + (cats['custom1-spells'] || 0);
+                                                        if (count > 0) items.push({name: customNames.custom1, count, isCustom: true});
+                                                    }
+                                                    if (customNames.custom2) {
+                                                        const count = (cats['custom2-creatures'] || 0) + (cats['custom2-spells'] || 0);
+                                                        if (count > 0) items.push({name: customNames.custom2, count, isCustom: true});
+                                                    }
+                                                    if (customNames.custom3) {
+                                                        const count = (cats['custom3-creatures'] || 0) + (cats['custom3-spells'] || 0);
+                                                        if (count > 0) items.push({name: customNames.custom3, count, isCustom: true});
+                                                    }
+                                                    return items.filter(item => item.count > 0).map((item, i) => (
                                                         <div key={i} style={{background: 'var(--bg-secondary)', padding: '0.5rem', borderRadius: '6px', textAlign: 'center'}}>
                                                             <div style={{fontSize: '1.1rem', fontWeight: 600, color: 'var(--accent-bright)'}}>{item.count}</div>
                                                             <div style={{fontSize: '0.7rem', color: 'var(--text-muted)'}}>{item.name}</div>
@@ -5954,29 +6839,43 @@ return (
                                             </div>
                                         </div>
 
-                                        {/* Land Breakdown - Now Last */}
+                                        {/* Land Breakdown */}
                                         <div>
-                                            <h4 style={{color: 'var(--accent-bright)', fontSize: '1rem', marginBottom: '0.75rem', fontWeight: 600}}>
+                                            <h4 style={{color: 'var(--gold)', fontSize: '1rem', marginBottom: '0.75rem', fontWeight: 600}}>
                                                 Land Breakdown
                                             </h4>
-                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '0.5rem'}}>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '0.5rem'}}>
                                                 {(() => {
                                                     const cats = selectedDeck.categories;
-                                                    const basics = (cats.plains || 0) + (cats.islands || 0) + (cats.swamps || 0) + (cats.mountains || 0) + (cats.forests || 0);
-                                                    const multicolor = (cats.duals || 0) + (cats.trilands || 0) + (cats.fetches || 0);
-                                                    const utility = (cats['utility-white'] || 0) + (cats['utility-blue'] || 0) + (cats['utility-black'] || 0) + (cats['utility-red'] || 0) + (cats['utility-green'] || 0) + (cats['utility-colorless'] || 0) + (cats.utility || 0);
-                                                    const other = cats['other-lands'] || 0;
-
                                                     const items = [];
-                                                    if (basics > 0) items.push({name: 'Basics', count: basics});
-                                                    if (multicolor > 0) items.push({name: 'Multi-Color', count: multicolor});
-                                                    if (utility > 0) items.push({name: 'Utility', count: utility});
-                                                    if (other > 0) items.push({name: 'Other', count: other});
+                                                    // Color lands - each color shows total (basic + utility) with utility count
+                                                    const colorLands = [
+                                                        {name: 'Plains', basic: cats.plains || 0, utility: cats['utility-white'] || 0, color: '#F0E68C'},
+                                                        {name: 'Islands', basic: cats.islands || 0, utility: cats['utility-blue'] || 0, color: '#0E68AB'},
+                                                        {name: 'Swamps', basic: cats.swamps || 0, utility: cats['utility-black'] || 0, color: '#666'},
+                                                        {name: 'Mountains', basic: cats.mountains || 0, utility: cats['utility-red'] || 0, color: '#D3202A'},
+                                                        {name: 'Forests', basic: cats.forests || 0, utility: cats['utility-green'] || 0, color: '#00733E'}
+                                                    ];
+                                                    colorLands.forEach(land => {
+                                                        const total = land.basic + land.utility;
+                                                        if (total > 0) items.push({name: land.name, count: total, utility: land.utility, color: land.color, isColor: true});
+                                                    });
+                                                    // Multi-color lands
+                                                    const multicolor = (cats.duals || 0) + (cats.trilands || 0) + (cats.fetches || 0);
+                                                    if (multicolor > 0) items.push({name: 'Multi', count: multicolor, color: 'var(--gold)'});
+                                                    // Colorless Utility
+                                                    const colorlessUtility = (cats['utility-colorless'] || 0);
+                                                    if (colorlessUtility > 0) items.push({name: 'Colorless', count: colorlessUtility, color: '#CAC5C0'});
+                                                    // Other lands
+                                                    const other = (cats['other-lands'] || 0);
+                                                    if (other > 0) items.push({name: 'Other', count: other, color: '#888'});
 
                                                     return items.map((item, i) => (
-                                                        <div key={i} style={{background: 'var(--bg-secondary)', padding: '0.5rem', borderRadius: '6px', textAlign: 'center'}}>
-                                                            <div style={{fontSize: '1.1rem', fontWeight: 600, color: 'var(--gold)'}}>{item.count}</div>
-                                                            <div style={{fontSize: '0.7rem', color: 'var(--text-muted)'}}>{item.name}</div>
+                                                        <div key={i} style={{background: 'var(--bg-secondary)', padding: '0.5rem', borderRadius: '6px', textAlign: 'center', borderLeft: `3px solid ${item.color}`}}>
+                                                            <div style={{fontSize: '1.1rem', fontWeight: 600, color: item.color}}>{item.count}</div>
+                                                            <div style={{fontSize: '0.65rem', color: 'var(--text-muted)'}}>
+                                                                {item.name}{item.isColor && item.utility > 0 && <span style={{color: 'var(--accent-bright)'}}> ({item.utility} util)</span>}
+                                                            </div>
                                                         </div>
                                                     ));
                                                 })()}
@@ -5985,8 +6884,9 @@ return (
                                     </div>
                                 )}
 
-                                {/* COMPREHENSIVE DECK ANALYTICS */}
-                                {selectedDeck.categories && (() => {
+                                {/* Action Buttons - Analytics and Subtype sections removed */}
+                                {false && selectedDeck.categories && (() => {
+                                    // REMOVED: COMPREHENSIVE DECK ANALYTICS and Subtype Breakdown
                                     const cats = selectedDeck.categories;
 
                                     // Calculate Total Draw Sources
@@ -6488,8 +7388,8 @@ return (
                                         </div>
                                     );
                                 })()}
-                                {/* Subtype Breakdown - Consolidated Similar Categories */}
-                                {selectedDeck.categories && Object.keys(selectedDeck.categories).length > 0 && (() => {
+                                {/* Subtype Breakdown - REMOVED */}
+                                {false && selectedDeck.categories && Object.keys(selectedDeck.categories).length > 0 && (() => {
                                     const cats = selectedDeck.categories;
 
                                     // Define consolidated category groups
@@ -6765,6 +7665,7 @@ return (
                                 }}>
                                     💡 {selectedDeck.id ? 'Click "Build Similar Deck" to start with these ratios and customize them!' : `This shows the ratio structure of a ${selectedDeck.strategy.toLowerCase()} strategy deck`}
                                 </div>
+                            </div>{/* End content wrapper */}
                             </div>
                         </div>
                     )}
@@ -6774,9 +7675,10 @@ return (
 
 
         // Settings Modal Component
-        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport }) {
+        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport, accentColor, setAccentColor, seasonalTheme, setSeasonalTheme, ACCENT_COLORS, SEASONAL_THEMES, achievements }) {
             const [bulkPrivacy, setBulkPrivacy] = useState('public');
             const [updating, setUpdating] = useState(false);
+            const [activeTab, setActiveTab] = useState('privacy'); // privacy, appearance, achievements
 
             const userDecks = decks.filter(deck => 
                 !deck.isExample && 
@@ -6910,9 +7812,45 @@ return (
                             marginBottom: '1.5rem',
                             fontSize: '2rem'
                         }}>
-                            ⚙️ Account Settings
+                            ⚙️ Settings
                         </h2>
 
+                        {/* Settings Tabs */}
+                        <div style={{
+                            display: 'flex',
+                            gap: '0.5rem',
+                            marginBottom: '1.5rem',
+                            borderBottom: '2px solid var(--border-color)',
+                            paddingBottom: '0.5rem'
+                        }}>
+                            {[
+                                { id: 'privacy', label: '🔒 Privacy', icon: '🔒' },
+                                { id: 'appearance', label: '🎨 Appearance', icon: '🎨' },
+                                { id: 'achievements', label: '🏆 Achievements', icon: '🏆' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    style={{
+                                        padding: '0.75rem 1rem',
+                                        background: activeTab === tab.id ? 'var(--gold)' : 'transparent',
+                                        border: '2px solid var(--gold)',
+                                        borderRadius: '8px',
+                                        color: activeTab === tab.id ? 'var(--bg-primary)' : 'var(--gold)',
+                                        cursor: 'pointer',
+                                        fontWeight: 600,
+                                        transition: 'all 0.2s ease',
+                                        fontSize: '0.9rem'
+                                    }}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Privacy Tab */}
+                        {activeTab === 'privacy' && (
+                        <>
                         {/* Account Info */}
                         <div style={{
                             background: 'var(--bg-tertiary)',
@@ -7105,6 +8043,209 @@ return (
                                 <span>Report a Bug</span>
                             </button>
                         </div>
+                        </>
+                        )}
+
+                        {/* Appearance Tab */}
+                        {activeTab === 'appearance' && (
+                        <>
+                        {/* Accent Color Selection */}
+                        <div style={{
+                            background: 'var(--bg-tertiary)',
+                            borderRadius: '12px',
+                            padding: '1.5rem',
+                            marginBottom: '1.5rem'
+                        }}>
+                            <h3 style={{
+                                color: 'var(--bone)',
+                                marginBottom: '1rem',
+                                fontSize: '1.2rem',
+                                fontFamily: 'MedievalSharp, cursive'
+                            }}>
+                                🎨 Accent Color
+                            </h3>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+                                gap: '0.75rem'
+                            }}>
+                                {ACCENT_COLORS && Object.entries(ACCENT_COLORS).map(([key, color]) => (
+                                    <button
+                                        key={key}
+                                        onClick={() => setAccentColor(key)}
+                                        style={{
+                                            padding: '0.75rem',
+                                            background: accentColor === key ? color.primary : 'var(--bg-card)',
+                                            border: `3px solid ${color.primary}`,
+                                            borderRadius: '8px',
+                                            color: accentColor === key ? 'var(--bg-primary)' : color.primary,
+                                            cursor: 'pointer',
+                                            fontWeight: 600,
+                                            transition: 'all 0.2s ease',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '0.5rem'
+                                        }}
+                                    >
+                                        <span style={{
+                                            width: '16px',
+                                            height: '16px',
+                                            borderRadius: '50%',
+                                            background: color.primary,
+                                            border: '2px solid var(--bg-primary)'
+                                        }}></span>
+                                        {color.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Seasonal Theme Selection */}
+                        <div style={{
+                            background: 'var(--bg-tertiary)',
+                            borderRadius: '12px',
+                            padding: '1.5rem'
+                        }}>
+                            <h3 style={{
+                                color: 'var(--bone)',
+                                marginBottom: '1rem',
+                                fontSize: '1.2rem',
+                                fontFamily: 'MedievalSharp, cursive'
+                            }}>
+                                🌟 Seasonal Theme
+                            </h3>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+                                gap: '0.75rem'
+                            }}>
+                                {SEASONAL_THEMES && Object.entries(SEASONAL_THEMES).map(([key, theme]) => (
+                                    <button
+                                        key={key}
+                                        onClick={() => setSeasonalTheme(key)}
+                                        style={{
+                                            padding: '0.75rem',
+                                            background: seasonalTheme === key ? 'var(--gold)' : 'var(--bg-card)',
+                                            border: `2px solid ${seasonalTheme === key ? 'var(--gold)' : 'var(--border-color)'}`,
+                                            borderRadius: '8px',
+                                            color: seasonalTheme === key ? 'var(--bg-primary)' : 'var(--text-primary)',
+                                            cursor: 'pointer',
+                                            fontWeight: 600,
+                                            transition: 'all 0.2s ease',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '0.5rem',
+                                            fontSize: '0.9rem'
+                                        }}
+                                    >
+                                        <span style={{fontSize: '1.2rem'}}>{theme.icon}</span>
+                                        {theme.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        </>
+                        )}
+
+                        {/* Achievements Tab */}
+                        {activeTab === 'achievements' && (
+                        <div style={{
+                            background: 'var(--bg-tertiary)',
+                            borderRadius: '12px',
+                            padding: '1.5rem'
+                        }}>
+                            <h3 style={{
+                                color: 'var(--bone)',
+                                marginBottom: '1rem',
+                                fontSize: '1.2rem',
+                                fontFamily: 'MedievalSharp, cursive'
+                            }}>
+                                🏆 Your Achievements
+                            </h3>
+                            <div style={{
+                                display: 'grid',
+                                gap: '0.75rem'
+                            }}>
+                                {[
+                                    { id: 'first_deck', name: 'First Steps', icon: '🎯', requirement: 1, desc: 'Create your first deck' },
+                                    { id: 'five_decks', name: 'Deck Builder', icon: '🏗️', requirement: 5, desc: 'Create 5 decks' },
+                                    { id: 'ten_decks', name: 'Architect', icon: '🏛️', requirement: 10, desc: 'Create 10 decks' },
+                                    { id: 'twenty_decks', name: 'Master Builder', icon: '👑', requirement: 20, desc: 'Create 20 decks' },
+                                    { id: 'fifty_decks', name: 'Legendary', icon: '⭐', requirement: 50, desc: 'Create 50 decks' }
+                                ].map(achievement => {
+                                    const isUnlocked = achievements?.unlocked?.includes(achievement.id);
+                                    const progress = Math.min((achievements?.decksCreated || 0) / achievement.requirement * 100, 100);
+                                    return (
+                                        <div
+                                            key={achievement.id}
+                                            style={{
+                                                padding: '1rem',
+                                                background: isUnlocked ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(201, 167, 114, 0.1))' : 'var(--bg-card)',
+                                                border: `2px solid ${isUnlocked ? 'var(--gold)' : 'var(--border-color)'}`,
+                                                borderRadius: '10px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '1rem',
+                                                opacity: isUnlocked ? 1 : 0.6
+                                            }}
+                                        >
+                                            <span style={{
+                                                fontSize: '2rem',
+                                                filter: isUnlocked ? 'none' : 'grayscale(100%)'
+                                            }}>
+                                                {achievement.icon}
+                                            </span>
+                                            <div style={{flex: 1}}>
+                                                <div style={{
+                                                    fontWeight: 700,
+                                                    color: isUnlocked ? 'var(--gold)' : 'var(--text-secondary)',
+                                                    marginBottom: '0.25rem'
+                                                }}>
+                                                    {achievement.name}
+                                                </div>
+                                                <div style={{
+                                                    fontSize: '0.85rem',
+                                                    color: 'var(--text-muted)',
+                                                    marginBottom: '0.5rem'
+                                                }}>
+                                                    {achievement.desc}
+                                                </div>
+                                                {!isUnlocked && (
+                                                    <div style={{
+                                                        height: '6px',
+                                                        background: 'var(--bg-primary)',
+                                                        borderRadius: '3px',
+                                                        overflow: 'hidden'
+                                                    }}>
+                                                        <div style={{
+                                                            height: '100%',
+                                                            width: `${progress}%`,
+                                                            background: 'var(--gold)',
+                                                            borderRadius: '3px',
+                                                            transition: 'width 0.3s ease'
+                                                        }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {isUnlocked && (
+                                                <span style={{color: 'var(--gold)', fontSize: '1.5rem'}}>✓</span>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <div style={{
+                                marginTop: '1rem',
+                                textAlign: 'center',
+                                color: 'var(--text-muted)',
+                                fontSize: '0.9rem'
+                            }}>
+                                Current Progress: {achievements?.decksCreated || 0} decks created
+                            </div>
+                        </div>
+                        )}
                     </div>
                 </div>
             );
@@ -7811,6 +8952,13 @@ return (
             const [sideboardOpen, setSideboardOpen] = useState(false);
             const [sideboardCategories, setSideboardCategories] = useState({});
             const [sideboardQuickInputs, setSideboardQuickInputs] = useState({});
+
+            // Custom category names (shared across creatures, non-creatures, sideboard)
+            const [customCategoryNames, setCustomCategoryNames] = useState({
+                custom1: '',
+                custom2: '',
+                custom3: ''
+            });
             
             // Mana calculator collapse state
             const [manaCalcOpen, setManaCalcOpen] = useState(false);
@@ -8471,6 +9619,7 @@ return (
                                 ...deckData,
                                 notableCards,
                                 sideboard: sideboardCategories,
+                                customCategoryNames: customCategoryNames,
                                 lands: totals.lands,
                                 creatures: totals.creatures,
                                 noncreature: totals.noncreature,
@@ -9057,7 +10206,91 @@ return (
                                                             </small>
                                                         </div>
 
-                                                        {/* SIMPLIFIED CATEGORIES - 2 columns on mobile */}
+                                                        {/* COMPACT LANDS RENDERING */}
+                                                        {majorGroupId === 'lands' && (
+                                                            <div>
+                                                                {/* Color Lands - Each color with Basic + Utility boxes like Anthems */}
+                                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0.75rem', marginBottom: '1rem'}}>
+                                                                    {[
+                                                                        {id: 'plains', utilityId: 'utility-white', name: 'Plains', symbol: 'W', color: '#333', bg: '#F0E68C'},
+                                                                        {id: 'islands', utilityId: 'utility-blue', name: 'Islands', symbol: 'U', color: '#fff', bg: '#0E68AB'},
+                                                                        {id: 'swamps', utilityId: 'utility-black', name: 'Swamps', symbol: 'B', color: '#ccc', bg: '#150B00'},
+                                                                        {id: 'mountains', utilityId: 'utility-red', name: 'Mountains', symbol: 'R', color: '#fff', bg: '#D3202A'},
+                                                                        {id: 'forests', utilityId: 'utility-green', name: 'Forests', symbol: 'G', color: '#fff', bg: '#00733E'}
+                                                                    ].map(land => {
+                                                                        const basicValue = deckData.categories[land.id] || 0;
+                                                                        const utilityValue = deckData.categories[land.utilityId] || 0;
+                                                                        return (
+                                                                            <div key={land.id} style={{
+                                                                                background: 'var(--bg-secondary)', borderRadius: '8px',
+                                                                                padding: '0.75rem',
+                                                                                border: (basicValue > 0 || utilityValue > 0) ? '2px solid var(--accent)' : '1px solid var(--border-color)'
+                                                                            }}>
+                                                                                {/* Title with Mana Pip */}
+                                                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem'}}>
+                                                                                    <div style={{
+                                                                                        width: '24px', height: '24px', borderRadius: '50%',
+                                                                                        background: land.bg, border: '2px solid var(--border-color)',
+                                                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                                        fontSize: '0.7rem', fontWeight: 'bold', color: land.color
+                                                                                    }}>{land.symbol}</div>
+                                                                                    <span style={{fontWeight: 600, color: 'var(--accent-bright)', fontSize: '0.95rem'}}>{land.name}</span>
+                                                                                </div>
+                                                                                {/* Basic + Utility boxes side by side */}
+                                                                                <div style={{display: 'flex', gap: '0.5rem'}}>
+                                                                                    {/* Basic Box */}
+                                                                                    <div style={{flex: 1, textAlign: 'center'}}>
+                                                                                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem'}}>
+                                                                                            <button type="button" onClick={(e) => { e.preventDefault(); if (basicValue > 0) { const newCategories = {...deckData.categories}; newCategories[land.id] = basicValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
+                                                                                            <input type="number" value={basicValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[land.id] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '50px', height: '36px', padding: '0.3rem', fontSize: '1rem', borderRadius: '6px', border: basicValue > 0 ? '2px solid var(--accent)' : '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center', fontWeight: 600}}/>
+                                                                                            <button type="button" onClick={(e) => { e.preventDefault(); const newCategories = {...deckData.categories}; newCategories[land.id] = basicValue + 1; setDeckData({...deckData, categories: newCategories}); }} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>+</button>
+                                                                                        </div>
+                                                                                        <div style={{fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem'}}>Basic</div>
+                                                                                    </div>
+                                                                                    {/* Utility Box */}
+                                                                                    <div style={{flex: 1, textAlign: 'center'}}>
+                                                                                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem'}}>
+                                                                                            <button type="button" onClick={(e) => { e.preventDefault(); if (utilityValue > 0) { const newCategories = {...deckData.categories}; newCategories[land.utilityId] = utilityValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
+                                                                                            <input type="number" value={utilityValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[land.utilityId] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '50px', height: '36px', padding: '0.3rem', fontSize: '1rem', borderRadius: '6px', border: utilityValue > 0 ? '2px solid var(--accent)' : '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center', fontWeight: 600}}/>
+                                                                                            <button type="button" onClick={(e) => { e.preventDefault(); const newCategories = {...deckData.categories}; newCategories[land.utilityId] = utilityValue + 1; setDeckData({...deckData, categories: newCategories}); }} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>+</button>
+                                                                                        </div>
+                                                                                        <div style={{fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem'}}>Utility</div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                                {/* Other Land Categories - With +/- buttons */}
+                                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.5rem'}}>
+                                                                    {[
+                                                                        {id: 'duals', name: 'Duals'},
+                                                                        {id: 'trilands', name: 'Tri+ Lands'},
+                                                                        {id: 'fetches', name: 'Fetches'},
+                                                                        {id: 'utility-colorless', name: 'Colorless Utility'},
+                                                                        {id: 'other-lands', name: 'Other'}
+                                                                    ].map(land => {
+                                                                        const currentValue = deckData.categories[land.id] || 0;
+                                                                        return (
+                                                                            <div key={land.id} style={{
+                                                                                display: 'flex', flexDirection: 'column', padding: '0.6rem',
+                                                                                background: 'var(--bg-secondary)', borderRadius: '8px',
+                                                                                border: currentValue > 0 ? '2px solid var(--accent)' : '1px solid var(--border-color)'
+                                                                            }}>
+                                                                                <label style={{fontSize: '0.85rem', color: 'var(--accent-bright)', fontWeight: 600, marginBottom: '0.5rem', textAlign: 'center'}}>{land.name}</label>
+                                                                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem'}}>
+                                                                                    <button type="button" onClick={(e) => { e.preventDefault(); if (currentValue > 0) { const newCategories = {...deckData.categories}; newCategories[land.id] = currentValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
+                                                                                    <input type="number" value={currentValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[land.id] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '50px', height: '36px', padding: '0.3rem', fontSize: '1rem', borderRadius: '6px', border: currentValue > 0 ? '2px solid var(--accent)' : '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center', fontWeight: 600}}/>
+                                                                                    <button type="button" onClick={(e) => { e.preventDefault(); const newCategories = {...deckData.categories}; newCategories[land.id] = currentValue + 1; setDeckData({...deckData, categories: newCategories}); }} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>+</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {/* SIMPLIFIED CATEGORIES - 2 columns on mobile (for non-lands) */}
+                                                        {majorGroupId !== 'lands' && (
                                                         <div style={{
                                                             display: 'grid',
                                                             gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))',
@@ -9102,6 +10335,9 @@ return (
                                                             // Single subcategory - render as before
                                                             const sub = category.subcategories[0];
                                                             const currentValue = deckData.categories[sub.id] || 0;
+                                                            const isCustom = sub.isCustom;
+                                                            const customKey = isCustom ? `custom${sub.customIndex}` : null;
+                                                            const displayName = isCustom && customCategoryNames[customKey] ? `✨ ${customCategoryNames[customKey]}` : category.name;
                                                             return (
                                                                 <div key={category.id} style={{
                                                                     display: 'flex',
@@ -9111,14 +10347,36 @@ return (
                                                                     borderRadius: '8px',
                                                                     border: currentValue > 0 ? '2px solid var(--accent)' : '1px solid var(--border-color)'
                                                                 }}>
-                                                                    <label style={{
-                                                                        fontSize: window.innerWidth <= 768 ? '0.85rem' : '0.95rem',
-                                                                        color: 'var(--accent-bright)',
-                                                                        fontWeight: 600,
-                                                                        marginBottom: '0.5rem'
-                                                                    }}>
-                                                                        {category.name}
-                                                                    </label>
+                                                                    {isCustom ? (
+                                                                        <div style={{marginBottom: '0.5rem'}}>
+                                                                            <input
+                                                                                type="text"
+                                                                                value={customCategoryNames[customKey] || ''}
+                                                                                onChange={(e) => setCustomCategoryNames(prev => ({...prev, [customKey]: e.target.value}))}
+                                                                                placeholder={`Custom ${sub.customIndex} name...`}
+                                                                                style={{
+                                                                                    width: '100%',
+                                                                                    padding: '0.4rem',
+                                                                                    fontSize: '0.85rem',
+                                                                                    borderRadius: '4px',
+                                                                                    border: '1px solid var(--accent)',
+                                                                                    background: 'var(--bg-tertiary)',
+                                                                                    color: 'var(--accent-bright)',
+                                                                                    fontWeight: 600,
+                                                                                    textAlign: 'center'
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    ) : (
+                                                                        <label style={{
+                                                                            fontSize: window.innerWidth <= 768 ? '0.85rem' : '0.95rem',
+                                                                            color: 'var(--accent-bright)',
+                                                                            fontWeight: 600,
+                                                                            marginBottom: '0.5rem'
+                                                                        }}>
+                                                                            {displayName}
+                                                                        </label>
+                                                                    )}
                                                                     {window.innerWidth <= 768 ? (
                                                                         <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', justifyContent: 'center'}}>
                                                                             <button type="button" onClick={(e) => { e.preventDefault(); if (currentValue > 0) { const newCategories = {...deckData.categories}; newCategories[sub.id] = currentValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
@@ -9128,11 +10386,12 @@ return (
                                                                     ) : (
                                                                         <input type="number" value={currentValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[sub.id] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '100%', padding: '0.5rem', fontSize: '1rem', borderRadius: '6px', border: '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center'}}/>
                                                                     )}
-                                                                    <small style={{fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem', textAlign: 'center'}}>{sub.description.split(' - ')[0]}</small>
+                                                                    {!isCustom && <small style={{fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem', textAlign: 'center'}}>{sub.description.split(' - ')[0]}</small>}
                                                                 </div>
                                                             );
                                                         })}
                                                         </div>
+                                                        )}
 
                                                         {/* MULTI-FUNCTION ADJUSTMENTS - Inside each category */}
                                                         {majorGroupId === 'creatures' && (totals.creatures > 0 || totals.creaturesDetailed > 0 || deckData.categories['creatures-quick'] > 0) && (
@@ -9483,23 +10742,49 @@ return (
                                                         gap: '0.5rem'
                                                     }}>
                                                         {majorGroup.categories.flatMap(category =>
-                                                            category.subcategories.map(sub => (
+                                                            category.subcategories.map(sub => {
+                                                                const isCustom = sub.isCustom;
+                                                                const customKey = isCustom ? `custom${sub.customIndex}` : null;
+                                                                const displayName = isCustom && customCategoryNames[customKey] ? `✨ ${customCategoryNames[customKey]}` : sub.name;
+                                                                return (
                                                                 <div key={sub.id} style={{
                                                                     display: 'flex',
+                                                                    flexDirection: isCustom ? 'column' : 'row',
                                                                     justifyContent: 'space-between',
-                                                                    alignItems: 'center',
+                                                                    alignItems: isCustom ? 'stretch' : 'center',
                                                                     padding: '0.5rem 0.75rem',
                                                                     background: 'var(--bg-secondary)',
                                                                     borderRadius: '6px',
                                                                     border: (sideboardCategories[sub.id] || 0) > 0 ? '2px solid var(--accent)' : '1px solid var(--border-color)'
                                                                 }}>
-                                                                    <label style={{
-                                                                        fontSize: '0.85rem',
-                                                                        color: 'var(--text-secondary)',
-                                                                        flex: 1
-                                                                    }}>
-                                                                        {sub.name}
-                                                                    </label>
+                                                                    {isCustom ? (
+                                                                        <input
+                                                                            type="text"
+                                                                            value={customCategoryNames[customKey] || ''}
+                                                                            onChange={(e) => setCustomCategoryNames(prev => ({...prev, [customKey]: e.target.value}))}
+                                                                            placeholder={`Custom ${sub.customIndex} name...`}
+                                                                            style={{
+                                                                                width: '100%',
+                                                                                padding: '0.3rem',
+                                                                                fontSize: '0.8rem',
+                                                                                borderRadius: '4px',
+                                                                                border: '1px solid var(--accent)',
+                                                                                background: 'var(--bg-tertiary)',
+                                                                                color: 'var(--accent-bright)',
+                                                                                fontWeight: 600,
+                                                                                textAlign: 'center',
+                                                                                marginBottom: '0.5rem'
+                                                                            }}
+                                                                        />
+                                                                    ) : (
+                                                                        <label style={{
+                                                                            fontSize: '0.85rem',
+                                                                            color: 'var(--text-secondary)',
+                                                                            flex: 1
+                                                                        }}>
+                                                                            {displayName}
+                                                                        </label>
+                                                                    )}
                                                                     {window.innerWidth <= 768 ? (
                                                                         <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
                                                                             <button
@@ -9583,7 +10868,7 @@ return (
                                                                         />
                                                                     )}
                                                                 </div>
-                                                            ))
+                                                            )})
                                                         )}
                                                     </div>
                                                 </div>
@@ -10594,6 +11879,7 @@ return (
                                                 ...deckData,
                                                 notableCards,
                                                 sideboard: sideboardCategories,
+                                                customCategoryNames: customCategoryNames,
                                                 lands: totals.lands,
                                                 creatures: totals.creatures,
                                                 noncreature: totals.noncreature,
@@ -10762,16 +12048,14 @@ return (
                                     )}
                                 </div>
 
-                                {/* DESKTOP ONLY: Deck Analytics in sidebar */}
-                                {window.innerWidth > 768 && (
+                                {/* Deck Preview in sidebar */}
+                                {(
                                     <div style={{
                                         marginTop: '2rem',
                                         padding: '1.5rem',
                                         background: 'var(--bg-secondary)',
                                         borderRadius: '12px',
-                                        border: '2px solid var(--accent-bright)',
-                                        maxHeight: '50vh',
-                                        overflowY: 'auto'
+                                        border: '2px solid var(--accent-bright)'
                                     }}>
                                         <h3 style={{
                                             fontFamily: 'Pirata One, cursive',
@@ -10780,9 +12064,101 @@ return (
                                             marginBottom: '1rem',
                                             fontSize: '1.3rem'
                                         }}>
-                                            📊 Deck Analytics
+                                            📊 Deck Preview
                                         </h3>
-                                        
+
+                                        {/* Spell Breakdown */}
+                                        <div style={{marginBottom: '1.5rem'}}>
+                                            <h4 style={{color: 'var(--accent-bright)', fontSize: '0.95rem', marginBottom: '0.75rem', fontWeight: 600}}>
+                                                Spell Breakdown
+                                            </h4>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem'}}>
+                                                {(() => {
+                                                    const cats = deckData.categories;
+                                                    const items = [
+                                                        {name: 'Ramp', count: (cats['ramp-creatures'] || 0) + (cats['ramp-spells'] || 0)},
+                                                        {name: 'Draw', count: (cats['draw-creatures'] || 0) + (cats['draw-spells'] || 0)},
+                                                        {name: 'Removal', count: (cats['removal-creatures'] || 0) + (cats['removal-spells'] || 0)},
+                                                        {name: 'Board Wipes', count: (cats['boardwipe-creatures'] || 0) + (cats['boardwipe-spells'] || 0)},
+                                                        {name: 'Protection', count: (cats['protection-creatures'] || 0) + (cats['protection-spells'] || 0)},
+                                                        {name: 'Synergy', count: (cats['synergy-creatures'] || 0) + (cats['synergy-spells'] || 0)},
+                                                        {name: 'Anthems', count: (cats['anthem-creatures'] || 0) + (cats['anthem-spells'] || 0)},
+                                                        {name: 'Combo', count: (cats['combo-creatures'] || 0) + (cats['combo-spells'] || 0)},
+                                                        {name: 'Finishers', count: (cats['finisher-creatures'] || 0) + (cats['finisher-spells'] || 0)},
+                                                        {name: 'Other', count: (cats['other-creatures'] || 0) + (cats['other-spells'] || 0)}
+                                                    ];
+                                                    if (customCategoryNames.custom1) {
+                                                        const count = (cats['custom1-creatures'] || 0) + (cats['custom1-spells'] || 0);
+                                                        if (count > 0) items.push({name: customCategoryNames.custom1, count});
+                                                    }
+                                                    if (customCategoryNames.custom2) {
+                                                        const count = (cats['custom2-creatures'] || 0) + (cats['custom2-spells'] || 0);
+                                                        if (count > 0) items.push({name: customCategoryNames.custom2, count});
+                                                    }
+                                                    if (customCategoryNames.custom3) {
+                                                        const count = (cats['custom3-creatures'] || 0) + (cats['custom3-spells'] || 0);
+                                                        if (count > 0) items.push({name: customCategoryNames.custom3, count});
+                                                    }
+                                                    const filtered = items.filter(item => item.count > 0);
+                                                    if (filtered.length === 0) return <div style={{gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-muted)', padding: '1rem', fontSize: '0.85rem'}}>Add cards to see breakdown</div>;
+                                                    return filtered.map((item, i) => (
+                                                        <div key={i} style={{background: 'var(--bg-tertiary)', padding: '0.5rem', borderRadius: '6px', textAlign: 'center'}}>
+                                                            <div style={{fontSize: '1.1rem', fontWeight: 600, color: 'var(--accent-bright)'}}>{item.count}</div>
+                                                            <div style={{fontSize: '0.7rem', color: 'var(--text-muted)'}}>{item.name}</div>
+                                                        </div>
+                                                    ));
+                                                })()}
+                                            </div>
+                                        </div>
+
+                                        {/* Land Breakdown */}
+                                        <div>
+                                            <h4 style={{color: 'var(--gold)', fontSize: '0.95rem', marginBottom: '0.75rem', fontWeight: 600}}>
+                                                Land Breakdown
+                                            </h4>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem'}}>
+                                                {(() => {
+                                                    const cats = deckData.categories;
+                                                    const items = [];
+                                                    // Color lands - each color shows total (basic + utility) with utility count
+                                                    const colorLands = [
+                                                        {name: 'Plains', basic: cats.plains || 0, utility: cats['utility-white'] || 0, color: '#F0E68C'},
+                                                        {name: 'Islands', basic: cats.islands || 0, utility: cats['utility-blue'] || 0, color: '#0E68AB'},
+                                                        {name: 'Swamps', basic: cats.swamps || 0, utility: cats['utility-black'] || 0, color: '#666'},
+                                                        {name: 'Mountains', basic: cats.mountains || 0, utility: cats['utility-red'] || 0, color: '#D3202A'},
+                                                        {name: 'Forests', basic: cats.forests || 0, utility: cats['utility-green'] || 0, color: '#00733E'}
+                                                    ];
+                                                    colorLands.forEach(land => {
+                                                        const total = land.basic + land.utility;
+                                                        if (total > 0) items.push({name: land.name, count: total, utility: land.utility, color: land.color, isColor: true});
+                                                    });
+                                                    // Multi-color lands
+                                                    const multicolor = (cats.duals || 0) + (cats.trilands || 0) + (cats.fetches || 0);
+                                                    if (multicolor > 0) items.push({name: 'Multi', count: multicolor, color: 'var(--gold)'});
+                                                    // Colorless Utility
+                                                    const colorlessUtility = (cats['utility-colorless'] || 0);
+                                                    if (colorlessUtility > 0) items.push({name: 'Colorless', count: colorlessUtility, color: '#CAC5C0'});
+                                                    // Other lands
+                                                    const other = (cats['other-lands'] || 0);
+                                                    if (other > 0) items.push({name: 'Other', count: other, color: '#888'});
+                                                    if (items.length === 0) return <div style={{gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-muted)', padding: '1rem', fontSize: '0.85rem'}}>Add lands to see breakdown</div>;
+                                                    return items.map((item, i) => (
+                                                        <div key={i} style={{background: 'var(--bg-tertiary)', padding: '0.5rem', borderRadius: '6px', textAlign: 'center', borderLeft: `3px solid ${item.color}`}}>
+                                                            <div style={{fontSize: '1.1rem', fontWeight: 600, color: item.color}}>{item.count}</div>
+                                                            <div style={{fontSize: '0.65rem', color: 'var(--text-muted)'}}>
+                                                                {item.name}{item.isColor && item.utility > 0 && <span style={{color: 'var(--accent-bright)'}}> ({item.utility} util)</span>}
+                                                            </div>
+                                                        </div>
+                                                    ));
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* OLD ANALYTICS - HIDDEN */}
+                                {false && window.innerWidth > 768 && (
+                                    <div style={{display: 'none'}}>
                                         <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem', fontStyle: 'italic'}}>
                                             ℹ️ These totals show what your deck DOES. Categories can overlap.
                                         </p>
@@ -11018,7 +12394,14 @@ return (
             const [sideboardOpen, setSideboardOpen] = useState(false);
             const [sideboardCategories, setSideboardCategories] = useState(deck?.sideboard || {});
             const [sideboardQuickInputs, setSideboardQuickInputs] = useState({});
-            
+
+            // Custom category names (shared across creatures, non-creatures, sideboard)
+            const [customCategoryNames, setCustomCategoryNames] = useState({
+                custom1: deck?.customCategoryNames?.custom1 || '',
+                custom2: deck?.customCategoryNames?.custom2 || '',
+                custom3: deck?.customCategoryNames?.custom3 || ''
+            });
+
             // Mana calculator collapse state
             const [manaCalcOpen, setManaCalcOpen] = useState(false);
             const [showManaCalcHelp, setShowManaCalcHelp] = useState(false);
@@ -11587,6 +12970,7 @@ return (
                                 ...deckData,
                                 notableCards,
                                 sideboard: sideboardCategories,
+                                customCategoryNames: customCategoryNames,
                                 lands: totals.lands,
                                 creatures: totals.creatures,
                                 noncreature: totals.noncreature,
@@ -12176,7 +13560,91 @@ return (
                                                             </small>
                                                         </div>
 
-                                                        {/* SIMPLIFIED CATEGORIES - 2 columns on mobile */}
+                                                        {/* COMPACT LANDS RENDERING */}
+                                                        {majorGroupId === 'lands' && (
+                                                            <div>
+                                                                {/* Color Lands - Each color with Basic + Utility boxes like Anthems */}
+                                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0.75rem', marginBottom: '1rem'}}>
+                                                                    {[
+                                                                        {id: 'plains', utilityId: 'utility-white', name: 'Plains', symbol: 'W', color: '#333', bg: '#F0E68C'},
+                                                                        {id: 'islands', utilityId: 'utility-blue', name: 'Islands', symbol: 'U', color: '#fff', bg: '#0E68AB'},
+                                                                        {id: 'swamps', utilityId: 'utility-black', name: 'Swamps', symbol: 'B', color: '#ccc', bg: '#150B00'},
+                                                                        {id: 'mountains', utilityId: 'utility-red', name: 'Mountains', symbol: 'R', color: '#fff', bg: '#D3202A'},
+                                                                        {id: 'forests', utilityId: 'utility-green', name: 'Forests', symbol: 'G', color: '#fff', bg: '#00733E'}
+                                                                    ].map(land => {
+                                                                        const basicValue = deckData.categories[land.id] || 0;
+                                                                        const utilityValue = deckData.categories[land.utilityId] || 0;
+                                                                        return (
+                                                                            <div key={land.id} style={{
+                                                                                background: 'var(--bg-secondary)', borderRadius: '8px',
+                                                                                padding: '0.75rem',
+                                                                                border: (basicValue > 0 || utilityValue > 0) ? '2px solid var(--accent)' : '1px solid var(--border-color)'
+                                                                            }}>
+                                                                                {/* Title with Mana Pip */}
+                                                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem'}}>
+                                                                                    <div style={{
+                                                                                        width: '24px', height: '24px', borderRadius: '50%',
+                                                                                        background: land.bg, border: '2px solid var(--border-color)',
+                                                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                                        fontSize: '0.7rem', fontWeight: 'bold', color: land.color
+                                                                                    }}>{land.symbol}</div>
+                                                                                    <span style={{fontWeight: 600, color: 'var(--accent-bright)', fontSize: '0.95rem'}}>{land.name}</span>
+                                                                                </div>
+                                                                                {/* Basic + Utility boxes side by side */}
+                                                                                <div style={{display: 'flex', gap: '0.5rem'}}>
+                                                                                    {/* Basic Box */}
+                                                                                    <div style={{flex: 1, textAlign: 'center'}}>
+                                                                                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem'}}>
+                                                                                            <button type="button" onClick={(e) => { e.preventDefault(); if (basicValue > 0) { const newCategories = {...deckData.categories}; newCategories[land.id] = basicValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
+                                                                                            <input type="number" value={basicValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[land.id] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '50px', height: '36px', padding: '0.3rem', fontSize: '1rem', borderRadius: '6px', border: basicValue > 0 ? '2px solid var(--accent)' : '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center', fontWeight: 600}}/>
+                                                                                            <button type="button" onClick={(e) => { e.preventDefault(); const newCategories = {...deckData.categories}; newCategories[land.id] = basicValue + 1; setDeckData({...deckData, categories: newCategories}); }} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>+</button>
+                                                                                        </div>
+                                                                                        <div style={{fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem'}}>Basic</div>
+                                                                                    </div>
+                                                                                    {/* Utility Box */}
+                                                                                    <div style={{flex: 1, textAlign: 'center'}}>
+                                                                                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem'}}>
+                                                                                            <button type="button" onClick={(e) => { e.preventDefault(); if (utilityValue > 0) { const newCategories = {...deckData.categories}; newCategories[land.utilityId] = utilityValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
+                                                                                            <input type="number" value={utilityValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[land.utilityId] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '50px', height: '36px', padding: '0.3rem', fontSize: '1rem', borderRadius: '6px', border: utilityValue > 0 ? '2px solid var(--accent)' : '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center', fontWeight: 600}}/>
+                                                                                            <button type="button" onClick={(e) => { e.preventDefault(); const newCategories = {...deckData.categories}; newCategories[land.utilityId] = utilityValue + 1; setDeckData({...deckData, categories: newCategories}); }} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>+</button>
+                                                                                        </div>
+                                                                                        <div style={{fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem'}}>Utility</div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                                {/* Other Land Categories - With +/- buttons */}
+                                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.5rem'}}>
+                                                                    {[
+                                                                        {id: 'duals', name: 'Duals'},
+                                                                        {id: 'trilands', name: 'Tri+ Lands'},
+                                                                        {id: 'fetches', name: 'Fetches'},
+                                                                        {id: 'utility-colorless', name: 'Colorless Utility'},
+                                                                        {id: 'other-lands', name: 'Other'}
+                                                                    ].map(land => {
+                                                                        const currentValue = deckData.categories[land.id] || 0;
+                                                                        return (
+                                                                            <div key={land.id} style={{
+                                                                                display: 'flex', flexDirection: 'column', padding: '0.6rem',
+                                                                                background: 'var(--bg-secondary)', borderRadius: '8px',
+                                                                                border: currentValue > 0 ? '2px solid var(--accent)' : '1px solid var(--border-color)'
+                                                                            }}>
+                                                                                <label style={{fontSize: '0.85rem', color: 'var(--accent-bright)', fontWeight: 600, marginBottom: '0.5rem', textAlign: 'center'}}>{land.name}</label>
+                                                                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem'}}>
+                                                                                    <button type="button" onClick={(e) => { e.preventDefault(); if (currentValue > 0) { const newCategories = {...deckData.categories}; newCategories[land.id] = currentValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
+                                                                                    <input type="number" value={currentValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[land.id] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '50px', height: '36px', padding: '0.3rem', fontSize: '1rem', borderRadius: '6px', border: currentValue > 0 ? '2px solid var(--accent)' : '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center', fontWeight: 600}}/>
+                                                                                    <button type="button" onClick={(e) => { e.preventDefault(); const newCategories = {...deckData.categories}; newCategories[land.id] = currentValue + 1; setDeckData({...deckData, categories: newCategories}); }} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>+</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {/* SIMPLIFIED CATEGORIES - 2 columns on mobile (for non-lands) */}
+                                                        {majorGroupId !== 'lands' && (
                                                         <div style={{
                                                             display: 'grid',
                                                             gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))',
@@ -12221,6 +13689,9 @@ return (
                                                             // Single subcategory - render as before
                                                             const sub = category.subcategories[0];
                                                             const currentValue = deckData.categories[sub.id] || 0;
+                                                            const isCustom = sub.isCustom;
+                                                            const customKey = isCustom ? `custom${sub.customIndex}` : null;
+                                                            const displayName = isCustom && customCategoryNames[customKey] ? `✨ ${customCategoryNames[customKey]}` : category.name;
                                                             return (
                                                                 <div key={category.id} style={{
                                                                     display: 'flex',
@@ -12230,14 +13701,36 @@ return (
                                                                     borderRadius: '8px',
                                                                     border: currentValue > 0 ? '2px solid var(--accent)' : '1px solid var(--border-color)'
                                                                 }}>
-                                                                    <label style={{
-                                                                        fontSize: window.innerWidth <= 768 ? '0.85rem' : '0.95rem',
-                                                                        color: 'var(--accent-bright)',
-                                                                        fontWeight: 600,
-                                                                        marginBottom: '0.5rem'
-                                                                    }}>
-                                                                        {category.name}
-                                                                    </label>
+                                                                    {isCustom ? (
+                                                                        <div style={{marginBottom: '0.5rem'}}>
+                                                                            <input
+                                                                                type="text"
+                                                                                value={customCategoryNames[customKey] || ''}
+                                                                                onChange={(e) => setCustomCategoryNames(prev => ({...prev, [customKey]: e.target.value}))}
+                                                                                placeholder={`Custom ${sub.customIndex} name...`}
+                                                                                style={{
+                                                                                    width: '100%',
+                                                                                    padding: '0.4rem',
+                                                                                    fontSize: '0.85rem',
+                                                                                    borderRadius: '4px',
+                                                                                    border: '1px solid var(--accent)',
+                                                                                    background: 'var(--bg-tertiary)',
+                                                                                    color: 'var(--accent-bright)',
+                                                                                    fontWeight: 600,
+                                                                                    textAlign: 'center'
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    ) : (
+                                                                        <label style={{
+                                                                            fontSize: window.innerWidth <= 768 ? '0.85rem' : '0.95rem',
+                                                                            color: 'var(--accent-bright)',
+                                                                            fontWeight: 600,
+                                                                            marginBottom: '0.5rem'
+                                                                        }}>
+                                                                            {displayName}
+                                                                        </label>
+                                                                    )}
                                                                     {window.innerWidth <= 768 ? (
                                                                         <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', justifyContent: 'center'}}>
                                                                             <button type="button" onClick={(e) => { e.preventDefault(); if (currentValue > 0) { const newCategories = {...deckData.categories}; newCategories[sub.id] = currentValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
@@ -12247,11 +13740,12 @@ return (
                                                                     ) : (
                                                                         <input type="number" value={currentValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[sub.id] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '100%', padding: '0.5rem', fontSize: '1rem', borderRadius: '6px', border: '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center'}}/>
                                                                     )}
-                                                                    <small style={{fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem', textAlign: 'center'}}>{sub.description.split(' - ')[0]}</small>
+                                                                    {!isCustom && <small style={{fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem', textAlign: 'center'}}>{sub.description.split(' - ')[0]}</small>}
                                                                 </div>
                                                             );
                                                         })}
                                                         </div>
+                                                        )}
 
                                                         {/* MULTI-FUNCTION ADJUSTMENTS - Inside each category */}
                                                         {majorGroupId === 'creatures' && (totals.creatures > 0 || totals.creaturesDetailed > 0 || deckData.categories['creatures-quick'] > 0) && (
@@ -12602,23 +14096,49 @@ return (
                                                         gap: '0.5rem'
                                                     }}>
                                                         {majorGroup.categories.flatMap(category =>
-                                                            category.subcategories.map(sub => (
+                                                            category.subcategories.map(sub => {
+                                                                const isCustom = sub.isCustom;
+                                                                const customKey = isCustom ? `custom${sub.customIndex}` : null;
+                                                                const displayName = isCustom && customCategoryNames[customKey] ? `✨ ${customCategoryNames[customKey]}` : sub.name;
+                                                                return (
                                                                 <div key={sub.id} style={{
                                                                     display: 'flex',
+                                                                    flexDirection: isCustom ? 'column' : 'row',
                                                                     justifyContent: 'space-between',
-                                                                    alignItems: 'center',
+                                                                    alignItems: isCustom ? 'stretch' : 'center',
                                                                     padding: '0.5rem 0.75rem',
                                                                     background: 'var(--bg-secondary)',
                                                                     borderRadius: '6px',
                                                                     border: (sideboardCategories[sub.id] || 0) > 0 ? '2px solid var(--accent)' : '1px solid var(--border-color)'
                                                                 }}>
-                                                                    <label style={{
-                                                                        fontSize: '0.85rem',
-                                                                        color: 'var(--text-secondary)',
-                                                                        flex: 1
-                                                                    }}>
-                                                                        {sub.name}
-                                                                    </label>
+                                                                    {isCustom ? (
+                                                                        <input
+                                                                            type="text"
+                                                                            value={customCategoryNames[customKey] || ''}
+                                                                            onChange={(e) => setCustomCategoryNames(prev => ({...prev, [customKey]: e.target.value}))}
+                                                                            placeholder={`Custom ${sub.customIndex} name...`}
+                                                                            style={{
+                                                                                width: '100%',
+                                                                                padding: '0.3rem',
+                                                                                fontSize: '0.8rem',
+                                                                                borderRadius: '4px',
+                                                                                border: '1px solid var(--accent)',
+                                                                                background: 'var(--bg-tertiary)',
+                                                                                color: 'var(--accent-bright)',
+                                                                                fontWeight: 600,
+                                                                                textAlign: 'center',
+                                                                                marginBottom: '0.5rem'
+                                                                            }}
+                                                                        />
+                                                                    ) : (
+                                                                        <label style={{
+                                                                            fontSize: '0.85rem',
+                                                                            color: 'var(--text-secondary)',
+                                                                            flex: 1
+                                                                        }}>
+                                                                            {displayName}
+                                                                        </label>
+                                                                    )}
                                                                     {window.innerWidth <= 768 ? (
                                                                         <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
                                                                             <button
@@ -12702,7 +14222,7 @@ return (
                                                                         />
                                                                     )}
                                                                 </div>
-                                                            ))
+                                                            )})
                                                         )}
                                                     </div>
                                                 </div>
@@ -13706,8 +15226,8 @@ return (
                                 {/* Save button - only show if user owns this deck */}
                                 <div style={{textAlign: 'center', marginTop: '2rem'}}>
                                     {user && deck && user.uid === deck.userId ? (
-                                        <button 
-                                            className="btn btn-primary" 
+                                        <button
+                                            className="btn btn-primary"
                                             style={{padding: '1rem 3rem', fontSize: '1.1rem'}}
                                             onClick={() => {
                                                 setHasUnsavedChanges(false);
@@ -13715,6 +15235,7 @@ return (
                                                     ...deckData,
                                                     notableCards,
                                                     sideboard: sideboardCategories,
+                                                    customCategoryNames: customCategoryNames,
                                                     lands: totals.lands,
                                                     creatures: totals.creatures,
                                                     noncreature: totals.noncreature,
@@ -13895,16 +15416,14 @@ return (
                                     )}
                                 </div>
 
-                                {/* DESKTOP ONLY: Deck Analytics in sidebar */}
-                                {window.innerWidth > 768 && (
+                                {/* Deck Preview in sidebar */}
+                                {(
                                     <div style={{
                                         marginTop: '2rem',
                                         padding: '1.5rem',
                                         background: 'var(--bg-secondary)',
                                         borderRadius: '12px',
-                                        border: '2px solid var(--accent-bright)',
-                                        maxHeight: '50vh',
-                                        overflowY: 'auto'
+                                        border: '2px solid var(--accent-bright)'
                                     }}>
                                         <h3 style={{
                                             fontFamily: 'Pirata One, cursive',
@@ -13913,9 +15432,101 @@ return (
                                             marginBottom: '1rem',
                                             fontSize: '1.3rem'
                                         }}>
-                                            📊 Deck Analytics
+                                            📊 Deck Preview
                                         </h3>
-                                        
+
+                                        {/* Spell Breakdown */}
+                                        <div style={{marginBottom: '1.5rem'}}>
+                                            <h4 style={{color: 'var(--accent-bright)', fontSize: '0.95rem', marginBottom: '0.75rem', fontWeight: 600}}>
+                                                Spell Breakdown
+                                            </h4>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem'}}>
+                                                {(() => {
+                                                    const cats = deckData.categories;
+                                                    const items = [
+                                                        {name: 'Ramp', count: (cats['ramp-creatures'] || 0) + (cats['ramp-spells'] || 0)},
+                                                        {name: 'Draw', count: (cats['draw-creatures'] || 0) + (cats['draw-spells'] || 0)},
+                                                        {name: 'Removal', count: (cats['removal-creatures'] || 0) + (cats['removal-spells'] || 0)},
+                                                        {name: 'Board Wipes', count: (cats['boardwipe-creatures'] || 0) + (cats['boardwipe-spells'] || 0)},
+                                                        {name: 'Protection', count: (cats['protection-creatures'] || 0) + (cats['protection-spells'] || 0)},
+                                                        {name: 'Synergy', count: (cats['synergy-creatures'] || 0) + (cats['synergy-spells'] || 0)},
+                                                        {name: 'Anthems', count: (cats['anthem-creatures'] || 0) + (cats['anthem-spells'] || 0)},
+                                                        {name: 'Combo', count: (cats['combo-creatures'] || 0) + (cats['combo-spells'] || 0)},
+                                                        {name: 'Finishers', count: (cats['finisher-creatures'] || 0) + (cats['finisher-spells'] || 0)},
+                                                        {name: 'Other', count: (cats['other-creatures'] || 0) + (cats['other-spells'] || 0)}
+                                                    ];
+                                                    if (customCategoryNames.custom1) {
+                                                        const count = (cats['custom1-creatures'] || 0) + (cats['custom1-spells'] || 0);
+                                                        if (count > 0) items.push({name: customCategoryNames.custom1, count});
+                                                    }
+                                                    if (customCategoryNames.custom2) {
+                                                        const count = (cats['custom2-creatures'] || 0) + (cats['custom2-spells'] || 0);
+                                                        if (count > 0) items.push({name: customCategoryNames.custom2, count});
+                                                    }
+                                                    if (customCategoryNames.custom3) {
+                                                        const count = (cats['custom3-creatures'] || 0) + (cats['custom3-spells'] || 0);
+                                                        if (count > 0) items.push({name: customCategoryNames.custom3, count});
+                                                    }
+                                                    const filtered = items.filter(item => item.count > 0);
+                                                    if (filtered.length === 0) return <div style={{gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-muted)', padding: '1rem', fontSize: '0.85rem'}}>Add cards to see breakdown</div>;
+                                                    return filtered.map((item, i) => (
+                                                        <div key={i} style={{background: 'var(--bg-tertiary)', padding: '0.5rem', borderRadius: '6px', textAlign: 'center'}}>
+                                                            <div style={{fontSize: '1.1rem', fontWeight: 600, color: 'var(--accent-bright)'}}>{item.count}</div>
+                                                            <div style={{fontSize: '0.7rem', color: 'var(--text-muted)'}}>{item.name}</div>
+                                                        </div>
+                                                    ));
+                                                })()}
+                                            </div>
+                                        </div>
+
+                                        {/* Land Breakdown */}
+                                        <div>
+                                            <h4 style={{color: 'var(--gold)', fontSize: '0.95rem', marginBottom: '0.75rem', fontWeight: 600}}>
+                                                Land Breakdown
+                                            </h4>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem'}}>
+                                                {(() => {
+                                                    const cats = deckData.categories;
+                                                    const items = [];
+                                                    // Color lands - each color shows total (basic + utility) with utility count
+                                                    const colorLands = [
+                                                        {name: 'Plains', basic: cats.plains || 0, utility: cats['utility-white'] || 0, color: '#F0E68C'},
+                                                        {name: 'Islands', basic: cats.islands || 0, utility: cats['utility-blue'] || 0, color: '#0E68AB'},
+                                                        {name: 'Swamps', basic: cats.swamps || 0, utility: cats['utility-black'] || 0, color: '#666'},
+                                                        {name: 'Mountains', basic: cats.mountains || 0, utility: cats['utility-red'] || 0, color: '#D3202A'},
+                                                        {name: 'Forests', basic: cats.forests || 0, utility: cats['utility-green'] || 0, color: '#00733E'}
+                                                    ];
+                                                    colorLands.forEach(land => {
+                                                        const total = land.basic + land.utility;
+                                                        if (total > 0) items.push({name: land.name, count: total, utility: land.utility, color: land.color, isColor: true});
+                                                    });
+                                                    // Multi-color lands
+                                                    const multicolor = (cats.duals || 0) + (cats.trilands || 0) + (cats.fetches || 0);
+                                                    if (multicolor > 0) items.push({name: 'Multi', count: multicolor, color: 'var(--gold)'});
+                                                    // Colorless Utility
+                                                    const colorlessUtility = (cats['utility-colorless'] || 0);
+                                                    if (colorlessUtility > 0) items.push({name: 'Colorless', count: colorlessUtility, color: '#CAC5C0'});
+                                                    // Other lands
+                                                    const other = (cats['other-lands'] || 0);
+                                                    if (other > 0) items.push({name: 'Other', count: other, color: '#888'});
+                                                    if (items.length === 0) return <div style={{gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-muted)', padding: '1rem', fontSize: '0.85rem'}}>Add lands to see breakdown</div>;
+                                                    return items.map((item, i) => (
+                                                        <div key={i} style={{background: 'var(--bg-tertiary)', padding: '0.5rem', borderRadius: '6px', textAlign: 'center', borderLeft: `3px solid ${item.color}`}}>
+                                                            <div style={{fontSize: '1.1rem', fontWeight: 600, color: item.color}}>{item.count}</div>
+                                                            <div style={{fontSize: '0.65rem', color: 'var(--text-muted)'}}>
+                                                                {item.name}{item.isColor && item.utility > 0 && <span style={{color: 'var(--accent-bright)'}}> ({item.utility} util)</span>}
+                                                            </div>
+                                                        </div>
+                                                    ));
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* OLD ANALYTICS - HIDDEN */}
+                                {false && window.innerWidth > 768 && (
+                                    <div style={{display: 'none'}}>
                                         <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem', fontStyle: 'italic'}}>
                                             ℹ️ These totals show what your deck DOES. Categories can overlap.
                                         </p>
