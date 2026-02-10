@@ -2187,6 +2187,29 @@
             const [seasonalTheme, setSeasonalTheme] = useState(() => {
                 return localStorage.getItem('deckBuilderSeason') || 'auto';
             });
+            const [siteTheme, setSiteTheme] = useState(() => {
+                return localStorage.getItem('deckBuilderSiteTheme') || 'bone';
+            });
+
+            // Effect Toggles
+            const [effectSettings, setEffectSettings] = useState(() => {
+                const saved = localStorage.getItem('deckBuilderEffects');
+                return saved ? JSON.parse(saved) : {
+                    particles: true,
+                    manaPulse: true,
+                    cardTilt: true,
+                    confetti: true,
+                    hoverGlow: true,
+                    skullExpressions: true,
+                    comparisons: true
+                };
+            });
+
+            const updateEffectSetting = (key, value) => {
+                const newSettings = { ...effectSettings, [key]: value };
+                setEffectSettings(newSettings);
+                localStorage.setItem('deckBuilderEffects', JSON.stringify(newSettings));
+            };
 
             const ACCENT_COLORS = {
                 gold: { primary: '#d4af37', secondary: '#c9a772', name: 'Gold' },
@@ -2195,7 +2218,134 @@
                 amethyst: { primary: '#9966CC', secondary: '#8A4FFF', name: 'Amethyst' },
                 emerald: { primary: '#50C878', secondary: '#00A86B', name: 'Emerald' },
                 ruby: { primary: '#E0115F', secondary: '#9B111E', name: 'Ruby' },
-                sapphire: { primary: '#0F52BA', secondary: '#082567', name: 'Sapphire' }
+                sapphire: { primary: '#0F52BA', secondary: '#082567', name: 'Sapphire' },
+                plasma: { primary: '#FF006E', secondary: '#8338EC', name: 'Plasma' },
+                cyber: { primary: '#00F5FF', secondary: '#00D4AA', name: 'Cyber' },
+                sunset: { primary: '#FF6B35', secondary: '#F7C59F', name: 'Sunset' }
+            };
+
+            // Full Site Color Themes (not just accents)
+            const SITE_THEMES = {
+                bone: {
+                    name: 'Bone & Rust',
+                    icon: '💀',
+                    desc: 'Classic dark brown theme',
+                    colors: {
+                        bgPrimary: '#1a1612',
+                        bgSecondary: '#2a241f',
+                        bgTertiary: '#3a3228',
+                        bgCard: '#4a3d30',
+                        borderColor: '#6b5d4f',
+                        textPrimary: '#f5ebe0',
+                        textSecondary: '#d4c4b0',
+                        bone: '#e8dcc4'
+                    }
+                },
+                midnight: {
+                    name: 'Midnight Blue',
+                    icon: '🌙',
+                    desc: 'Deep blue night theme',
+                    colors: {
+                        bgPrimary: '#0a0e1a',
+                        bgSecondary: '#131b2e',
+                        bgTertiary: '#1c2942',
+                        bgCard: '#243656',
+                        borderColor: '#3d5a80',
+                        textPrimary: '#e0e6f0',
+                        textSecondary: '#a8b8d0',
+                        bone: '#c5d5e8'
+                    }
+                },
+                void: {
+                    name: 'Void Black',
+                    icon: '🕳️',
+                    desc: 'Pure dark OLED theme',
+                    colors: {
+                        bgPrimary: '#000000',
+                        bgSecondary: '#0a0a0a',
+                        bgTertiary: '#151515',
+                        bgCard: '#1f1f1f',
+                        borderColor: '#333333',
+                        textPrimary: '#ffffff',
+                        textSecondary: '#b0b0b0',
+                        bone: '#e0e0e0'
+                    }
+                },
+                forest: {
+                    name: 'Forest Grove',
+                    icon: '🌲',
+                    desc: 'Deep green nature theme',
+                    colors: {
+                        bgPrimary: '#0d1a0d',
+                        bgSecondary: '#152415',
+                        bgTertiary: '#1e3320',
+                        bgCard: '#2a4a2a',
+                        borderColor: '#3d6b3d',
+                        textPrimary: '#e8f5e8',
+                        textSecondary: '#b8d4b8',
+                        bone: '#d4e8d4'
+                    }
+                },
+                crimson: {
+                    name: 'Crimson Night',
+                    icon: '🩸',
+                    desc: 'Dark red vampire theme',
+                    colors: {
+                        bgPrimary: '#1a0a0a',
+                        bgSecondary: '#2a1515',
+                        bgTertiary: '#3d1f1f',
+                        bgCard: '#4d2a2a',
+                        borderColor: '#6b3d3d',
+                        textPrimary: '#f5e0e0',
+                        textSecondary: '#d4b0b0',
+                        bone: '#e8c4c4'
+                    }
+                },
+                ocean: {
+                    name: 'Ocean Depths',
+                    icon: '🌊',
+                    desc: 'Teal underwater theme',
+                    colors: {
+                        bgPrimary: '#0a1a1a',
+                        bgSecondary: '#0f2a2a',
+                        bgTertiary: '#153d3d',
+                        bgCard: '#1f5050',
+                        borderColor: '#2d7070',
+                        textPrimary: '#e0f5f5',
+                        textSecondary: '#a8d8d8',
+                        bone: '#c4e8e8'
+                    }
+                },
+                neon: {
+                    name: 'Neon Arcade',
+                    icon: '🎮',
+                    desc: 'Vibrant cyberpunk theme',
+                    colors: {
+                        bgPrimary: '#0d0015',
+                        bgSecondary: '#150025',
+                        bgTertiary: '#1f0038',
+                        bgCard: '#2a004d',
+                        borderColor: '#4a0080',
+                        textPrimary: '#f0e0ff',
+                        textSecondary: '#c8a8e8',
+                        bone: '#e0c8f0'
+                    }
+                },
+                parchment: {
+                    name: 'Ancient Parchment',
+                    icon: '📜',
+                    desc: 'Light aged paper theme',
+                    colors: {
+                        bgPrimary: '#f4ede4',
+                        bgSecondary: '#e8dfd0',
+                        bgTertiary: '#d8cbb8',
+                        bgCard: '#c8b8a0',
+                        borderColor: '#a89070',
+                        textPrimary: '#2a1f15',
+                        textSecondary: '#4a3f30',
+                        bone: '#3a2f20'
+                    }
+                }
             };
 
             const SEASONAL_THEMES = {
@@ -2228,11 +2378,37 @@
                 }
             }, [accentColor]);
 
+            // Apply site theme colors
+            useEffect(() => {
+                const theme = SITE_THEMES[siteTheme];
+                if (theme) {
+                    document.documentElement.style.setProperty('--bg-primary', theme.colors.bgPrimary);
+                    document.documentElement.style.setProperty('--bg-secondary', theme.colors.bgSecondary);
+                    document.documentElement.style.setProperty('--bg-tertiary', theme.colors.bgTertiary);
+                    document.documentElement.style.setProperty('--bg-card', theme.colors.bgCard);
+                    document.documentElement.style.setProperty('--border-color', theme.colors.borderColor);
+                    document.documentElement.style.setProperty('--text-primary', theme.colors.textPrimary);
+                    document.documentElement.style.setProperty('--text-secondary', theme.colors.textSecondary);
+                    document.documentElement.style.setProperty('--bone', theme.colors.bone);
+                    document.body.style.background = `linear-gradient(135deg, ${theme.colors.bgPrimary} 0%, ${theme.colors.bgSecondary} 50%, ${theme.colors.bgPrimary} 100%)`;
+                    localStorage.setItem('deckBuilderSiteTheme', siteTheme);
+                }
+            }, [siteTheme]);
+
             useEffect(() => {
                 localStorage.setItem('deckBuilderSeason', seasonalTheme);
             }, [seasonalTheme]);
 
             // Average EDH Deck Stats for Comparison
+            // Based on EDHREC community data and common deckbuilding guidelines:
+            // - 37 lands is the most common recommendation for EDH
+            // - ~25 creatures is typical for creature-based strategies
+            // - ~38 non-creature spells fills the remaining slots
+            // - 10 ramp sources is "Rule of 10" recommendation
+            // - 10 draw sources for consistent card advantage
+            // - 8 removal pieces for interaction
+            // - 3 board wipes for emergency resets
+            // Source: EDHREC averages, Command Zone recommendations, and MTG community guidelines
             const AVERAGE_DECK_STATS = {
                 lands: 37,
                 creatures: 25,
@@ -4208,10 +4384,10 @@ return (
 
                 <>
                     {/* Magical Floating Particles */}
-                    {renderParticles()}
+                    {effectSettings.particles && renderParticles()}
 
                     {/* Confetti Celebration */}
-                    {renderConfetti()}
+                    {effectSettings.confetti && renderConfetti()}
 
                     {/* Achievement Popup */}
                     {showAchievement && (
@@ -5692,6 +5868,11 @@ return (
                             ACCENT_COLORS={ACCENT_COLORS}
                             SEASONAL_THEMES={SEASONAL_THEMES}
                             achievements={achievements}
+                            siteTheme={siteTheme}
+                            setSiteTheme={setSiteTheme}
+                            SITE_THEMES={SITE_THEMES}
+                            effectSettings={effectSettings}
+                            updateEffectSetting={updateEffectSetting}
                         />
                     )}
 
@@ -5955,8 +6136,8 @@ return (
                                                         cursor: deleteMode ? 'default' : 'pointer',
                                                         position: 'relative'
                                                     }}
-                                                    onMouseMove={(e) => handleCardTilt(e, e.currentTarget)}
-                                                    onMouseLeave={(e) => resetCardTilt(e.currentTarget)}
+                                                    onMouseMove={(e) => effectSettings.cardTilt && handleCardTilt(e, e.currentTarget)}
+                                                    onMouseLeave={(e) => effectSettings.cardTilt && resetCardTilt(e.currentTarget)}
                                                     onClick={() => deleteMode ? toggleDeckSelection(deck.id) : setSelectedDeck(deck)}
                                                 >
                                                     {/* Commander Art Background */}
@@ -6028,7 +6209,7 @@ return (
                                                         marginBottom: '0.75rem'
                                                     }}>
                                                         {deck.colors && deck.colors.map(color => (
-                                                            <span key={color} className={`mana-pip-animated pip-${color}`} style={{
+                                                            <span key={color} className={`${effectSettings.manaPulse ? 'mana-pip-animated' : ''} pip-${color}`} style={{
                                                                 width: '24px',
                                                                 height: '24px',
                                                                 borderRadius: '50%',
@@ -6368,8 +6549,8 @@ return (
                                                         cursor: 'pointer',
                                                         position: 'relative'
                                                     }}
-                                                    onMouseMove={(e) => handleCardTilt(e, e.currentTarget)}
-                                                    onMouseLeave={(e) => resetCardTilt(e.currentTarget)}
+                                                    onMouseMove={(e) => effectSettings.cardTilt && handleCardTilt(e, e.currentTarget)}
+                                                    onMouseLeave={(e) => effectSettings.cardTilt && resetCardTilt(e.currentTarget)}
                                                     onClick={async () => {
                                                         console.log("🖱️ Deck card clicked, ID:", deck.id);
                                                         // Increment view count when deck is clicked
@@ -6411,7 +6592,7 @@ return (
                                                         marginBottom: '0.75rem'
                                                     }}>
                                                         {deck.colors && deck.colors.map(color => (
-                                                            <div key={color} className={`mana-pip mana-pip-animated pip-${color}`}></div>
+                                                            <div key={color} className={`mana-pip ${effectSettings.manaPulse ? 'mana-pip-animated' : ''} pip-${color}`}></div>
                                                         ))}
                                                     </div>
 
@@ -6708,12 +6889,12 @@ return (
                                 }}>
                                     {/* Lands with comparison */}
                                     {(() => {
-                                        const landsComp = getComparison(selectedDeck.lands, AVERAGE_DECK_STATS.lands);
+                                        const landsComp = effectSettings.comparisons ? getComparison(selectedDeck.lands, AVERAGE_DECK_STATS.lands) : {};
                                         return (
                                             <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
                                                 <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.lands}</div>
                                                 <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>LANDS</div>
-                                                {landsComp.text && (
+                                                {effectSettings.comparisons && landsComp.text && (
                                                     <div style={{
                                                         position: 'absolute',
                                                         top: '0.25rem',
@@ -6730,14 +6911,14 @@ return (
                                     })()}
                                     {/* Creatures with comparison */}
                                     {(() => {
-                                        const creaturesComp = getComparison(selectedDeck.creatures, AVERAGE_DECK_STATS.creatures);
+                                        const creaturesComp = effectSettings.comparisons ? getComparison(selectedDeck.creatures, AVERAGE_DECK_STATS.creatures) : {};
                                         return (
                                             <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
                                                 <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.creatures}</div>
                                                 <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
                                                     {window.innerWidth <= 768 ? 'CREAT.' : 'CREATURES'}
                                                 </div>
-                                                {creaturesComp.text && (
+                                                {effectSettings.comparisons && creaturesComp.text && (
                                                     <div style={{
                                                         position: 'absolute',
                                                         top: '0.25rem',
@@ -6754,14 +6935,14 @@ return (
                                     })()}
                                     {/* Non-creature with comparison */}
                                     {(() => {
-                                        const ncComp = getComparison(selectedDeck.noncreature, AVERAGE_DECK_STATS.noncreature);
+                                        const ncComp = effectSettings.comparisons ? getComparison(selectedDeck.noncreature, AVERAGE_DECK_STATS.noncreature) : {};
                                         return (
                                             <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
                                                 <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.noncreature}</div>
                                                 <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
                                                     {window.innerWidth <= 768 ? 'NON-CREAT.' : 'NON-CREATURE SPELLS'}
                                                 </div>
-                                                {ncComp.text && (
+                                                {effectSettings.comparisons && ncComp.text && (
                                                     <div style={{
                                                         position: 'absolute',
                                                         top: '0.25rem',
@@ -6779,6 +6960,7 @@ return (
                                 </div>
 
                                 {/* Comparison Legend */}
+                                {effectSettings.comparisons && (
                                 <div style={{
                                     display: 'flex',
                                     justifyContent: 'center',
@@ -6789,8 +6971,9 @@ return (
                                 }}>
                                     <span><span style={{color: '#50C878'}}>↑</span> Above avg</span>
                                     <span><span style={{color: '#E0115F'}}>↓</span> Below avg</span>
-                                    <span>vs. typical EDH deck</span>
+                                    <span title="Based on EDHREC averages and Command Zone recommendations">vs. typical EDH deck ℹ️</span>
                                 </div>
+                                )}
 
                                 {/* SUBTYPE BREAKDOWN */}
                                 {selectedDeck.categories && (
@@ -7675,10 +7858,10 @@ return (
 
 
         // Settings Modal Component
-        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport, accentColor, setAccentColor, seasonalTheme, setSeasonalTheme, ACCENT_COLORS, SEASONAL_THEMES, achievements }) {
+        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport, accentColor, setAccentColor, seasonalTheme, setSeasonalTheme, ACCENT_COLORS, SEASONAL_THEMES, achievements, siteTheme, setSiteTheme, SITE_THEMES, effectSettings, updateEffectSetting }) {
             const [bulkPrivacy, setBulkPrivacy] = useState('public');
             const [updating, setUpdating] = useState(false);
-            const [activeTab, setActiveTab] = useState('privacy'); // privacy, appearance, achievements
+            const [activeTab, setActiveTab] = useState('privacy'); // privacy, appearance, effects, achievements
 
             const userDecks = decks.filter(deck => 
                 !deck.isExample && 
@@ -7824,15 +8007,16 @@ return (
                             paddingBottom: '0.5rem'
                         }}>
                             {[
-                                { id: 'privacy', label: '🔒 Privacy', icon: '🔒' },
-                                { id: 'appearance', label: '🎨 Appearance', icon: '🎨' },
-                                { id: 'achievements', label: '🏆 Achievements', icon: '🏆' }
+                                { id: 'privacy', label: '🔒 Privacy' },
+                                { id: 'appearance', label: '🎨 Theme' },
+                                { id: 'effects', label: '✨ Effects' },
+                                { id: 'achievements', label: '🏆 Badges' }
                             ].map(tab => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     style={{
-                                        padding: '0.75rem 1rem',
+                                        padding: '0.5rem 0.75rem',
                                         background: activeTab === tab.id ? 'var(--gold)' : 'transparent',
                                         border: '2px solid var(--gold)',
                                         borderRadius: '8px',
@@ -7840,6 +8024,7 @@ return (
                                         cursor: 'pointer',
                                         fontWeight: 600,
                                         transition: 'all 0.2s ease',
+                                        fontSize: '0.85rem',
                                         fontSize: '0.9rem'
                                     }}
                                 >
@@ -8049,6 +8234,53 @@ return (
                         {/* Appearance Tab */}
                         {activeTab === 'appearance' && (
                         <>
+                        {/* Site Theme Selection */}
+                        <div style={{
+                            background: 'var(--bg-tertiary)',
+                            borderRadius: '12px',
+                            padding: '1.5rem',
+                            marginBottom: '1.5rem'
+                        }}>
+                            <h3 style={{
+                                color: 'var(--bone)',
+                                marginBottom: '0.5rem',
+                                fontSize: '1.2rem',
+                                fontFamily: 'MedievalSharp, cursive'
+                            }}>
+                                🖼️ Site Theme
+                            </h3>
+                            <p style={{color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem'}}>
+                                Change the overall color scheme of the site
+                            </p>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+                                gap: '0.75rem'
+                            }}>
+                                {SITE_THEMES && Object.entries(SITE_THEMES).map(([key, theme]) => (
+                                    <button
+                                        key={key}
+                                        onClick={() => setSiteTheme(key)}
+                                        style={{
+                                            padding: '0.75rem',
+                                            background: siteTheme === key ? 'var(--gold)' : theme.colors.bgCard,
+                                            border: `3px solid ${siteTheme === key ? 'var(--gold)' : theme.colors.borderColor}`,
+                                            borderRadius: '10px',
+                                            color: siteTheme === key ? 'var(--bg-primary)' : theme.colors.textPrimary,
+                                            cursor: 'pointer',
+                                            fontWeight: 600,
+                                            transition: 'all 0.2s ease',
+                                            textAlign: 'center'
+                                        }}
+                                    >
+                                        <div style={{fontSize: '1.5rem', marginBottom: '0.25rem'}}>{theme.icon}</div>
+                                        <div style={{fontSize: '0.9rem'}}>{theme.name}</div>
+                                        <div style={{fontSize: '0.7rem', opacity: 0.7, marginTop: '0.25rem'}}>{theme.desc}</div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
                         {/* Accent Color Selection */}
                         <div style={{
                             background: 'var(--bg-tertiary)',
@@ -8058,23 +8290,26 @@ return (
                         }}>
                             <h3 style={{
                                 color: 'var(--bone)',
-                                marginBottom: '1rem',
+                                marginBottom: '0.5rem',
                                 fontSize: '1.2rem',
                                 fontFamily: 'MedievalSharp, cursive'
                             }}>
                                 🎨 Accent Color
                             </h3>
+                            <p style={{color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem'}}>
+                                Highlight color for buttons, borders, and text
+                            </p>
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
-                                gap: '0.75rem'
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))',
+                                gap: '0.5rem'
                             }}>
                                 {ACCENT_COLORS && Object.entries(ACCENT_COLORS).map(([key, color]) => (
                                     <button
                                         key={key}
                                         onClick={() => setAccentColor(key)}
                                         style={{
-                                            padding: '0.75rem',
+                                            padding: '0.5rem',
                                             background: accentColor === key ? color.primary : 'var(--bg-card)',
                                             border: `3px solid ${color.primary}`,
                                             borderRadius: '8px',
@@ -8085,12 +8320,13 @@ return (
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            gap: '0.5rem'
+                                            gap: '0.3rem',
+                                            fontSize: '0.8rem'
                                         }}
                                     >
                                         <span style={{
-                                            width: '16px',
-                                            height: '16px',
+                                            width: '14px',
+                                            height: '14px',
                                             borderRadius: '50%',
                                             background: color.primary,
                                             border: '2px solid var(--bg-primary)'
@@ -8147,6 +8383,119 @@ return (
                             </div>
                         </div>
                         </>
+                        )}
+
+                        {/* Effects Tab */}
+                        {activeTab === 'effects' && (
+                        <div style={{
+                            background: 'var(--bg-tertiary)',
+                            borderRadius: '12px',
+                            padding: '1.5rem'
+                        }}>
+                            <h3 style={{
+                                color: 'var(--bone)',
+                                marginBottom: '0.5rem',
+                                fontSize: '1.2rem',
+                                fontFamily: 'MedievalSharp, cursive'
+                            }}>
+                                ✨ Visual Effects
+                            </h3>
+                            <p style={{color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem'}}>
+                                Toggle individual effects on or off
+                            </p>
+
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
+                                {[
+                                    { key: 'particles', label: '🌟 Floating Particles', desc: 'Magical stars and sparkles in background' },
+                                    { key: 'manaPulse', label: '💫 Mana Pip Glow', desc: 'Pulsing glow on mana color icons' },
+                                    { key: 'cardTilt', label: '🎴 Card Tilt Effect', desc: '3D tilt when hovering deck cards' },
+                                    { key: 'confetti', label: '🎉 Save Confetti', desc: 'Celebration confetti when saving' },
+                                    { key: 'hoverGlow', label: '✨ Hover Glow', desc: 'Golden glow on card hover' },
+                                    { key: 'skullExpressions', label: '💀 Skull Expressions', desc: 'Animated skull mascot reactions' },
+                                    { key: 'comparisons', label: '📊 Deck Comparisons', desc: 'Show vs. average EDH stats' }
+                                ].map(effect => (
+                                    <label
+                                        key={effect.key}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            padding: '1rem',
+                                            background: 'var(--bg-card)',
+                                            borderRadius: '10px',
+                                            cursor: 'pointer',
+                                            border: `2px solid ${effectSettings?.[effect.key] ? 'var(--gold)' : 'var(--border-color)'}`,
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                    >
+                                        <div>
+                                            <div style={{fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem'}}>
+                                                {effect.label}
+                                            </div>
+                                            <div style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>
+                                                {effect.desc}
+                                            </div>
+                                        </div>
+                                        <div
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                updateEffectSetting(effect.key, !effectSettings?.[effect.key]);
+                                            }}
+                                            style={{
+                                                width: '50px',
+                                                height: '28px',
+                                                background: effectSettings?.[effect.key] ? 'var(--gold)' : 'var(--bg-secondary)',
+                                                borderRadius: '14px',
+                                                position: 'relative',
+                                                transition: 'all 0.2s ease',
+                                                cursor: 'pointer',
+                                                border: '2px solid var(--border-color)'
+                                            }}
+                                        >
+                                            <div style={{
+                                                width: '20px',
+                                                height: '20px',
+                                                background: 'white',
+                                                borderRadius: '50%',
+                                                position: 'absolute',
+                                                top: '2px',
+                                                left: effectSettings?.[effect.key] ? '26px' : '2px',
+                                                transition: 'all 0.2s ease',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                                            }}></div>
+                                        </div>
+                                    </label>
+                                ))}
+                            </div>
+
+                            <div style={{
+                                marginTop: '1.5rem',
+                                display: 'flex',
+                                gap: '0.75rem',
+                                justifyContent: 'center'
+                            }}>
+                                <button
+                                    onClick={() => {
+                                        const allOn = { particles: true, manaPulse: true, cardTilt: true, confetti: true, hoverGlow: true, skullExpressions: true, comparisons: true };
+                                        Object.keys(allOn).forEach(k => updateEffectSetting(k, true));
+                                    }}
+                                    className="btn btn-secondary"
+                                    style={{fontSize: '0.85rem', padding: '0.5rem 1rem'}}
+                                >
+                                    ✨ Enable All
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const allOff = { particles: false, manaPulse: false, cardTilt: false, confetti: false, hoverGlow: false, skullExpressions: false, comparisons: false };
+                                        Object.keys(allOff).forEach(k => updateEffectSetting(k, false));
+                                    }}
+                                    className="btn btn-secondary"
+                                    style={{fontSize: '0.85rem', padding: '0.5rem 1rem'}}
+                                >
+                                    🚫 Disable All
+                                </button>
+                            </div>
+                        </div>
                         )}
 
                         {/* Achievements Tab */}
