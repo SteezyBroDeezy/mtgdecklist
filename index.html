@@ -6875,7 +6875,7 @@ return (
                                     gap: '1rem'
                                 }}>
                                     <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
-                                        <svg width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
+                                        <svg onClick={handleSkullClick} className={getSkullClass()} width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
                                             <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
                                             <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
                                             <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
@@ -6898,7 +6898,7 @@ return (
                                         }}>
                                             Browse Public Decks
                                         </h1>
-                                        <svg width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
+                                        <svg onClick={handleSkullClick} className={getSkullClass()} width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
                                             <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
                                             <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
                                             <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
@@ -8214,20 +8214,20 @@ return (
                                                     if (view === 'browse' && user && selectedDeck.userId === user.uid) {
                                                         try {
                                                             console.log("Finding personal version of deck:", selectedDeck.name);
-                                                            
+
                                                             // Try to find by ID first
                                                             let personalDeck = decks.find(d => d.id === selectedDeck.id);
-                                                            
+
                                                             // If not found by ID, search by name and commander
                                                             if (!personalDeck) {
                                                                 console.log("Not found by ID, searching by name and commander...");
-                                                                personalDeck = decks.find(d => 
-                                                                    d.name === selectedDeck.name && 
+                                                                personalDeck = decks.find(d =>
+                                                                    d.name === selectedDeck.name &&
                                                                     d.commander === selectedDeck.commander &&
                                                                     d.userId === user.uid
                                                                 );
                                                             }
-                                                            
+
                                                             if (personalDeck) {
                                                                 console.log("✅ Found personal deck!", personalDeck.id);
                                                                 // Close preview
@@ -8238,14 +8238,14 @@ return (
                                                             } else {
                                                                 // Not found in loaded decks - try fetching from Firestore
                                                                 console.log("Not in loaded decks, querying Firestore...");
-                                                                
+
                                                                 const querySnapshot = await db.collection("decks")
                                                                     .where("userId", "==", user.uid)
                                                                     .where("name", "==", selectedDeck.name)
                                                                     .where("commander", "==", selectedDeck.commander)
                                                                     .limit(1)
                                                                     .get();
-                                                                
+
                                                                 if (!querySnapshot.empty) {
                                                                     const doc = querySnapshot.docs[0];
                                                                     console.log("✅ Found in Firestore!", doc.id);
@@ -8253,20 +8253,27 @@ return (
                                                                     setDeckToEdit({ ...doc.data(), id: doc.id });
                                                                     setShowEditModal(true);
                                                                 } else {
-                                                                    console.log("⚠️ Deck not found anywhere");
-                                                                    alert('⚠️ Deck Not Found in Personal Collection\n\nThis deck exists in Browse but not in your My Decks.\n\nUse "Build Similar Deck" to create your own copy!');
+                                                                    // Deck not found in personal collection - just view it read-only
+                                                                    console.log("⚠️ Deck not found in personal collection, opening view-only");
+                                                                    setSelectedDeck(null);
+                                                                    setDeckToEdit({...selectedDeck, viewOnly: true});
+                                                                    setShowEditModal(true);
                                                                 }
                                                             }
                                                         } catch (error) {
                                                             console.error("Error finding deck:", error);
-                                                            alert('Error loading deck: ' + error.message + '\n\nTry using "Build Similar Deck" instead!');
+                                                            // On error, still allow viewing
+                                                            setSelectedDeck(null);
+                                                            setDeckToEdit({...selectedDeck, viewOnly: true});
+                                                            setShowEditModal(true);
                                                         }
-                                                        
+
                                                         return;
                                                     }
-                                                    
-                                                    // Not the owner, or viewing from My Decks - just view it
-                                                    setDeckToEdit(selectedDeck);
+
+                                                    // Not the owner - open in view-only mode
+                                                    const isOwnDeck = user && selectedDeck.userId === user.uid;
+                                                    setDeckToEdit(isOwnDeck ? selectedDeck : {...selectedDeck, viewOnly: true});
                                                     setSelectedDeck(null);
                                                     setShowEditModal(true);
                                                 }}
@@ -8274,7 +8281,7 @@ return (
                                                 {view === 'browse' && user && selectedDeck.userId === user.uid ? (
                                                     '✏️ Edit in My Decks'
                                                 ) : (
-                                                    '📋 See Full Deck'
+                                                    '👁️ View Full Deck'
                                                 )}
                                             </button>
                                         )}
@@ -8628,7 +8635,7 @@ return (
                                 <button
                                     onClick={handleBulkUpdate}
                                     disabled={updating}
-                                    className={btnClass("btn btn-primary")}
+                                    className="btn btn-primary"
                                     style={{
                                         width: '100%',
                                         padding: '0.75rem',
@@ -8693,7 +8700,7 @@ return (
                                     onClose();
                                     setTimeout(() => onShowBugReport(), 100);
                                 }}
-                                className={btnClass("btn btn-secondary")}
+                                className="btn btn-secondary"
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
@@ -8956,7 +8963,7 @@ return (
                                         const allOn = { particles: true, manaPulse: true, cardTilt: true, confetti: true, hoverGlow: true, skullExpressions: true, comparisons: true };
                                         Object.keys(allOn).forEach(k => updateEffectSetting(k, true));
                                     }}
-                                    className={btnClass("btn btn-secondary")}
+                                    className="btn btn-secondary"
                                     style={{fontSize: '0.85rem', padding: '0.5rem 1rem'}}
                                 >
                                     ✨ Enable All
@@ -8966,7 +8973,7 @@ return (
                                         const allOff = { particles: false, manaPulse: false, cardTilt: false, confetti: false, hoverGlow: false, skullExpressions: false, comparisons: false };
                                         Object.keys(allOff).forEach(k => updateEffectSetting(k, false));
                                     }}
-                                    className={btnClass("btn btn-secondary")}
+                                    className="btn btn-secondary"
                                     style={{fontSize: '0.85rem', padding: '0.5rem 1rem'}}
                                 >
                                     🚫 Disable All
@@ -9489,7 +9496,7 @@ return (
                                         setResetEmailSent(false);
                                         setEmail('');
                                     }}
-                                    className={btnClass("btn btn-primary")}
+                                    className="btn btn-primary"
                                     style={{
                                         width: '100%',
                                         padding: '0.75rem',
@@ -9538,7 +9545,7 @@ return (
 
                                 <button
                                     type="submit"
-                                    className={btnClass("btn btn-primary")}
+                                    className="btn btn-primary"
                                     style={{
                                         width: '100%',
                                         padding: '0.75rem',
@@ -9662,7 +9669,7 @@ return (
 
                             <button
                                 type="submit"
-                                className={btnClass("btn btn-primary")}
+                                className="btn btn-primary"
                                 style={{
                                     width: '100%',
                                     padding: '0.75rem',
@@ -9838,7 +9845,7 @@ return (
                         <button
                             type="submit"
                             disabled={submitting}
-                            className={btnClass("btn btn-primary")}
+                            className="btn btn-primary"
                             style={{
                                 width: '100%',
                                 padding: '0.75rem',
@@ -10187,6 +10194,13 @@ return (
                     noncreatureMultiAdj
                 };
             }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander, deckData.secondCommanderIsCreature, multiFunctionCreatures, multiFunctionNoncreature]);
+
+            // Check if stored deck values differ from calculated totals (data mismatch)
+            const hasDataMismatch = deck && (
+                deck.creatures !== totals.creatures ||
+                deck.lands !== totals.lands ||
+                deck.noncreature !== totals.noncreature
+            );
 
                 const analytics = {
                     removal: { quick: [], slow: [] },
@@ -10814,8 +10828,8 @@ return (
                                             onChange={(val) => setDeckData({...deckData, commander: val})}
                                             placeholder="e.g., Atraxa, Praetors' Voice or Kozilek, Butcher of Truth"
                                         />
-                                        <button 
-                                            className={btnClass("btn btn-secondary")} 
+                                        <button
+                                            className="btn btn-secondary"
                                             onClick={async () => {
                                                 if (deckData.commander.length > 3) {
                                                     setLoadingCommander(true);
@@ -10878,8 +10892,8 @@ return (
                                                 onChange={(val) => setDeckData({...deckData, secondCommander: val})}
                                                 placeholder="e.g., Partner commander or Background"
                                             />
-                                            <button 
-                                                className={btnClass("btn btn-secondary")} 
+                                            <button
+                                                className="btn btn-secondary"
                                                 onClick={async () => {
                                                     if (deckData.secondCommander.length > 3) {
                                                         setLoadingSecondCommander(true);
@@ -11055,7 +11069,7 @@ return (
                                             placeholder="e.g., Sol Ring, Craterhoof Behemoth..."
                                             onSelect={(cardName) => addNotableCard(cardName)}
                                         />
-                                        <button className={btnClass("btn btn-secondary")} onClick={addNotableCard}>Add</button>
+                                        <button className="btn btn-secondary" onClick={addNotableCard}>Add</button>
                                     </div>
 
                                     {notableCards.length > 0 && (
@@ -11107,7 +11121,7 @@ return (
                                             <div key={majorGroupId} style={{marginBottom: '1rem'}}>
                                                 <button
                                                     onClick={() => setCategoryOpen(prev => ({...prev, [majorGroupId]: !prev[majorGroupId]}))}
-                                                    className={btnClass("btn btn-secondary")}
+                                                    className="btn btn-secondary"
                                                     style={{
                                                         width: '100%',
                                                         display: 'flex',
@@ -11558,7 +11572,7 @@ return (
                                 <div style={{marginBottom: '2rem'}}>
                                     <button
                                         onClick={() => setSideboardOpen(!sideboardOpen)}
-                                        className={btnClass("btn btn-secondary")}
+                                        className="btn btn-secondary"
                                         style={{
                                             width: '100%',
                                             display: 'flex',
@@ -11941,7 +11955,7 @@ return (
                                 <div style={{marginBottom: '2rem'}}>
                                     <button
                                         onClick={() => setManaCalcOpen(!manaCalcOpen)}
-                                        className={btnClass("btn btn-secondary")}
+                                        className="btn btn-secondary"
                                         style={{
                                             width: '100%',
                                             display: 'flex',
@@ -11967,7 +11981,7 @@ return (
                                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
                                         <div className="calculator-title" style={{margin: 0}}>⚗️ Mana Base Calculator</div>
                                         <button
-                                            className={btnClass("btn btn-secondary")}
+                                            className="btn btn-secondary"
                                             onClick={() => setShowManaCalcHelp(!showManaCalcHelp)}
                                             style={{
                                                 padding: '0.4rem 0.8rem',
@@ -12800,8 +12814,8 @@ return (
                                         )}
                                         </div>
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
-                                            <button 
-                                                className={btnClass("btn btn-primary")}
+                                            <button
+                                                className="btn btn-primary"
                                                 onClick={calculateManaBase}
                                                 style={{
                                                     padding: '0.9rem 2.5rem',
@@ -12930,8 +12944,8 @@ return (
                                 </div>
 
                                 <div style={{textAlign: 'center', marginTop: '2rem'}}>
-                                    <button 
-                                        className={btnClass("btn btn-primary")} 
+                                    <button
+                                        className="btn btn-primary"
                                         style={{padding: '1rem 3rem', fontSize: '1.1rem'}}
                                         onClick={() => {
                                             setHasUnsavedChanges(false);
@@ -13107,6 +13121,41 @@ return (
                                         <div style={{marginTop: '0.5rem', color: 'var(--text-muted)'}}>{100 - totals.total} remaining</div>
                                     )}
                                 </div>
+
+                                {/* Data Sync Warning - shows when stored values don't match calculated */}
+                                {hasDataMismatch && user && deck?.userId === user?.uid && !deck?.viewOnly && (
+                                    <div style={{
+                                        marginTop: '1rem',
+                                        padding: '1rem',
+                                        background: 'rgba(255, 165, 0, 0.15)',
+                                        border: '2px solid orange',
+                                        borderRadius: '8px',
+                                        textAlign: 'center'
+                                    }}>
+                                        <div style={{fontSize: '0.85rem', color: 'orange', marginBottom: '0.5rem'}}>
+                                            ⚠️ Data Mismatch Detected
+                                        </div>
+                                        <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.75rem'}}>
+                                            Preview shows different values than calculated
+                                        </div>
+                                        <button
+                                            className="btn btn-secondary"
+                                            onClick={() => {
+                                                setHasUnsavedChanges(true);
+                                                alert('✅ Click "Save Changes" to sync the data!\n\nThe deck preview will show correct values after saving.');
+                                            }}
+                                            style={{
+                                                padding: '0.5rem 1rem',
+                                                fontSize: '0.85rem',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '0.5rem'
+                                            }}
+                                        >
+                                            🔄 Mark for Sync
+                                        </button>
+                                    </div>
+                                )}
 
                                 {/* Deck Preview in sidebar */}
                                 {(
@@ -13631,6 +13680,13 @@ return (
                 };
             }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander, deckData.secondCommanderIsCreature, multiFunctionCreatures, multiFunctionNoncreature]);
 
+            // Check if stored deck values differ from calculated totals (data mismatch)
+            const hasDataMismatch = deck && (
+                deck.creatures !== totals.creatures ||
+                deck.lands !== totals.lands ||
+                deck.noncreature !== totals.noncreature
+            );
+
                 const analytics = {
                     removal: { quick: [], slow: [] },
                     cardDraw: { repeatable: [], oneShot: [] },
@@ -14056,15 +14112,15 @@ return (
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h2 className="modal-title">
-                                {user && deck && user.uid === deck.userId ? '✏️ Edit Deck' : '👁️ View Deck'}
+                                {user && deck && user.uid === deck.userId && !deck.viewOnly ? '✏️ Edit Deck' : '👁️ View Deck'}
                             </h2>
                             <button className="close-btn" onClick={handleClose}>×</button>
                         </div>
 
                         <div className="modal-content-wrapper">
                             <div className="modal-body">
-                                {/* Privacy Toggle Section - only show if user owns this deck */}
-                                {user && deck && user.uid === deck.userId && (
+                                {/* Privacy Toggle Section - only show if user owns this deck and not view-only */}
+                                {user && deck && user.uid === deck.userId && !deck.viewOnly && (
                                 <div style={{
                                     background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(139, 111, 71, 0.1) 100%)',
                                     border: '2px solid var(--gold)',
@@ -14168,8 +14224,8 @@ return (
                                             onChange={(val) => setDeckData({...deckData, commander: val})}
                                             placeholder="e.g., Atraxa, Praetors' Voice or Kozilek, Butcher of Truth"
                                         />
-                                        <button 
-                                            className={btnClass("btn btn-secondary")} 
+                                        <button
+                                            className="btn btn-secondary"
                                             onClick={async () => {
                                                 if (deckData.commander.length > 3) {
                                                     setLoadingCommander(true);
@@ -14232,8 +14288,8 @@ return (
                                                 onChange={(val) => setDeckData({...deckData, secondCommander: val})}
                                                 placeholder="e.g., Partner commander or Background"
                                             />
-                                            <button 
-                                                className={btnClass("btn btn-secondary")} 
+                                            <button
+                                                className="btn btn-secondary"
                                                 onClick={async () => {
                                                     if (deckData.secondCommander.length > 3) {
                                                         setLoadingSecondCommander(true);
@@ -14409,7 +14465,7 @@ return (
                                             placeholder="e.g., Sol Ring, Craterhoof Behemoth..."
                                             onSelect={(cardName) => addNotableCard(cardName)}
                                         />
-                                        <button className={btnClass("btn btn-secondary")} onClick={addNotableCard}>Add</button>
+                                        <button className="btn btn-secondary" onClick={addNotableCard}>Add</button>
                                     </div>
 
                                     {notableCards.length > 0 && (
@@ -14461,7 +14517,7 @@ return (
                                             <div key={majorGroupId} style={{marginBottom: '1rem'}}>
                                                 <button
                                                     onClick={() => setCategoryOpen(prev => ({...prev, [majorGroupId]: !prev[majorGroupId]}))}
-                                                    className={btnClass("btn btn-secondary")}
+                                                    className="btn btn-secondary"
                                                     style={{
                                                         width: '100%',
                                                         display: 'flex',
@@ -14912,7 +14968,7 @@ return (
                                 <div style={{marginBottom: '2rem'}}>
                                     <button
                                         onClick={() => setSideboardOpen(!sideboardOpen)}
-                                        className={btnClass("btn btn-secondary")}
+                                        className="btn btn-secondary"
                                         style={{
                                             width: '100%',
                                             display: 'flex',
@@ -15295,7 +15351,7 @@ return (
                                 <div style={{marginBottom: '2rem'}}>
                                     <button
                                         onClick={() => setManaCalcOpen(!manaCalcOpen)}
-                                        className={btnClass("btn btn-secondary")}
+                                        className="btn btn-secondary"
                                         style={{
                                             width: '100%',
                                             display: 'flex',
@@ -15321,7 +15377,7 @@ return (
                                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
                                         <div className="calculator-title" style={{margin: 0}}>⚗️ Mana Base Calculator</div>
                                         <button
-                                            className={btnClass("btn btn-secondary")}
+                                            className="btn btn-secondary"
                                             onClick={() => setShowManaCalcHelp(!showManaCalcHelp)}
                                             style={{
                                                 padding: '0.4rem 0.8rem',
@@ -16154,8 +16210,8 @@ return (
                                         )}
                                         </div>
                                         <div style={{textAlign: 'center', marginTop: '2rem', marginBottom: '1.5rem'}}>
-                                            <button 
-                                                className={btnClass("btn btn-primary")}
+                                            <button
+                                                className="btn btn-primary"
                                                 onClick={calculateManaBase}
                                                 style={{
                                                     padding: '0.9rem 2.5rem',
@@ -16283,11 +16339,11 @@ return (
                                     )}
                                 </div>
 
-                                {/* Save button - only show if user owns this deck */}
+                                {/* Save button - only show if user owns this deck and not view-only */}
                                 <div style={{textAlign: 'center', marginTop: '2rem'}}>
-                                    {user && deck && user.uid === deck.userId ? (
+                                    {user && deck && user.uid === deck.userId && !deck.viewOnly ? (
                                         <button
-                                            className={btnClass("btn btn-primary")}
+                                            className="btn btn-primary"
                                             style={{padding: '1rem 3rem', fontSize: '1.1rem'}}
                                             onClick={() => {
                                                 setHasUnsavedChanges(false);
@@ -16315,7 +16371,7 @@ return (
                                             fontSize: '0.95rem',
                                             fontStyle: 'italic'
                                         }}>
-                                            👤 This is {deck?.userId ? 'another user\'s' : 'an example'} deck. Use "Build Similar Deck" to create your own version!
+                                            👁️ Viewing {deck?.userId ? 'another user\'s' : 'an example'} deck. Use "Build Similar Deck" to create your own version!
                                         </div>
                                     )}
                                 </div>
@@ -16475,6 +16531,41 @@ return (
                                         <div style={{marginTop: '0.5rem', color: 'var(--text-muted)'}}>{100 - totals.total} remaining</div>
                                     )}
                                 </div>
+
+                                {/* Data Sync Warning - shows when stored values don't match calculated */}
+                                {hasDataMismatch && user && deck?.userId === user?.uid && !deck?.viewOnly && (
+                                    <div style={{
+                                        marginTop: '1rem',
+                                        padding: '1rem',
+                                        background: 'rgba(255, 165, 0, 0.15)',
+                                        border: '2px solid orange',
+                                        borderRadius: '8px',
+                                        textAlign: 'center'
+                                    }}>
+                                        <div style={{fontSize: '0.85rem', color: 'orange', marginBottom: '0.5rem'}}>
+                                            ⚠️ Data Mismatch Detected
+                                        </div>
+                                        <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.75rem'}}>
+                                            Preview shows different values than calculated
+                                        </div>
+                                        <button
+                                            className="btn btn-secondary"
+                                            onClick={() => {
+                                                setHasUnsavedChanges(true);
+                                                alert('✅ Click "Save Changes" to sync the data!\n\nThe deck preview will show correct values after saving.');
+                                            }}
+                                            style={{
+                                                padding: '0.5rem 1rem',
+                                                fontSize: '0.85rem',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '0.5rem'
+                                            }}
+                                        >
+                                            🔄 Mark for Sync
+                                        </button>
+                                    </div>
+                                )}
 
                                 {/* Deck Preview in sidebar */}
                                 {(
