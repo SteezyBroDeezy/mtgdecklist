@@ -10722,10 +10722,10 @@ return (
             }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander, deckData.secondCommanderIsCreature, multiFunctionCreatures, multiFunctionNoncreature]);
 
             // Check if stored deck values differ from calculated totals (data mismatch)
-            const hasDataMismatch = deck && (
-                deck.creatures !== totals.creatures ||
-                deck.lands !== totals.lands ||
-                deck.noncreature !== totals.noncreature
+            const hasDataMismatch = initialData && (
+                 initialData.creatures !== totals.creatures ||
+                 initialData.lands !== totals.lands ||
+                 initialData.noncreature !== totals.noncreature
             );
 
                 const analytics = {
