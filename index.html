@@ -508,6 +508,64 @@
             animation: rainFall linear infinite;
         }
 
+        @keyframes hailFall {
+            0% { transform: translateY(-100vh) translateX(0); opacity: 1; }
+            100% { transform: translateY(100vh) translateX(-15px); opacity: 0.2; }
+        }
+
+        @keyframes hurricaneSwirl {
+            0% { transform: translateY(-100vh) translateX(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) translateX(80px) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes dustDrift {
+            0% { transform: translateX(-200px); opacity: 0; }
+            20% { opacity: 0.4; }
+            80% { opacity: 0.3; }
+            100% { transform: translateX(110vw); opacity: 0; }
+        }
+
+        @keyframes waveRipple {
+            0% { transform: scaleX(0.5) translateY(0); opacity: 0; }
+            30% { opacity: 0.5; transform: scaleX(1) translateY(-20px); }
+            70% { opacity: 0.3; transform: scaleX(1.5) translateY(-40px); }
+            100% { transform: scaleX(2) translateY(-60px); opacity: 0; }
+        }
+
+        .weather-drop.hail {
+            width: 4px;
+            height: 4px;
+            background: rgba(200, 230, 255, 0.9);
+            border-radius: 50%;
+            animation: hailFall linear infinite;
+        }
+
+        .weather-drop.hurricane {
+            width: 3px;
+            height: 30px;
+            background: linear-gradient(transparent, rgba(200, 200, 200, 0.7));
+            animation: hurricaneSwirl linear infinite;
+        }
+
+        .weather-drop.tornado {
+            font-size: 40px;
+            line-height: 1;
+            animation: hurricaneSwirl ease-in-out infinite;
+        }
+
+        .weather-drop.dustStorm {
+            height: 60px;
+            background: linear-gradient(transparent, rgba(180, 140, 80, 0.15), transparent);
+            animation: dustDrift linear infinite;
+            border-radius: 50%;
+        }
+
+        .weather-drop.oceanWaves {
+            background: linear-gradient(transparent, rgba(0, 120, 200, 0.2));
+            animation: waveRipple ease-out infinite;
+            border-radius: 50%;
+        }
+
         .lightning-flash {
             position: fixed;
             top: 0;
@@ -856,7 +914,7 @@
         /* ============================================ */
         /* MOBILE RESPONSIVE STYLES */
         /* ============================================ */
-        
+
         @media (max-width: 768px) {
             .modal-content-wrapper {
                 flex-direction: column;
@@ -865,6 +923,19 @@
                 width: 100%;
                 border-left: none;
                 border-top: 2px solid var(--border-color);
+            }
+            /* Fix 5: Full-width modal on mobile */
+            .modal-overlay {
+                padding: 0 !important;
+                align-items: stretch !important;
+            }
+            .modal {
+                border-radius: 0 !important;
+                max-height: 100vh !important;
+                height: 100vh !important;
+                margin: 0 !important;
+                border-left: none !important;
+                border-right: none !important;
             }
         }
 
@@ -890,6 +961,7 @@
             .modal-body {
                 overflow-x: hidden !important;
                 padding: 1rem !important;
+                padding-bottom: 130px !important;
             }
 
             /* Ensure all content stays within bounds */
@@ -1099,6 +1171,19 @@
 
         .featured-calculator-box {
             animation: subtle-glow 3s ease-in-out infinite;
+            scroll-margin-top: 90px;
+        }
+
+        /* Featured Decks pagination grid - mobile responsive */
+        @media (max-width: 600px) {
+            .featured-decks-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        @media (min-width: 601px) and (max-width: 900px) {
+            .featured-decks-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
         }
 
         .deck-grid {
@@ -1779,6 +1864,27 @@
                         name: 'Other Lands',
                         subcategories: [
                             { id: 'other-lands', name: 'Other Lands', defaultValue: 0, description: 'Any other lands not categorized above' }
+                        ]
+                    },
+                    {
+                        id: 'land-custom1',
+                        name: '✨ Custom Land 1',
+                        subcategories: [
+                            { id: 'custom1-lands', name: 'Custom Land 1', defaultValue: 0, description: 'Custom land category - name it yourself!', isCustom: true, customIndex: 'landCustom1' }
+                        ]
+                    },
+                    {
+                        id: 'land-custom2',
+                        name: '✨ Custom Land 2',
+                        subcategories: [
+                            { id: 'custom2-lands', name: 'Custom Land 2', defaultValue: 0, description: 'Custom land category - name it yourself!', isCustom: true, customIndex: 'landCustom2' }
+                        ]
+                    },
+                    {
+                        id: 'land-custom3',
+                        name: '✨ Custom Land 3',
+                        subcategories: [
+                            { id: 'custom3-lands', name: 'Custom Land 3', defaultValue: 0, description: 'Custom land category - name it yourself!', isCustom: true, customIndex: 'landCustom3' }
                         ]
                     }
                 ]
@@ -2569,6 +2675,8 @@
             const [showManaCalcInfo, setShowManaCalcInfo] = useState(false);
             const [showMobileAbout, setShowMobileAbout] = useState(false);
             const [showManaCalcAbout, setShowManaCalcAbout] = useState(false);
+            const [showTrackInfo, setShowTrackInfo] = useState(false);
+            const [featuredPage, setFeaturedPage] = useState(0);
             const [manaCalculation, setManaCalculation] = useState(null);
             const [showResults, setShowResults] = useState(false);
             const [randomQuote, setRandomQuote] = useState('');
@@ -2729,6 +2837,11 @@
                     case 'fireflies': count = 25; break;
                     case 'bubbles': count = 20; break;
                     case 'sakura': count = 20; break;
+                    case 'hail': count = 80; break;
+                    case 'hurricane': count = 40; break;
+                    case 'tornado': count = 5; break;
+                    case 'dustStorm': count = 15; break;
+                    case 'oceanWaves': count = 12; break;
                     default: count = 30;
                 }
 
@@ -2751,6 +2864,11 @@
                         case 'fireflies': drop.duration = 3 + Math.random() * 5; break;
                         case 'bubbles': drop.duration = 6 + Math.random() * 6; break;
                         case 'sakura': drop.duration = 6 + Math.random() * 8; break;
+                        case 'hail': drop.duration = 0.2 + Math.random() * 0.2; break;
+                        case 'hurricane': drop.duration = 0.8 + Math.random() * 0.7; break;
+                        case 'tornado': drop.duration = 3 + Math.random() * 3; break;
+                        case 'dustStorm': drop.duration = 8 + Math.random() * 7; break;
+                        case 'oceanWaves': drop.duration = 4 + Math.random() * 4; break;
                         default: drop.duration = 5 + Math.random() * 5;
                     }
 
@@ -2759,6 +2877,7 @@
                         case 'snow': drop.emoji = '❄️'; break;
                         case 'leaves': drop.emoji = ['🍂', '🍁', '🍃'][Math.floor(Math.random() * 3)]; break;
                         case 'sakura': drop.emoji = '🌸'; break;
+                        case 'tornado': drop.emoji = '🌪️'; break;
                         default: drop.emoji = null;
                     }
 
@@ -2773,6 +2892,19 @@
                     }
                     if (weatherType === 'fireflies') {
                         drop.top = Math.random() * 100;
+                    }
+
+                    // New weather effects: top position and size
+                    if (weatherType === 'tornado') {
+                        drop.top = Math.random() * 100;
+                    }
+                    if (weatherType === 'dustStorm') {
+                        drop.top = Math.random() * 80;
+                        drop.width = 100 + Math.random() * 200;
+                    }
+                    if (weatherType === 'oceanWaves') {
+                        drop.top = 60 + Math.random() * 40;
+                        drop.size = 80 + Math.random() * 120;
                     }
 
                     drops.push(drop);
@@ -2792,6 +2924,9 @@
                             if (drop.size) {
                                 extraStyle.width = `${drop.size}px`;
                                 extraStyle.height = `${drop.size}px`;
+                            }
+                            if (drop.width) {
+                                extraStyle.width = `${drop.width}px`;
                             }
                             return (
                                 <div
@@ -5613,12 +5748,9 @@ return (
                                         setTimeout(() => {
                                             const calc = document.querySelector('.featured-calculator-box');
                                             if (calc) {
-                                                const offset = 100;
-                                                const elementPosition = calc.getBoundingClientRect().top;
-                                                const offsetPosition = elementPosition + window.pageYOffset - offset;
-                                                window.scrollTo({top: offsetPosition, behavior: 'smooth'});
+                                                calc.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                             }
-                                        }, 100);
+                                        }, 200);
                                     }}
                                     style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
                                 >
@@ -6078,19 +6210,16 @@ return (
                                         <span style={{fontSize: '1.5rem'}}>📚</span>
                                         <span>Browse Public Decks</span>
                                     </button>
-                                    <button 
-                                        className={btnClass("btn btn-secondary")} 
+                                    <button
+                                        className={btnClass("btn btn-secondary")}
                                         onClick={() => {
                                             const calc = document.querySelector('.featured-calculator-box');
                                             if (calc) {
-                                                const offset = 100;
-                                                const elementPosition = calc.getBoundingClientRect().top;
-                                                const offsetPosition = elementPosition + window.pageYOffset - offset;
-                                                window.scrollTo({top: offsetPosition, behavior: 'smooth'});
+                                                calc.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                             }
                                         }}
                                         style={{
-                                            padding: '1.2rem 2.5rem', 
+                                            padding: '1.2rem 2.5rem',
                                             fontSize: '1.2rem',
                                             display: 'flex',
                                             alignItems: 'center',
@@ -6235,14 +6364,189 @@ return (
                             </div>
 
 
-                            <div id="public-decks" style={{marginTop: '5rem', marginBottom: '3rem'}}>
-                                {/* Introduction to the Tool - MOVED UP */}
-                                <div style={{
-                                    maxWidth: '900px',
-                                    margin: '0 auto 4rem auto',
+                            <div id="public-decks" style={{marginTop: '2rem', marginBottom: '3rem'}}>
+
+                                {/* Mini Featured Decks Preview */}
+                                {publicDecks && publicDecks.length > 0 && (
+                                    <div style={{maxWidth: '1100px', margin: '0 auto 3rem auto', padding: '0 1rem'}}>
+                                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem'}}>
+                                            <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', fontSize: '1.8rem', margin: 0}}>
+                                                📚 Featured Public Decks
+                                            </h3>
+                                            <button
+                                                className={btnClass("btn btn-secondary")}
+                                                onClick={() => changeView('browse')}
+                                                style={{fontSize: '0.85rem', padding: '0.5rem 1.25rem'}}
+                                            >
+                                                View All →
+                                            </button>
+                                        </div>
+                                        {/* Pagination controls */}
+                                        {(() => {
+                                            const featuredDecks = publicDecks.slice(0, 36);
+                                            const totalPages = Math.ceil(featuredDecks.length / 6);
+                                            const pageDecks = featuredDecks.slice(featuredPage * 6, (featuredPage + 1) * 6);
+                                            return (
+                                                <div>
+                                                    {/* Arrow nav */}
+                                                    {totalPages > 1 && (
+                                                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1rem'}}>
+                                                            <button
+                                                                onClick={() => setFeaturedPage(p => Math.max(0, p - 1))}
+                                                                disabled={featuredPage === 0}
+                                                                style={{
+                                                                    padding: '0.5rem 1rem', fontSize: '1.2rem', border: '2px solid var(--border-color)',
+                                                                    background: featuredPage === 0 ? 'var(--bg-secondary)' : 'var(--bg-card)',
+                                                                    color: featuredPage === 0 ? 'var(--text-muted)' : 'var(--text-primary)',
+                                                                    borderRadius: '8px', cursor: featuredPage === 0 ? 'default' : 'pointer',
+                                                                    opacity: featuredPage === 0 ? 0.4 : 1
+                                                                }}
+                                                            >←</button>
+                                                            <span style={{color: 'var(--text-muted)', fontSize: '0.85rem'}}>
+                                                                Page {featuredPage + 1} of {totalPages}
+                                                            </span>
+                                                            <button
+                                                                onClick={() => setFeaturedPage(p => Math.min(totalPages - 1, p + 1))}
+                                                                disabled={(featuredPage + 1) * 6 >= featuredDecks.length}
+                                                                style={{
+                                                                    padding: '0.5rem 1rem', fontSize: '1.2rem', border: '2px solid var(--border-color)',
+                                                                    background: (featuredPage + 1) * 6 >= featuredDecks.length ? 'var(--bg-secondary)' : 'var(--bg-card)',
+                                                                    color: (featuredPage + 1) * 6 >= featuredDecks.length ? 'var(--text-muted)' : 'var(--text-primary)',
+                                                                    borderRadius: '8px', cursor: (featuredPage + 1) * 6 >= featuredDecks.length ? 'default' : 'pointer',
+                                                                    opacity: (featuredPage + 1) * 6 >= featuredDecks.length ? 0.4 : 1
+                                                                }}
+                                                            >→</button>
+                                                        </div>
+                                                    )}
+                                                    {/* Cards grid — matches Browse page style */}
+                                                    <div className="featured-decks-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem'}}>
+                                                        {pageDecks.map(deck => (
+                                                            <div
+                                                                key={deck.id}
+                                                                className="deck-card-animated deck-card-tilt"
+                                                                style={{
+                                                                    background: 'var(--gradient-card)',
+                                                                    border: '2px solid var(--border-color)',
+                                                                    borderRadius: '12px',
+                                                                    padding: '1.5rem',
+                                                                    cursor: 'pointer',
+                                                                    position: 'relative'
+                                                                }}
+                                                                onMouseMove={(e) => effectSettings.cardTilt && handleCardTilt(e, e.currentTarget)}
+                                                                onMouseLeave={(e) => effectSettings.cardTilt && resetCardTilt(e.currentTarget)}
+                                                                onClick={async () => {
+                                                                    await incrementViewCount(deck.id);
+                                                                    await loadPublicDecks();
+                                                                    setSelectedDeck(deck);
+                                                                }}
+                                                            >
+                                                                {deck.commanderArt && (
+                                                                    <div className="deck-card-art-bg" style={{backgroundImage: `url(${deck.commanderArt})`, borderRadius: '10px'}} />
+                                                                )}
+                                                                <div className="deck-card-content">
+                                                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--accent-bright)', marginBottom: '0.75rem', fontSize: '1.3rem'}}>
+                                                                        {deck.name}
+                                                                    </h3>
+                                                                    {/* Commander Card Thumbnail — right-floated */}
+                                                                    {deck.commander && (
+                                                                        <div style={{float: 'right', display: 'flex', gap: '0.3rem', marginLeft: '0.75rem', marginBottom: '0.5rem'}}>
+                                                                            <img
+                                                                                src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.commander)}`}
+                                                                                alt={deck.commander}
+                                                                                style={{height: '120px', borderRadius: '6px', border: '1.5px solid var(--gold)', boxShadow: '0 3px 12px rgba(0,0,0,0.5)'}}
+                                                                                onError={(e) => { e.target.style.display = 'none'; }}
+                                                                            />
+                                                                            {deck.hasSecondCommander && deck.secondCommander && (
+                                                                                <img
+                                                                                    src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.secondCommander)}`}
+                                                                                    alt={deck.secondCommander}
+                                                                                    style={{height: '120px', borderRadius: '6px', border: '1.5px solid var(--gold)', boxShadow: '0 3px 12px rgba(0,0,0,0.5)'}}
+                                                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                                                />
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                    <div style={{display: 'flex', gap: '0.3rem', marginBottom: '0.75rem'}}>
+                                                                        {deck.colors && deck.colors.map(color => (
+                                                                            <div key={color} className={`mana-pip ${effectSettings.manaPulse ? 'mana-pip-animated' : ''} pip-${color}`}></div>
+                                                                        ))}
+                                                                    </div>
+                                                                    {/* Commander name */}
+                                                                    <div style={{color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem'}}>
+                                                                        {deck.commander}
+                                                                    </div>
+                                                                    {/* Synergy Tags */}
+                                                                    {(deck.synergyTags?.length > 0 || deck.customTag1 || deck.customTag2) && (
+                                                                        <div style={{display: 'flex', flexWrap: 'wrap', gap: '0.3rem', marginBottom: '0.75rem'}}>
+                                                                            {deck.synergyTags?.slice(0, 3).map((tag, i) => (
+                                                                                <span key={i} style={{padding: '0.2rem 0.5rem', borderRadius: '12px', background: 'rgba(212, 175, 55, 0.2)', border: '1px solid var(--gold)', color: 'var(--gold)', fontSize: '0.7rem', fontWeight: 600}}>{tag}</span>
+                                                                            ))}
+                                                                            {deck.synergyTags?.length > 3 && <span style={{padding: '0.2rem 0.5rem', borderRadius: '12px', background: 'var(--bg-tertiary)', color: 'var(--text-muted)', fontSize: '0.7rem'}}>+{deck.synergyTags.length - 3}</span>}
+                                                                            {deck.customTag1 && <span style={{padding: '0.2rem 0.5rem', borderRadius: '12px', background: 'rgba(139, 111, 71, 0.3)', border: '1px solid var(--accent)', color: 'var(--accent-bright)', fontSize: '0.7rem', fontWeight: 600}}>{deck.customTag1}</span>}
+                                                                            {deck.customTag2 && <span style={{padding: '0.2rem 0.5rem', borderRadius: '12px', background: 'rgba(139, 111, 71, 0.3)', border: '1px solid var(--accent)', color: 'var(--accent-bright)', fontSize: '0.7rem', fontWeight: 600}}>{deck.customTag2}</span>}
+                                                                        </div>
+                                                                    )}
+                                                                    {/* Card Type Summary */}
+                                                                    <div style={{display: 'flex', gap: '0.75rem', marginBottom: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', flexWrap: 'wrap'}}>
+                                                                        <span>Creatures: <strong>{deck.creatures || 0}</strong></span>
+                                                                        <span>Non-Creatures: <strong>{deck.noncreature || 0}</strong></span>
+                                                                        <span>Lands: <strong>{deck.lands || 0}</strong></span>
+                                                                    </div>
+                                                                    {/* Stats */}
+                                                                    <div style={{display: 'flex', gap: '1rem', marginBottom: '0.75rem', fontSize: '0.85rem', color: 'var(--accent-bright)'}}>
+                                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                            <span>👁️</span><span>{deck.viewCount || 0} views</span>
+                                                                        </div>
+                                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+                                                                            <span>🏗️</span><span>{deck.buildSimilarCount || 0} builds</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-muted)'}}>
+                                                                        <span>🌍 Public Deck</span>
+                                                                        <span>Click to View</span>
+                                                                    </div>
+                                                                </div>{/* End deck-card-content */}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
+                                )}
+
+                                {/* Introduction to the Tool - Collapsible */}
+                                <div style={{maxWidth: '900px', margin: '0 auto 4rem auto'}}>
+                                    <button
+                                        onClick={() => setShowTrackInfo(!showTrackInfo)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '1.2rem 1.5rem',
+                                            background: 'var(--bg-card)',
+                                            border: `2px solid ${showTrackInfo ? 'var(--gold)' : 'var(--border-color)'}`,
+                                            borderRadius: showTrackInfo ? '12px 12px 0 0' : '12px',
+                                            color: 'var(--text-primary)',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            transition: 'all 0.2s ease',
+                                            textAlign: 'left'
+                                        }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold)'; }}
+                                        onMouseLeave={(e) => { if (!showTrackInfo) e.currentTarget.style.borderColor = 'var(--border-color)'; }}
+                                    >
+                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                            <span style={{fontSize: '1.3rem'}}>📊</span>
+                                            <span style={{fontFamily: 'Pirata One, cursive', fontSize: '1.3rem', color: 'var(--gold)'}}>What is MTG Deck Skeleton?</span>
+                                        </div>
+                                        <span style={{fontSize: '1rem', color: 'var(--text-muted)', display: 'inline-block', transform: showTrackInfo ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease'}}>▼</span>
+                                    </button>
+                                {showTrackInfo && <div style={{
                                     background: 'var(--bg-card)',
-                                    border: '1px solid var(--border-color)',
-                                    borderRadius: '12px',
+                                    border: '2px solid var(--gold)',
+                                    borderTop: 'none',
+                                    borderRadius: '0 0 12px 12px',
                                     padding: '2.5rem',
                                     textAlign: 'left'
                                 }}>
@@ -6340,21 +6644,14 @@ return (
                                         textAlign: 'center',
                                         marginTop: '2rem'
                                     }}>
-                                        Whether you're fine-tuning an existing deck or planning a new brew, 
+                                        Whether you're fine-tuning an existing deck or planning a new brew,
                                         our ratio tracker helps you <strong style={{color: 'var(--accent-bright)'}}>build better, faster</strong>.
                                     </p>
+                                </div>}
                                 </div>
 
-                                {/* Example Deck Showcase - NOW SECOND */}
-                                <div style={{
-                                    maxWidth: '1100px',
-                                    margin: '0 auto 5rem auto',
-                                    background: 'var(--bg-card)',
-                                    border: '2px solid var(--accent)',
-                                    borderRadius: '16px',
-                                    padding: '2.5rem',
-                                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
-                                }}>
+                                {/* Example Deck Showcase REMOVED */}
+                                {false && <div style={{display:'none'}}>
                                     <div style={{textAlign: 'center', marginBottom: '2rem'}}>
                                         <h2 style={{
                                             fontFamily: 'Pirata One, cursive',
@@ -6501,8 +6798,7 @@ return (
                                             No card names entered—just counts. See your deck structure instantly, tweak ratios easily, and build better decks faster.
                                         </div>
                                     </div>
-                                </div>
-
+                                </div>}
 
                                 {/* Mana Base Calculator */}
                                 <div className="featured-calculator-box" style={{
@@ -6652,19 +6948,7 @@ return (
                                 }
 
                                 try {
-                                    // First, check if document exists and verify ownership
-                                    const deckRef = db.collection("decks").doc(String(deckId));
-                                    const deckDoc = await deckRef.get();
-
-                                    if (deckDoc.exists) {
-                                        const existingData = deckDoc.data();
-                                        if (existingData.userId && existingData.userId !== user.uid) {
-                                            alert('⚠️ Permission Denied\n\nThis deck belongs to another user.\n\nUse "Build Similar Deck" to create your own copy!');
-                                            return;
-                                        }
-                                    }
-
-                                    // Fetch commander art if commander changed or no art exists
+                                    // Build the deck payload to save
                                     let commanderArt = deckToEdit.commanderArt || null;
                                     if (updatedDeck.commander && updatedDeck.commander !== deckToEdit.commander) {
                                         try {
@@ -6679,8 +6963,7 @@ return (
                                         }
                                     }
 
-                                    // Use set with merge instead of update - handles both create and update cases
-                                    await db.collection("decks").doc(String(deckId)).set({
+                                    const deckPayload = {
                                         name: updatedDeck.name,
                                         commander: updatedDeck.commander,
                                         commanderArt: commanderArt,
@@ -6694,13 +6977,10 @@ return (
                                         lands: updatedDeck.lands || 0,
                                         creatures: updatedDeck.creatures || 0,
                                         noncreature: updatedDeck.noncreature || 0,
-                                        // Save multi-function adjustments
                                         multiFunctionCreatures: updatedDeck.multiFunctionCreatures || { twoFunctions: 0, threeFunctions: 0, fourFunctions: 0 },
                                         multiFunctionNoncreature: updatedDeck.multiFunctionNoncreature || { twoFunctions: 0, threeFunctions: 0, fourFunctions: 0 },
-                                        // Save tap lands and mana pip counts
                                         tapLands: updatedDeck.tapLands || 0,
                                         pipCounts: updatedDeck.pipCounts || null,
-                                        // Save extra deck info
                                         secondCommander: updatedDeck.secondCommander || '',
                                         hasSecondCommander: updatedDeck.hasSecondCommander || false,
                                         secondCommanderIsCreature: updatedDeck.secondCommanderIsCreature || false,
@@ -6709,19 +6989,36 @@ return (
                                         customTag2: updatedDeck.customTag2 || '',
                                         gamePlan: updatedDeck.gamePlan || '',
                                         updatedAt: new Date(),
-                                        // Keep createdAt if it exists, otherwise set it
                                         createdAt: deckToEdit.createdAt || new Date()
-                                    }, { merge: true });
+                                    };
 
-                                    // Handle public collection syncing
+                                    // Try to write to the existing doc. If it fails (missing userId
+                                    // field on old decks causes permission-denied), fall back to
+                                    // creating a brand-new doc with .add() so the userId is set fresh.
+                                    let savedId = deckId;
+                                    try {
+                                        await db.collection("decks").doc(String(deckId)).set(deckPayload, { merge: true });
+                                    } catch (writeErr) {
+                                        if (writeErr.code === 'permission-denied') {
+                                            // Old deck missing userId — create fresh with auto-ID
+                                            const newRef = await db.collection("decks").add(deckPayload);
+                                            savedId = newRef.id;
+                                            setDeckToEdit(prev => ({ ...prev, id: newRef.id }));
+                                            console.log('Migrated deck to new Firestore doc:', newRef.id, '(old ID:', deckId, ')');
+                                        } else {
+                                            throw writeErr; // re-throw non-permission errors
+                                        }
+                                    }
+
+                                    // Handle public collection syncing (use savedId in case deck was migrated)
                                     if (updatedDeck.isPublic) {
                                         await addToPublicDecks({
-                                            ...updatedDeck, 
-                                            id: deckId,
+                                            ...updatedDeck,
+                                            id: savedId,
                                             userId: user.uid
                                         });
                                     } else {
-                                        await removeFromPublicDecks(deckId);
+                                        await removeFromPublicDecks(savedId);
                                     }
 
                                     // Reload decks from Firebase
@@ -7117,13 +7414,41 @@ return (
                                                     }}>
                                                         {deck.name}
                                                     </h3>
-                                                    <p style={{
-                                                        color: 'var(--text-secondary)',
-                                                        marginBottom: '1rem',
-                                                        fontSize: '0.9rem'
-                                                    }}>
-                                                        Commander: {deck.commander}
-                                                    </p>
+                                                    {/* Commander Card Thumbnail(s) — right-floated */}
+                                                    {deck.commander && (
+                                                        <div style={{
+                                                            float: 'right',
+                                                            display: 'flex',
+                                                            gap: '0.3rem',
+                                                            marginLeft: '0.75rem',
+                                                            marginBottom: '0.5rem'
+                                                        }}>
+                                                            <img
+                                                                src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.commander)}`}
+                                                                alt={deck.commander}
+                                                                style={{
+                                                                    height: '120px',
+                                                                    borderRadius: '6px',
+                                                                    border: '1.5px solid var(--gold)',
+                                                                    boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
+                                                                }}
+                                                                onError={(e) => { e.target.style.display = 'none'; }}
+                                                            />
+                                                            {deck.hasSecondCommander && deck.secondCommander && (
+                                                                <img
+                                                                    src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.secondCommander)}`}
+                                                                    alt={deck.secondCommander}
+                                                                    style={{
+                                                                        height: '120px',
+                                                                        borderRadius: '6px',
+                                                                        border: '1.5px solid var(--gold)',
+                                                                        boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
+                                                                    }}
+                                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    )}
                                                     <div style={{
                                                         display: 'flex',
                                                         gap: '0.5rem',
@@ -7199,41 +7524,16 @@ return (
                                                     {/* Card Type Summary */}
                                                     <div style={{
                                                         display: 'flex',
-                                                        gap: '1rem',
+                                                        gap: '0.75rem',
                                                         marginBottom: '0.5rem',
-                                                        fontSize: '0.8rem',
-                                                        color: 'var(--text-secondary)'
+                                                        fontSize: '0.75rem',
+                                                        color: 'var(--text-secondary)',
+                                                        flexWrap: 'wrap'
                                                     }}>
-                                                        <span>🏞 {deck.lands || 0}</span>
-                                                        <span>🧟 {deck.creatures || 0}</span>
-                                                        <span>⚡ {deck.noncreature || 0}</span>
+                                                        <span>Creatures: <strong>{deck.creatures || 0}</strong></span>
+                                                        <span>Non-Creatures: <strong>{deck.noncreature || 0}</strong></span>
+                                                        <span>Lands: <strong>{deck.lands || 0}</strong></span>
                                                     </div>
-                                                    {/* Land Breakdown */}
-                                                    {deck.categories && (
-                                                        <div style={{
-                                                            display: 'flex',
-                                                            flexWrap: 'wrap',
-                                                            gap: '0.5rem',
-                                                            marginBottom: '0.5rem',
-                                                            fontSize: '0.7rem',
-                                                            color: 'var(--text-muted)'
-                                                        }}>
-                                                            {(() => {
-                                                                const basics = (deck.categories.plains || 0) + (deck.categories.islands || 0) +
-                                                                              (deck.categories.swamps || 0) + (deck.categories.mountains || 0) +
-                                                                              (deck.categories.forests || 0) + (deck.categories.wastes || 0);
-                                                                const duals = (deck.categories.duals || 0) + (deck.categories.trilands || 0) + (deck.categories.fetches || 0);
-                                                                const utility = (deck.categories.utility || 0) + (deck.categories['utility-white'] || 0) + (deck.categories['utility-blue'] || 0) + (deck.categories['utility-black'] || 0) + (deck.categories['utility-red'] || 0) + (deck.categories['utility-green'] || 0) + (deck.categories['utility-colorless'] || 0) + (deck.categories['creature-lands'] || 0) + (deck.categories['mdfc-lands'] || 0);
-                                                                return (
-                                                                    <>
-                                                                        {basics > 0 && <span>Basic: {basics}</span>}
-                                                                        {duals > 0 && <span>Multi: {duals}</span>}
-                                                                        {utility > 0 && <span>Util: {utility}</span>}
-                                                                    </>
-                                                                );
-                                                            })()}
-                                                        </div>
-                                                    )}
                                                     <div style={{
                                                         color: 'var(--text-muted)',
                                                         fontSize: '0.85rem'
@@ -7500,13 +7800,41 @@ return (
                                                     }}>
                                                         {deck.name}
                                                     </h3>
-                                                    <div style={{
-                                                        color: 'var(--text-secondary)',
-                                                        marginBottom: '1rem',
-                                                        fontSize: '0.95rem'
-                                                    }}>
-                                                        Commander: {deck.commander}
-                                                    </div>
+                                                    {/* Commander Card Thumbnail(s) — right-floated */}
+                                                    {deck.commander && (
+                                                        <div style={{
+                                                            float: 'right',
+                                                            display: 'flex',
+                                                            gap: '0.3rem',
+                                                            marginLeft: '0.75rem',
+                                                            marginBottom: '0.5rem'
+                                                        }}>
+                                                            <img
+                                                                src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.commander)}`}
+                                                                alt={deck.commander}
+                                                                style={{
+                                                                    height: '120px',
+                                                                    borderRadius: '6px',
+                                                                    border: '1.5px solid var(--gold)',
+                                                                    boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
+                                                                }}
+                                                                onError={(e) => { e.target.style.display = 'none'; }}
+                                                            />
+                                                            {deck.hasSecondCommander && deck.secondCommander && (
+                                                                <img
+                                                                    src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.secondCommander)}`}
+                                                                    alt={deck.secondCommander}
+                                                                    style={{
+                                                                        height: '120px',
+                                                                        borderRadius: '6px',
+                                                                        border: '1.5px solid var(--gold)',
+                                                                        boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
+                                                                    }}
+                                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    )}
                                                     <div style={{
                                                         display: 'flex',
                                                         gap: '0.3rem',
@@ -7573,42 +7901,16 @@ return (
                                                     {/* Card Type Summary */}
                                                     <div style={{
                                                         display: 'flex',
-                                                        gap: '1rem',
+                                                        gap: '0.75rem',
                                                         marginBottom: '0.5rem',
-                                                        fontSize: '0.8rem',
-                                                        color: 'var(--text-secondary)'
+                                                        fontSize: '0.75rem',
+                                                        color: 'var(--text-secondary)',
+                                                        flexWrap: 'wrap'
                                                     }}>
-                                                        <span>🏞 {deck.lands || 0}</span>
-                                                        <span>🧟 {deck.creatures || 0}</span>
-                                                        <span>⚡ {deck.noncreature || 0}</span>
+                                                        <span>Creatures: <strong>{deck.creatures || 0}</strong></span>
+                                                        <span>Non-Creatures: <strong>{deck.noncreature || 0}</strong></span>
+                                                        <span>Lands: <strong>{deck.lands || 0}</strong></span>
                                                     </div>
-                                                    {/* Land Breakdown */}
-                                                    {deck.categories && (
-                                                        <div style={{
-                                                            display: 'flex',
-                                                            flexWrap: 'wrap',
-                                                            gap: '0.5rem',
-                                                            marginBottom: '0.5rem',
-                                                            fontSize: '0.7rem',
-                                                            color: 'var(--text-muted)'
-                                                        }}>
-                                                            {(() => {
-                                                                const basics = (deck.categories.plains || 0) + (deck.categories.islands || 0) +
-                                                                              (deck.categories.swamps || 0) + (deck.categories.mountains || 0) +
-                                                                              (deck.categories.forests || 0) + (deck.categories.wastes || 0);
-                                                                const duals = (deck.categories.duals || 0) + (deck.categories.trilands || 0) + (deck.categories.fetches || 0);
-                                                                const utility = (deck.categories.utility || 0) + (deck.categories['utility-white'] || 0) + (deck.categories['utility-blue'] || 0) + (deck.categories['utility-black'] || 0) + (deck.categories['utility-red'] || 0) + (deck.categories['utility-green'] || 0) + (deck.categories['utility-colorless'] || 0) + (deck.categories['creature-lands'] || 0) + (deck.categories['mdfc-lands'] || 0);
-                                                                return (
-                                                                    <>
-                                                                        {basics > 0 && <span>Basic: {basics}</span>}
-                                                                        {duals > 0 && <span>Multi: {duals}</span>}
-                                                                        {utility > 0 && <span>Util: {utility}</span>}
-                                                                    </>
-                                                                );
-                                                            })()}
-                                                        </div>
-                                                    )}
-
                                                     {/* Stats Display */}
                                                     <div style={{
                                                         display: 'flex',
@@ -7801,41 +8103,44 @@ return (
                                     </button>
                                 </div>
 
-                                {/* Main Categories */}
+                                {/* Main Categories - use stored totals (saved by accurate totals calc) as source of truth */}
+                                {(() => {
+                                    // Use stored totals as the primary source — they are saved by the accurate
+                                    // EditDeckModal/CreateDeckModal totals calculation (which handles multi-function
+                                    // card adjustments, commander counting, quick inputs, etc.)
+                                    // Fall back to raw category sum only if stored totals are all 0 (old/unmigrated deck).
+                                    const storedLands = selectedDeck.lands || 0;
+                                    const storedCreatures = selectedDeck.creatures || 0;
+                                    const storedNoncreature = selectedDeck.noncreature || 0;
+                                    const storedTotal = storedLands + storedCreatures + storedNoncreature;
+
+                                    // Fallback: raw category sum for old decks that have no stored totals
+                                    const cats = selectedDeck.categories || {};
+                                    const landKeys = ['plains','islands','swamps','mountains','forests','utility-white','utility-blue','utility-black','utility-red','utility-green','duals','trilands','fetches','utility-colorless','other-lands','custom1-lands','custom2-lands','custom3-lands'];
+                                    const creatureKeys = ['ramp-creatures','draw-creatures','removal-creatures','boardwipe-creatures','protection-creatures','synergy-creatures','anthem-creatures','combo-creatures','finisher-creatures','other-creatures','custom1-creatures','custom2-creatures','custom3-creatures'];
+                                    const noncreatureKeys = ['ramp-spells','draw-spells','removal-spells','boardwipe-spells','protection-spells','synergy-spells','anthem-spells','combo-spells','finisher-spells','other-spells','custom1-spells','custom2-spells','custom3-spells','custom4-spells','custom5-spells'];
+                                    const calcLands = landKeys.reduce((s, k) => s + (parseInt(cats[k]) || 0), 0) + (cats['lands-quick'] || 0);
+                                    const calcCreatures = creatureKeys.reduce((s, k) => s + (parseInt(cats[k]) || 0), 0) + (cats['creatures-quick'] || 0);
+                                    const calcNoncreature = noncreatureKeys.reduce((s, k) => s + (parseInt(cats[k]) || 0), 0) + (cats['noncreature-quick'] || 0);
+                                    const calcTotal = calcLands + calcCreatures + calcNoncreature;
+
+                                    // Prefer stored totals; use recalculated only if stored are all zero
+                                    const dispLands = storedTotal > 0 ? storedLands : calcLands;
+                                    const dispCreatures = storedTotal > 0 ? storedCreatures : calcCreatures;
+                                    const dispNoncreature = storedTotal > 0 ? storedNoncreature : calcNoncreature;
+                                    return (
                                 <div style={{
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(3, 1fr)',
                                     gap: window.innerWidth <= 768 ? '0.5rem' : '1rem',
                                     marginBottom: '2rem'
                                 }}>
-                                    {/* Lands with comparison */}
-                                    {(() => {
-                                        const landsComp = effectSettings.comparisons ? getComparison(selectedDeck.lands, AVERAGE_DECK_STATS.lands) : {};
-                                        return (
-                                            <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
-                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.lands}</div>
-                                                <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>LANDS</div>
-                                                {effectSettings.comparisons && landsComp.text && (
-                                                    <div style={{
-                                                        position: 'absolute',
-                                                        top: '0.25rem',
-                                                        right: '0.25rem',
-                                                        fontSize: '0.7rem',
-                                                        color: landsComp.color,
-                                                        fontWeight: 700
-                                                    }}>
-                                                        {landsComp.icon} {landsComp.text}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })()}
                                     {/* Creatures with comparison */}
                                     {(() => {
-                                        const creaturesComp = effectSettings.comparisons ? getComparison(selectedDeck.creatures, AVERAGE_DECK_STATS.creatures) : {};
+                                        const creaturesComp = effectSettings.comparisons ? getComparison(dispCreatures, AVERAGE_DECK_STATS.creatures) : {};
                                         return (
                                             <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
-                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.creatures}</div>
+                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{dispCreatures}</div>
                                                 <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
                                                     {window.innerWidth <= 768 ? 'CREAT.' : 'CREATURES'}
                                                 </div>
@@ -7856,10 +8161,10 @@ return (
                                     })()}
                                     {/* Non-creature with comparison */}
                                     {(() => {
-                                        const ncComp = effectSettings.comparisons ? getComparison(selectedDeck.noncreature, AVERAGE_DECK_STATS.noncreature) : {};
+                                        const ncComp = effectSettings.comparisons ? getComparison(dispNoncreature, AVERAGE_DECK_STATS.noncreature) : {};
                                         return (
                                             <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
-                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{selectedDeck.noncreature}</div>
+                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{dispNoncreature}</div>
                                                 <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.85rem', color: 'var(--text-muted)'}}>
                                                     {window.innerWidth <= 768 ? 'NON-CREAT.' : 'NON-CREATURE SPELLS'}
                                                 </div>
@@ -7878,7 +8183,30 @@ return (
                                             </div>
                                         );
                                     })()}
+                                    {/* Lands with comparison */}
+                                    {(() => {
+                                        const landsComp = effectSettings.comparisons ? getComparison(dispLands, AVERAGE_DECK_STATS.lands) : {};
+                                        return (
+                                            <div style={{background: 'var(--bg-secondary)', padding: window.innerWidth <= 768 ? '0.75rem 0.5rem' : '1rem', borderRadius: '8px', textAlign: 'center', position: 'relative'}}>
+                                                <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{dispLands}</div>
+                                                <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>LANDS</div>
+                                                {effectSettings.comparisons && landsComp.text && (
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: '0.25rem',
+                                                        right: '0.25rem',
+                                                        fontSize: '0.7rem',
+                                                        color: landsComp.color,
+                                                        fontWeight: 700
+                                                    }}>
+                                                        {landsComp.icon} {landsComp.text}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
+                                    ); })()}
 
                                 {/* Tap Lands + Mana Pips in Preview Popup */}
                                 {((selectedDeck.tapLands || 0) > 0 || (selectedDeck.pipCounts && Object.values(selectedDeck.pipCounts).some(p => (parseInt(p.single)||0) + (parseInt(p.double)||0) + (parseInt(p.triple)||0) > 0))) && (
@@ -7902,8 +8230,7 @@ return (
                                             </div>
                                         )}
                                         {selectedDeck.pipCounts && (() => {
-                                            const colorIcons = {W: '☀️', U: '💧', B: '💀', R: '🔥', G: '🌲'};
-                                            const colorHex = {W: '#F0E68C', U: '#0E68AB', B: '#666', R: '#D3202A', G: '#00733E'};
+                                            const colorNames = {W: 'Plains', U: 'Islands', B: 'Swamps', R: 'Mountains', G: 'Forests'};
                                             const pips = selectedDeck.pipCounts;
                                             const totalPips = Object.keys(pips).reduce((sum, c) => {
                                                 const p = pips[c];
@@ -7917,6 +8244,7 @@ return (
                                                     borderRadius: '6px',
                                                     display: 'flex',
                                                     alignItems: 'center',
+                                                    flexWrap: 'wrap',
                                                     gap: '0.5rem',
                                                     fontSize: '0.8rem'
                                                 }}>
@@ -7925,7 +8253,11 @@ return (
                                                         const p = pips[color];
                                                         const count = (parseInt(p.single) || 0) + ((parseInt(p.double) || 0) * 2) + ((parseInt(p.triple) || 0) * 3);
                                                         if (count === 0) return null;
-                                                        return <span key={color} style={{fontWeight: 600, color: colorHex[color]}}>{colorIcons[color]}{count}</span>;
+                                                        return (
+                                                            <span key={color} style={{fontWeight: 600, color: 'var(--text-secondary)'}}>
+                                                                {colorNames[color]}: {count}
+                                                            </span>
+                                                        );
                                                     })}
                                                 </div>
                                             );
@@ -8034,6 +8366,16 @@ return (
                                                     // Other lands
                                                     const other = (cats['other-lands'] || 0);
                                                     if (other > 0) items.push({name: 'Other', count: other, color: '#888'});
+                                                    // Custom lands
+                                                    const customLandNames = selectedDeck.customCategoryNames || {};
+                                                    [
+                                                        {id: 'custom1-lands', label: customLandNames.landCustom1 || 'Custom Land 1'},
+                                                        {id: 'custom2-lands', label: customLandNames.landCustom2 || 'Custom Land 2'},
+                                                        {id: 'custom3-lands', label: customLandNames.landCustom3 || 'Custom Land 3'},
+                                                    ].forEach(cl => {
+                                                        const count = cats[cl.id] || 0;
+                                                        if (count > 0) items.push({name: cl.label, count, color: 'var(--gold)'});
+                                                    });
 
                                                     return items.map((item, i) => (
                                                         <div key={i} style={{background: 'var(--bg-secondary)', padding: '0.5rem', borderRadius: '6px', textAlign: 'center', borderLeft: `3px solid ${item.color}`}}>
@@ -9605,7 +9947,12 @@ return (
                                         { key: 'fog', name: 'Fog', icon: '🌫️' },
                                         { key: 'fireflies', name: 'Fireflies', icon: '✨' },
                                         { key: 'bubbles', name: 'Bubbles', icon: '🫧' },
-                                        { key: 'sakura', name: 'Cherry Blossoms', icon: '🌸' }
+                                        { key: 'sakura', name: 'Cherry Blossoms', icon: '🌸' },
+                                        { key: 'hail', name: 'Hail', icon: '🧊' },
+                                        { key: 'hurricane', name: 'Hurricane', icon: '🌀' },
+                                        { key: 'tornado', name: 'Tornado', icon: '🌪️' },
+                                        { key: 'dustStorm', name: 'Dust Storm', icon: '💨' },
+                                        { key: 'oceanWaves', name: 'Ocean Waves', icon: '🌊' }
                                     ].map(opt => (
                                         <button
                                             key={opt.key}
@@ -10545,9 +10892,12 @@ return (
                 custom2: '',
                 custom3: '',
                 custom4: '',
-                custom5: ''
+                custom5: '',
+                landCustom1: '',
+                landCustom2: '',
+                landCustom3: ''
             });
-            
+
             // Mana calculator collapse state
             const [manaCalcOpen, setManaCalcOpen] = useState(false);
             const [showManaCalcHelp, setShowManaCalcHelp] = useState(false);
@@ -10701,8 +11051,15 @@ return (
                     0;
                 const noncreatureCommanderCount = commanderCount - creatureCommanderCount;
                 
-                const creatures = creaturesQuick + creaturesGroupQuick + (creaturesDetailed - creaturesMultiAdj) + creatureCommanderCount;
-                const noncreature = noncreatureQuick + noncreatureGroupQuick + (noncreatureDetailed - noncreatureMultiAdj) + noncreatureCommanderCount;
+                // Multi-function adjustment: subtract duplicates from cards entered in
+                // multiple subcategories. twoFunctions=cards counted 2x (subtract 1 each),
+                // threeFunctions=cards counted 3x (subtract 2 each), etc.
+                const creatures = Math.max(0,
+                    creaturesQuick + creaturesGroupQuick + creaturesDetailed + creatureCommanderCount - creaturesMultiAdj
+                );
+                const noncreature = Math.max(0,
+                    noncreatureQuick + noncreatureGroupQuick + noncreatureDetailed + noncreatureCommanderCount - noncreatureMultiAdj
+                );
                 
                 const nonLandCards = creatures + noncreature;
                 const total = lands + nonLandCards;
@@ -10722,10 +11079,10 @@ return (
             }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander, deckData.secondCommanderIsCreature, multiFunctionCreatures, multiFunctionNoncreature]);
 
             // Check if stored deck values differ from calculated totals (data mismatch)
-            const hasDataMismatch = initialData && (
-                 initialData.creatures !== totals.creatures ||
-                 initialData.lands !== totals.lands ||
-                 initialData.noncreature !== totals.noncreature
+            const hasDataMismatch = deck && (
+                deck.creatures !== totals.creatures ||
+                deck.lands !== totals.lands ||
+                deck.noncreature !== totals.noncreature
             );
 
                 const analytics = {
@@ -11956,6 +12313,35 @@ return (
                                                                             </div>
                                                                         );
                                                                     })}
+                                                                    {/* Custom Land Categories */}
+                                                                    {[
+                                                                        {id: 'custom1-lands', customKey: 'landCustom1', num: 1},
+                                                                        {id: 'custom2-lands', customKey: 'landCustom2', num: 2},
+                                                                        {id: 'custom3-lands', customKey: 'landCustom3', num: 3}
+                                                                    ].map(cl => {
+                                                                        const currentValue = deckData.categories[cl.id] || 0;
+                                                                        const displayName = customCategoryNames[cl.customKey] || `Custom Land ${cl.num}`;
+                                                                        return (
+                                                                            <div key={cl.id} style={{
+                                                                                display: 'flex', flexDirection: 'column', padding: '0.6rem',
+                                                                                background: 'var(--bg-secondary)', borderRadius: '8px',
+                                                                                border: currentValue > 0 ? '2px solid var(--gold)' : '1px solid var(--border-color)'
+                                                                            }}>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={customCategoryNames[cl.customKey] || ''}
+                                                                                    onChange={(e) => setCustomCategoryNames(prev => ({...prev, [cl.customKey]: e.target.value}))}
+                                                                                    placeholder={`Custom Land ${cl.num} name...`}
+                                                                                    style={{width: '100%', padding: '0.3rem', fontSize: '0.78rem', borderRadius: '4px', border: '1px solid var(--gold)', background: 'var(--bg-tertiary)', color: 'var(--gold)', fontWeight: 600, textAlign: 'center', marginBottom: '0.4rem'}}
+                                                                                />
+                                                                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem'}}>
+                                                                                    <button type="button" onClick={(e) => { e.preventDefault(); if (currentValue > 0) { const newCategories = {...deckData.categories}; newCategories[cl.id] = currentValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
+                                                                                    <input type="number" value={currentValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[cl.id] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '50px', height: '36px', padding: '0.3rem', fontSize: '1rem', borderRadius: '6px', border: currentValue > 0 ? '2px solid var(--gold)' : '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center', fontWeight: 600}}/>
+                                                                                    <button type="button" onClick={(e) => { e.preventDefault(); const newCategories = {...deckData.categories}; newCategories[cl.id] = currentValue + 1; setDeckData({...deckData, categories: newCategories}); }} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>+</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -12455,7 +12841,7 @@ return (
                                                                 {/* SUBCATEGORIES - Same grid style as main deck */}
                                                                 <div style={{
                                                                     display: 'grid',
-                                                                    gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))',
+                                                                    gridTemplateColumns: window.innerWidth <= 480 ? '1fr' : (window.innerWidth <= 768 ? 'repeat(auto-fill, minmax(160px, 1fr))' : 'repeat(auto-fill, minmax(200px, 1fr))'),
                                                                     gap: '0.75rem'
                                                                 }}>
                                                                 {majorGroup.categories.map(category => {
@@ -13686,16 +14072,6 @@ return (
                                 }}>
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
-                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
-                                    <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.lands}</div>
-                                    {(deckData.tapLands || 0) > 0 && (
-                                        <div style={{marginTop: '0.4rem', fontSize: '0.75rem', color: 'orange', opacity: 0.8}}>
-                                            🐢 {deckData.tapLands} tap lands <span style={{fontStyle: 'italic', opacity: 0.7}}>(ref)</span>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🧟 Creatures</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.creatures}</div>
                                 </div>
@@ -13705,10 +14081,19 @@ return (
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.noncreature}</div>
                                 </div>
 
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
+                                    <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.lands}</div>
+                                    {(deckData.tapLands || 0) > 0 && (
+                                        <div style={{marginTop: '0.4rem', fontSize: '0.75rem', color: 'orange', opacity: 0.8}}>
+                                            🐢 {deckData.tapLands} tap lands <span style={{fontStyle: 'italic', opacity: 0.7}}>(ref)</span>
+                                        </div>
+                                    )}
+                                </div>
+
                                 {/* Mana Pips in Live Stats */}
                                 {(() => {
-                                    const colorIcons = {W: '☀️', U: '💧', B: '💀', R: '🔥', G: '🌲'};
-                                    const colorHex = {W: '#F0E68C', U: '#0E68AB', B: '#666', R: '#D3202A', G: '#00733E'};
+                                    const colorNames = {W: 'Plains', U: 'Islands', B: 'Swamps', R: 'Mountains', G: 'Forests'};
                                     const totalPips = Object.keys(pipCounts).reduce((sum, c) => {
                                         const p = pipCounts[c];
                                         return sum + (parseInt(p.single) || 0) + ((parseInt(p.double) || 0) * 2) + ((parseInt(p.triple) || 0) * 3);
@@ -13723,10 +14108,9 @@ return (
                                                     const count = (parseInt(p.single) || 0) + ((parseInt(p.double) || 0) * 2) + ((parseInt(p.triple) || 0) * 3);
                                                     if (count === 0) return null;
                                                     return (
-                                                        <div key={color} style={{textAlign: 'center', minWidth: '32px'}}>
-                                                            <div style={{fontSize: '0.7rem'}}>{colorIcons[color]}</div>
-                                                            <div style={{fontSize: '1.1rem', fontWeight: 700, color: colorHex[color]}}>{count}</div>
-                                                        </div>
+                                                        <span key={color} style={{fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600}}>
+                                                            {colorNames[color]}: {count}
+                                                        </span>
                                                     );
                                                 })}
                                             </div>
@@ -13799,23 +14183,39 @@ return (
                                             ⚠️ Data Mismatch Detected
                                         </div>
                                         <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.75rem'}}>
-                                            Preview shows different values than calculated
+                                            Deck preview shows different totals than this editor. Click below to sync them.
                                         </div>
                                         <button
-                                            className="btn btn-secondary"
                                             onClick={() => {
-                                                setHasUnsavedChanges(true);
-                                                alert('✅ Click "Save Changes" to sync the data!\n\nThe deck preview will show correct values after saving.');
+                                                setHasUnsavedChanges(false);
+                                                onSave({
+                                                    ...deckData,
+                                                    notableCards,
+                                                    sideboard: sideboardCategories,
+                                                    customCategoryNames: customCategoryNames,
+                                                    lands: totals.lands,
+                                                    creatures: totals.creatures,
+                                                    noncreature: totals.noncreature,
+                                                    multiFunctionCreatures: multiFunctionCreatures,
+                                                    multiFunctionNoncreature: multiFunctionNoncreature,
+                                                    pipCounts: pipCounts
+                                                });
                                             }}
                                             style={{
-                                                padding: '0.5rem 1rem',
-                                                fontSize: '0.85rem',
+                                                padding: '0.5rem 1.25rem',
+                                                fontSize: '0.9rem',
                                                 display: 'inline-flex',
                                                 alignItems: 'center',
-                                                gap: '0.5rem'
+                                                gap: '0.5rem',
+                                                background: 'orange',
+                                                color: '#000',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                fontWeight: 700,
+                                                cursor: 'pointer'
                                             }}
                                         >
-                                            🔄 Mark for Sync
+                                            🔄 Sync to Preview Data
                                         </button>
                                     </div>
                                 )}
@@ -13951,9 +14351,7 @@ return (
                                         </div>
                                         {/* Mana Pip Summary */}
                                         {(() => {
-                                            const colorNames = {W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green'};
-                                            const colorIcons = {W: '☀️', U: '💧', B: '💀', R: '🔥', G: '🌲'};
-                                            const colorHex = {W: '#F0E68C', U: '#0E68AB', B: '#666', R: '#D3202A', G: '#00733E'};
+                                            const colorNames = {W: 'Plains', U: 'Islands', B: 'Swamps', R: 'Mountains', G: 'Forests'};
                                             const totalPips = Object.keys(pipCounts).reduce((sum, c) => {
                                                 const p = pipCounts[c];
                                                 return sum + (parseInt(p.single) || 0) + ((parseInt(p.double) || 0) * 2) + ((parseInt(p.triple) || 0) * 3);
@@ -13964,16 +14362,15 @@ return (
                                                     <h4 style={{color: 'var(--gold)', fontSize: '0.95rem', marginBottom: '0.75rem', fontWeight: 600}}>
                                                         ⚗️ Mana Pips ({totalPips} total)
                                                     </h4>
-                                                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.4rem'}}>
+                                                    <div style={{display: 'flex', flexWrap: 'wrap', gap: '0.4rem'}}>
                                                         {Object.keys(pipCounts).map(color => {
                                                             const p = pipCounts[color];
                                                             const count = (parseInt(p.single) || 0) + ((parseInt(p.double) || 0) * 2) + ((parseInt(p.triple) || 0) * 3);
                                                             if (count === 0) return null;
                                                             return (
-                                                                <div key={color} style={{background: 'var(--bg-tertiary)', padding: '0.4rem', borderRadius: '6px', textAlign: 'center', borderBottom: `2px solid ${colorHex[color]}`}}>
-                                                                    <div style={{fontSize: '0.8rem'}}>{colorIcons[color]}</div>
-                                                                    <div style={{fontSize: '1rem', fontWeight: 700, color: colorHex[color]}}>{count}</div>
-                                                                </div>
+                                                                <span key={color} style={{fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600}}>
+                                                                    {colorNames[color]}: {count}
+                                                                </span>
                                                             );
                                                         })}
                                                     </div>
@@ -14229,7 +14626,10 @@ return (
                 custom2: deck?.customCategoryNames?.custom2 || '',
                 custom3: deck?.customCategoryNames?.custom3 || '',
                 custom4: deck?.customCategoryNames?.custom4 || '',
-                custom5: deck?.customCategoryNames?.custom5 || ''
+                custom5: deck?.customCategoryNames?.custom5 || '',
+                landCustom1: deck?.customCategoryNames?.landCustom1 || '',
+                landCustom2: deck?.customCategoryNames?.landCustom2 || '',
+                landCustom3: deck?.customCategoryNames?.landCustom3 || ''
             });
 
             // Mana calculator collapse state
@@ -14386,8 +14786,15 @@ return (
                     0;
                 const noncreatureCommanderCount = commanderCount - creatureCommanderCount;
                 
-                const creatures = creaturesQuick + creaturesGroupQuick + (creaturesDetailed - creaturesMultiAdj) + creatureCommanderCount;
-                const noncreature = noncreatureQuick + noncreatureGroupQuick + (noncreatureDetailed - noncreatureMultiAdj) + noncreatureCommanderCount;
+                // Multi-function adjustment: subtract duplicates from cards entered in
+                // multiple subcategories. twoFunctions=cards counted 2x (subtract 1 each),
+                // threeFunctions=cards counted 3x (subtract 2 each), etc.
+                const creatures = Math.max(0,
+                    creaturesQuick + creaturesGroupQuick + creaturesDetailed + creatureCommanderCount - creaturesMultiAdj
+                );
+                const noncreature = Math.max(0,
+                    noncreatureQuick + noncreatureGroupQuick + noncreatureDetailed + noncreatureCommanderCount - noncreatureMultiAdj
+                );
                 
                 const nonLandCards = creatures + noncreature;
                 const total = lands + nonLandCards;
@@ -15552,6 +15959,35 @@ return (
                                                                             </div>
                                                                         );
                                                                     })}
+                                                                    {/* Custom Land Categories */}
+                                                                    {[
+                                                                        {id: 'custom1-lands', customKey: 'landCustom1', num: 1},
+                                                                        {id: 'custom2-lands', customKey: 'landCustom2', num: 2},
+                                                                        {id: 'custom3-lands', customKey: 'landCustom3', num: 3}
+                                                                    ].map(cl => {
+                                                                        const currentValue = deckData.categories[cl.id] || 0;
+                                                                        const displayName = customCategoryNames[cl.customKey] || `Custom Land ${cl.num}`;
+                                                                        return (
+                                                                            <div key={cl.id} style={{
+                                                                                display: 'flex', flexDirection: 'column', padding: '0.6rem',
+                                                                                background: 'var(--bg-secondary)', borderRadius: '8px',
+                                                                                border: currentValue > 0 ? '2px solid var(--gold)' : '1px solid var(--border-color)'
+                                                                            }}>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={customCategoryNames[cl.customKey] || ''}
+                                                                                    onChange={(e) => setCustomCategoryNames(prev => ({...prev, [cl.customKey]: e.target.value}))}
+                                                                                    placeholder={`Custom Land ${cl.num} name...`}
+                                                                                    style={{width: '100%', padding: '0.3rem', fontSize: '0.78rem', borderRadius: '4px', border: '1px solid var(--gold)', background: 'var(--bg-tertiary)', color: 'var(--gold)', fontWeight: 600, textAlign: 'center', marginBottom: '0.4rem'}}
+                                                                                />
+                                                                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem'}}>
+                                                                                    <button type="button" onClick={(e) => { e.preventDefault(); if (currentValue > 0) { const newCategories = {...deckData.categories}; newCategories[cl.id] = currentValue - 1; setDeckData({...deckData, categories: newCategories}); }}} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>−</button>
+                                                                                    <input type="number" value={currentValue || ''} onChange={(e) => { const newCategories = {...deckData.categories}; newCategories[cl.id] = parseInt(e.target.value) || 0; setDeckData({...deckData, categories: newCategories}); }} min="0" placeholder="0" style={{width: '50px', height: '36px', padding: '0.3rem', fontSize: '1rem', borderRadius: '6px', border: currentValue > 0 ? '2px solid var(--gold)' : '2px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', textAlign: 'center', fontWeight: 600}}/>
+                                                                                    <button type="button" onClick={(e) => { e.preventDefault(); const newCategories = {...deckData.categories}; newCategories[cl.id] = currentValue + 1; setDeckData({...deckData, categories: newCategories}); }} style={{width: '36px', height: '36px', fontSize: '1.2rem', padding: 0, background: 'var(--bg-primary)', border: '2px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'}}>+</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -16051,7 +16487,7 @@ return (
                                                                 {/* SUBCATEGORIES - Same grid style as main deck */}
                                                                 <div style={{
                                                                     display: 'grid',
-                                                                    gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))',
+                                                                    gridTemplateColumns: window.innerWidth <= 480 ? '1fr' : (window.innerWidth <= 768 ? 'repeat(auto-fill, minmax(160px, 1fr))' : 'repeat(auto-fill, minmax(200px, 1fr))'),
                                                                     gap: '0.75rem'
                                                                 }}>
                                                                 {majorGroup.categories.map(category => {
@@ -17296,16 +17732,6 @@ return (
                                 }}>
 
                                 <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
-                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
-                                    <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.lands}</div>
-                                    {(deckData.tapLands || 0) > 0 && (
-                                        <div style={{marginTop: '0.4rem', fontSize: '0.75rem', color: 'orange', opacity: 0.8}}>
-                                            🐢 {deckData.tapLands} tap lands <span style={{fontStyle: 'italic', opacity: 0.7}}>(ref)</span>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
                                     <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🧟 Creatures</div>
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.creatures}</div>
                                 </div>
@@ -17315,10 +17741,19 @@ return (
                                     <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.noncreature}</div>
                                 </div>
 
+                                <div style={{background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🏞 Lands</div>
+                                    <div style={{fontSize: '2rem', fontWeight: 700, color: 'var(--accent-bright)'}}>{totals.lands}</div>
+                                    {(deckData.tapLands || 0) > 0 && (
+                                        <div style={{marginTop: '0.4rem', fontSize: '0.75rem', color: 'orange', opacity: 0.8}}>
+                                            🐢 {deckData.tapLands} tap lands <span style={{fontStyle: 'italic', opacity: 0.7}}>(ref)</span>
+                                        </div>
+                                    )}
+                                </div>
+
                                 {/* Mana Pips in Live Stats */}
                                 {(() => {
-                                    const colorIcons = {W: '☀️', U: '💧', B: '💀', R: '🔥', G: '🌲'};
-                                    const colorHex = {W: '#F0E68C', U: '#0E68AB', B: '#666', R: '#D3202A', G: '#00733E'};
+                                    const colorNames = {W: 'Plains', U: 'Islands', B: 'Swamps', R: 'Mountains', G: 'Forests'};
                                     const totalPips = Object.keys(pipCounts).reduce((sum, c) => {
                                         const p = pipCounts[c];
                                         return sum + (parseInt(p.single) || 0) + ((parseInt(p.double) || 0) * 2) + ((parseInt(p.triple) || 0) * 3);
@@ -17333,10 +17768,9 @@ return (
                                                     const count = (parseInt(p.single) || 0) + ((parseInt(p.double) || 0) * 2) + ((parseInt(p.triple) || 0) * 3);
                                                     if (count === 0) return null;
                                                     return (
-                                                        <div key={color} style={{textAlign: 'center', minWidth: '32px'}}>
-                                                            <div style={{fontSize: '0.7rem'}}>{colorIcons[color]}</div>
-                                                            <div style={{fontSize: '1.1rem', fontWeight: 700, color: colorHex[color]}}>{count}</div>
-                                                        </div>
+                                                        <span key={color} style={{fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600}}>
+                                                            {colorNames[color]}: {count}
+                                                        </span>
                                                     );
                                                 })}
                                             </div>
@@ -17396,7 +17830,7 @@ return (
                                 </div>
 
                                 {/* Data Sync Warning - shows when stored values don't match calculated */}
-                                {hasDataMismatch && user && deck?.userId === user?.uid && !deck?.viewOnly && (
+                                {hasDataMismatch && user && deck?.userId === user?.uid && !deck?.viewOnly && deck?.id && (
                                     <div style={{
                                         marginTop: '1rem',
                                         padding: '1rem',
@@ -17409,23 +17843,70 @@ return (
                                             ⚠️ Data Mismatch Detected
                                         </div>
                                         <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.75rem'}}>
-                                            Preview shows different values than calculated
+                                            Stored totals differ from your current counts. Click to fix.
                                         </div>
                                         <button
-                                            className="btn btn-secondary"
-                                            onClick={() => {
-                                                setHasUnsavedChanges(true);
-                                                alert('✅ Click "Save Changes" to sync the data!\n\nThe deck preview will show correct values after saving.');
+                                            onClick={async () => {
+                                                try {
+                                                    // Use set+merge with userId so Firestore security rules pass
+                                                    await db.collection("decks").doc(String(deck.id)).set({
+                                                        userId: user.uid,
+                                                        creatures: totals.creatures,
+                                                        noncreature: totals.noncreature,
+                                                        lands: totals.lands,
+                                                        updatedAt: new Date()
+                                                    }, { merge: true });
+                                                    if (deckData.isPublic) {
+                                                        try {
+                                                            const pubSnap = await db.collection("publicDecks")
+                                                                .where("originalDeckId", "==", String(deck.id))
+                                                                .limit(1).get();
+                                                            if (!pubSnap.empty) {
+                                                                await pubSnap.docs[0].ref.set({
+                                                                    userId: user.uid,
+                                                                    creatures: totals.creatures,
+                                                                    noncreature: totals.noncreature,
+                                                                    lands: totals.lands,
+                                                                    updatedAt: new Date()
+                                                                }, { merge: true });
+                                                            }
+                                                        } catch(pubErr) {
+                                                            console.log('Could not update public deck totals:', pubErr);
+                                                        }
+                                                    }
+                                                    // Trigger a full save via onSave so the parent reloads decks and closes the modal
+                                                    onSave({
+                                                        ...deckData,
+                                                        notableCards,
+                                                        sideboard: sideboardCategories,
+                                                        customCategoryNames,
+                                                        lands: totals.lands,
+                                                        creatures: totals.creatures,
+                                                        noncreature: totals.noncreature,
+                                                        multiFunctionCreatures,
+                                                        multiFunctionNoncreature,
+                                                        pipCounts
+                                                    });
+                                                } catch (err) {
+                                                    console.error('Sync error:', err);
+                                                    alert('❌ Sync failed: ' + err.message + '\n\nTry using "Save Changes" instead to fully re-save the deck.');
+                                                }
                                             }}
                                             style={{
-                                                padding: '0.5rem 1rem',
-                                                fontSize: '0.85rem',
+                                                padding: '0.5rem 1.25rem',
+                                                fontSize: '0.9rem',
                                                 display: 'inline-flex',
                                                 alignItems: 'center',
-                                                gap: '0.5rem'
+                                                gap: '0.5rem',
+                                                background: 'orange',
+                                                color: '#000',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                fontWeight: 700,
+                                                cursor: 'pointer'
                                             }}
                                         >
-                                            🔄 Mark for Sync
+                                            🔄 Sync to Preview Data
                                         </button>
                                     </div>
                                 )}
@@ -17561,9 +18042,7 @@ return (
                                         </div>
                                         {/* Mana Pip Summary */}
                                         {(() => {
-                                            const colorNames = {W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green'};
-                                            const colorIcons = {W: '☀️', U: '💧', B: '💀', R: '🔥', G: '🌲'};
-                                            const colorHex = {W: '#F0E68C', U: '#0E68AB', B: '#666', R: '#D3202A', G: '#00733E'};
+                                            const colorNames = {W: 'Plains', U: 'Islands', B: 'Swamps', R: 'Mountains', G: 'Forests'};
                                             const totalPips = Object.keys(pipCounts).reduce((sum, c) => {
                                                 const p = pipCounts[c];
                                                 return sum + (parseInt(p.single) || 0) + ((parseInt(p.double) || 0) * 2) + ((parseInt(p.triple) || 0) * 3);
@@ -17574,16 +18053,15 @@ return (
                                                     <h4 style={{color: 'var(--gold)', fontSize: '0.95rem', marginBottom: '0.75rem', fontWeight: 600}}>
                                                         ⚗️ Mana Pips ({totalPips} total)
                                                     </h4>
-                                                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.4rem'}}>
+                                                    <div style={{display: 'flex', flexWrap: 'wrap', gap: '0.4rem'}}>
                                                         {Object.keys(pipCounts).map(color => {
                                                             const p = pipCounts[color];
                                                             const count = (parseInt(p.single) || 0) + ((parseInt(p.double) || 0) * 2) + ((parseInt(p.triple) || 0) * 3);
                                                             if (count === 0) return null;
                                                             return (
-                                                                <div key={color} style={{background: 'var(--bg-tertiary)', padding: '0.4rem', borderRadius: '6px', textAlign: 'center', borderBottom: `2px solid ${colorHex[color]}`}}>
-                                                                    <div style={{fontSize: '0.8rem'}}>{colorIcons[color]}</div>
-                                                                    <div style={{fontSize: '1rem', fontWeight: 700, color: colorHex[color]}}>{count}</div>
-                                                                </div>
+                                                                <span key={color} style={{fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600}}>
+                                                                    {colorNames[color]}: {count}
+                                                                </span>
                                                             );
                                                         })}
                                                     </div>
