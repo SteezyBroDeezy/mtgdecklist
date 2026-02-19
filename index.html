@@ -3,7 +3,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck Skeleton + Mana Calculator v2.9.0 PIP-SECTIONS-EXPANDABLE</title>
+    <title>Deck Skeleton + Mana Calculator v2.9.1 DECK-ERROR-FIXED</title>
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=MedievalSharp&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -11079,10 +11079,10 @@ return (
             }, [deckData.categories, deckData.commander, deckData.hasSecondCommander, deckData.secondCommander, deckData.secondCommanderIsCreature, multiFunctionCreatures, multiFunctionNoncreature]);
 
             // Check if stored deck values differ from calculated totals (data mismatch)
-            const hasDataMismatch = deck && (
-                deck.creatures !== totals.creatures ||
-                deck.lands !== totals.lands ||
-                deck.noncreature !== totals.noncreature
+            const hasDataMismatch = initialData && (
+                initialData.creatures !== totals.creatures ||
+                initialData.lands !== totals.lands ||
+                initialData.noncreature !== totals.noncreature
             );
 
                 const analytics = {
