@@ -3,7 +3,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck Skeleton + Mana Calculator v2.9.1 DECK-ERROR-FIXED</title>
+    <title>Deck Skeleton + Mana Calculator v3.0.0 RANDOM-THEMES-AND-EFFECTS</title>
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=MedievalSharp&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -2691,26 +2691,45 @@
                 return localStorage.getItem('deckBuilderSeason') || 'auto';
             });
             const [siteTheme, setSiteTheme] = useState(() => {
-                return localStorage.getItem('deckBuilderSiteTheme') || 'bone';
+                const saved = localStorage.getItem('deckBuilderSiteTheme');
+                // If user has saved preference, use it
+                if (saved) return saved;
+                
+                // Otherwise, pick random theme on first visit!
+                const themeKeys = ['bone', 'midnight', 'void', 'forest', 'crimson', 'ocean', 'neon', 'parchment', 'electric', 'cyberpunk', 'synthwave', 'toxic', 'bloodmoon', 'aurora', 'deepspace'];
+                const randomTheme = themeKeys[Math.floor(Math.random() * themeKeys.length)];
+                console.log('🎨 Random Theme Selected:', randomTheme);
+                return randomTheme;
             });
 
             // Effect Toggles
             const [effectSettings, setEffectSettings] = useState(() => {
                 const saved = localStorage.getItem('deckBuilderEffects');
-                return saved ? JSON.parse(saved) : {
-                    particles: true,
-                    manaPulse: true,
-                    cardTilt: true,
-                    confetti: true,
-                    hoverGlow: true,
-                    skullExpressions: true,
+                if (saved) return JSON.parse(saved);
+                
+                // Pick random effects on first visit!
+                const weatherOptions = ['none', 'rain', 'snow', 'leaves', 'fireflies', 'bubbles', 'sakura'];
+                const cursorOptions = ['none', 'sparkle', 'magic', 'stars', 'fire', 'rainbow'];
+                const skullOptions = ['bounce', 'spin', 'wobble', 'glow', 'dance', 'float', 'rainbow'];
+                const transitionOptions = ['slide', 'fade', 'zoom', 'flip', 'drop'];
+                
+                const randomSettings = {
+                    particles: Math.random() > 0.3, // 70% chance
+                    manaPulse: Math.random() > 0.3,
+                    cardTilt: Math.random() > 0.4,
+                    confetti: Math.random() > 0.2,
+                    hoverGlow: Math.random() > 0.3,
+                    skullExpressions: Math.random() > 0.2,
                     comparisons: true,
-                    skullHover: 'bounce',
-                    pageTransition: 'slide',
-                    weather: 'none',
-                    cursorTrail: 'none',
-                    buttonRipple: true
+                    skullHover: skullOptions[Math.floor(Math.random() * skullOptions.length)],
+                    pageTransition: transitionOptions[Math.floor(Math.random() * transitionOptions.length)],
+                    weather: weatherOptions[Math.floor(Math.random() * weatherOptions.length)],
+                    cursorTrail: cursorOptions[Math.floor(Math.random() * cursorOptions.length)],
+                    buttonRipple: Math.random() > 0.3
                 };
+                
+                console.log('✨ Random Effects Selected:', randomSettings);
+                return randomSettings;
             });
 
             const SKULL_HOVER_OPTIONS = {
@@ -2761,6 +2780,73 @@
                 setEffectSettings(newSettings);
                 localStorage.setItem('deckBuilderEffects', JSON.stringify(newSettings));
             };
+
+            // Show random selection notification on first visit
+            React.useEffect(() => {
+                const hasSeenNotification = sessionStorage.getItem('randomThemeNotificationShown');
+                const hasSavedTheme = localStorage.getItem('deckBuilderSiteTheme');
+                const hasSavedEffects = localStorage.getItem('deckBuilderEffects');
+                
+                // Only show if this is truly a first visit (no saved preferences)
+                if (!hasSeenNotification && !hasSavedTheme && !hasSavedEffects) {
+                    setTimeout(() => {
+                        const notification = document.createElement('div');
+                        notification.style.cssText = `
+                            position: fixed;
+                            bottom: 20px;
+                            right: 20px;
+                            background: var(--bg-card);
+                            border: 2px solid var(--border-color);
+                            padding: 1.5rem;
+                            border-radius: 12px;
+                            z-index: 10000;
+                            max-width: 300px;
+                            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+                            animation: slideIn 0.5s ease, slideOut 0.5s ease 4.5s forwards;
+                        `;
+                        
+                        const themeName = SITE_THEMES[siteTheme]?.name || siteTheme;
+                        const weatherName = WEATHER_OPTIONS[effectSettings.weather]?.name || 'None';
+                        const cursorName = CURSOR_TRAIL_OPTIONS[effectSettings.cursorTrail]?.name || 'None';
+                        
+                        notification.innerHTML = `
+                            <div style="display: flex; align-items: start; gap: 1rem;">
+                                <span style="font-size: 2rem;">🎲</span>
+                                <div>
+                                    <div style="font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; font-size: 1.1rem;">
+                                        Welcome! Random Theme:
+                                    </div>
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                                        🎨 <strong>${themeName}</strong><br/>
+                                        🌤️ Weather: ${weatherName}<br/>
+                                        ✨ Cursor: ${cursorName}
+                                    </div>
+                                    <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.5rem;">
+                                        Change anytime in Settings ⚙️
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        const style = document.createElement('style');
+                        style.textContent = `
+                            @keyframes slideIn {
+                                from { opacity: 0; transform: translateX(100px); }
+                                to { opacity: 1; transform: translateX(0); }
+                            }
+                            @keyframes slideOut {
+                                from { opacity: 1; transform: translateX(0); }
+                                to { opacity: 0; transform: translateX(100px); pointer-events: none; }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                        document.body.appendChild(notification);
+                        
+                        sessionStorage.setItem('randomThemeNotificationShown', 'true');
+                        setTimeout(() => notification.remove(), 5500);
+                    }, 1500); // Show after 1.5s to let page load
+                }
+            }, [siteTheme, effectSettings]);
 
             // Helper to add ripple class to buttons
             const btnClass = (baseClass) => {
@@ -15216,6 +15302,7 @@ return (
                             // User wants to save - trigger save and close
                             setHasUnsavedChanges(false);
                             onSave({
+                                id: deck.id,  // Include the deck ID!
                                 ...deckData,
                                 notableCards,
                                 sideboard: sideboardCategories,
@@ -17611,6 +17698,7 @@ return (
                                             onClick={() => {
                                                 setHasUnsavedChanges(false);
                                                 onSave({
+                                                 id: deck.id,  // Include the deck ID!
                                                     ...deckData,
                                                     notableCards,
                                                     sideboard: sideboardCategories,
@@ -17876,6 +17964,7 @@ return (
                                                     }
                                                     // Trigger a full save via onSave so the parent reloads decks and closes the modal
                                                     onSave({
+                                                     id: deck.id,  // Include the deck ID!
                                                         ...deckData,
                                                         notableCards,
                                                         sideboard: sideboardCategories,
