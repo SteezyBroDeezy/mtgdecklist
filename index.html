@@ -50,6 +50,7 @@
             color: var(--text-primary);
             min-height: 100vh;
             background-attachment: fixed;
+            min-width: max-content;
         }
 
         /* Fun Loading Overlay */
@@ -607,6 +608,18 @@
         @keyframes skullScatter {
             0%   { transform: translate(0,0) scale(1); opacity:1; }
             100% { transform: translate(var(--sx,40px),var(--sy,-60px)) scale(0.3); opacity:0; }
+        }
+        @keyframes skullSwirl {
+            0%   { transform: translateY(-10vh) translateX(0) rotate(0deg) scale(1); opacity:0.9; }
+            25%  { transform: translateY(30vh) translateX(40px) rotate(180deg) scale(1.3); opacity:0.8; }
+            50%  { transform: translateY(60vh) translateX(-30px) rotate(360deg) scale(0.8); opacity:0.7; }
+            75%  { transform: translateY(85vh) translateX(50px) rotate(540deg) scale(1.1); opacity:0.5; }
+            100% { transform: translateY(110vh) translateX(0) rotate(720deg) scale(0.5); opacity:0.1; }
+        }
+        @keyframes skullExplodeOut {
+            0%   { transform: translate(0,0) scale(1) rotate(0deg); opacity:1; }
+            50%  { transform: translate(var(--sx,40px), var(--sy,-60px)) scale(1.5) rotate(180deg); opacity:0.8; }
+            100% { transform: translate(calc(var(--sx,40px)*2), calc(var(--sy,-60px)*2)) scale(0.2) rotate(360deg); opacity:0; }
         }
         @keyframes fadeInUp {
             0% { opacity: 0; transform: translateY(20px); }
@@ -4045,6 +4058,7 @@
                     setEasterEggType(randomEgg);
                     setShowEasterEgg(true);
                     triggerConfetti();
+                    triggerSkullExplosion();
 
                     setTimeout(() => {
                         setShowEasterEgg(false);
@@ -4058,6 +4072,24 @@
                 setTimeout(() => {
                     setSkullClickCount(prev => prev > 0 ? prev - 1 : 0);
                 }, 2000);
+            };
+
+            // Skull explosion easter egg - 60 skulls fly from random positions
+            const triggerSkullExplosion = () => {
+                const skullEmojis = ['💀','☠️','💀','💀','☠️','💀','☠️','🦴'];
+                const newSpawns = [];
+                for (let i = 0; i < 70; i++) {
+                    const id = Date.now() * 1000 + i;
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    const sx = (Math.random() - 0.5) * 400;
+                    const sy = (Math.random() - 0.5) * 400;
+                    const emoji = skullEmojis[Math.floor(Math.random() * skullEmojis.length)];
+                    const big = Math.random() > 0.65;
+                    newSpawns.push({ id, x, y, sx, sy, emoji, big, explode: true });
+                    setTimeout(() => setSkullSpawns(prev => prev.filter(s => s.id !== id)), 1400);
+                }
+                setSkullSpawns(prev => [...prev, ...newSpawns]);
             };
 
             // Get skull class based on easter egg state
@@ -4266,11 +4298,20 @@
             const [skullRainDrops, setSkullRainDrops] = useState([]);
             useEffect(() => {
                 if (!effectSettings?.skeletonParty) { setSkullRainDrops([]); return; }
-                const countMap = { low: 15, medium: 30, large: 50 };
+                const countMap = { low: 15, medium: 30, large: 50, insane: 150 };
                 const count = countMap[effectSettings?.skeletonIntensity || 'medium'];
+                const isInsane = effectSettings?.skeletonIntensity === 'insane';
                 const drops = [];
                 for (let i = 0; i < count; i++) {
-                    drops.push({ id: i, left: Math.random()*100, delay: Math.random()*6, duration: 3+Math.random()*5, emoji: i%4===0?'☠️':'💀' });
+                    drops.push({
+                        id: i,
+                        left: Math.random()*100,
+                        delay: Math.random()*6,
+                        duration: isInsane ? (1.5+Math.random()*4) : (3+Math.random()*5),
+                        emoji: isInsane ? (i%3===0?'☠️':i%7===0?'🦴':i%11===0?'👻':'💀') : (i%4===0?'☠️':'💀'),
+                        big: isInsane && i % 5 === 0,
+                        swirl: isInsane && i % 8 === 0
+                    });
                 }
                 setSkullRainDrops(drops);
             }, [effectSettings?.skeletonParty, effectSettings?.skeletonIntensity]);
@@ -4296,19 +4337,33 @@
             }, [effectSettings?.skeletonParty, handleGlobalSkullClick]);
 
             const renderSkeletonParty = () => {
-                if (!effectSettings?.skeletonParty) return null;
                 return (
                     <>
-                        {skullRainDrops.map(drop => (
+                        {effectSettings?.skeletonParty && skullRainDrops.map(drop => (
                             <div key={drop.id} className="skull-rain-drop"
-                                style={{left:`${drop.left}%`,animationDuration:`${drop.duration}s`,animationDelay:`${drop.delay}s`,top:'-40px'}}>
+                                style={{
+                                    left:`${drop.left}%`,
+                                    animationDuration:`${drop.duration}s`,
+                                    animationDelay:`${drop.delay}s`,
+                                    top:'-40px',
+                                    fontSize: drop.big ? '36px' : '24px',
+                                    animationName: drop.swirl ? 'skullSwirl' : 'skullRain'
+                                }}>
                                 {drop.emoji}
                             </div>
                         ))}
                         {skullSpawns.map(spawn => (
                             <div key={spawn.id} className="skull-spawn"
-                                style={{left:spawn.x,top:spawn.y,'--sx':`${spawn.sx}px`,'--sy':`${spawn.sy}px`}}>
-                                💀
+                                style={{
+                                    left:spawn.x,
+                                    top:spawn.y,
+                                    '--sx':`${spawn.sx}px`,
+                                    '--sy':`${spawn.sy}px`,
+                                    fontSize: spawn.big ? '32px' : '18px',
+                                    animationName: spawn.explode ? 'skullExplodeOut' : 'skullScatter',
+                                    animationDuration: spawn.explode ? '1.4s' : '0.8s'
+                                }}>
+                                {spawn.emoji || '💀'}
                             </div>
                         ))}
                     </>
@@ -7284,29 +7339,9 @@ return (
                                         createdAt: deckToEdit.createdAt || new Date()
                                     };
 
-                                    // Try to write to the existing doc. If it fails (missing userId
-                                    // field on old decks causes permission-denied), fall back to
-                                    // creating a brand-new doc with .add() so the userId is set fresh.
-                                    let savedId = deckId;
-                                    try {
-                                        await db.collection("decks").doc(String(deckId)).set(deckPayload, { merge: true });
-                                    } catch (writeErr) {
-                                        if (writeErr.code === 'permission-denied') {
-                                            // Old deck missing userId — create fresh with auto-ID
-                                            const newRef = await db.collection("decks").add(deckPayload);
-                                            savedId = newRef.id;
-                                            setDeckToEdit(prev => ({ ...prev, id: newRef.id }));
-                                            // Delete the old orphaned doc so no duplicate appears
-                                            try {
-                                                await db.collection("decks").doc(String(deckId)).delete();
-                                            } catch (delErr) {
-                                                console.log('Could not delete old doc (expected for legacy):', delErr.message);
-                                            }
-                                            console.log('Migrated deck to new Firestore doc:', newRef.id, '(old ID:', deckId, ')');
-                                        } else {
-                                            throw writeErr; // re-throw non-permission errors
-                                        }
-                                    }
+                                    // Update the existing deck document in place
+                                    const savedId = deckId;
+                                    await db.collection("decks").doc(String(deckId)).update(deckPayload);
 
                                     // Handle public collection syncing (use savedId in case deck was migrated)
                                     if (updatedDeck.isPublic) {
@@ -7477,8 +7512,8 @@ return (
                         <div className={`container ${pageTransitionClass}`}>
                             <div style={{
                                 maxWidth: '1200px',
-                                margin: '3rem auto',
-                                padding: '2rem'
+                                margin: window.innerWidth <= 768 ? '1rem auto' : '3rem auto',
+                                padding: window.innerWidth <= 768 ? '0.75rem' : '2rem'
                             }}>
                                 <div style={{
                                     display: 'flex',
@@ -7627,8 +7662,8 @@ return (
                                     decks.filter(d => !d.isExample).length > 0 ? (
                                         <div style={{
                                             display: 'grid',
-                                            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                                            gap: '1.5rem'
+                                            gridTemplateColumns: window.innerWidth <= 600 ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))',
+                                            gap: '1rem'
                                         }}>
                                             {decks
                                                 .filter(d => !d.isExample)
@@ -7648,7 +7683,7 @@ return (
                                                             ? '3px solid var(--red-mana)'
                                                             : deck.isExample ? '2px solid var(--gold)' : '2px solid var(--border-color)',
                                                         borderRadius: '12px',
-                                                        padding: '1.5rem',
+                                                        padding: window.innerWidth <= 600 ? '1rem' : '1.5rem',
                                                         cursor: deleteMode ? 'default' : 'pointer',
                                                         position: 'relative'
                                                     }}
@@ -8036,8 +8071,8 @@ return (
                                 {publicDecks.length > 0 ? (
                                     <div style={{
                                         display: 'grid',
-                                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                                        gap: '1.5rem'
+                                        gridTemplateColumns: window.innerWidth <= 600 ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))',
+                                        gap: '1rem'
                                     }}>
                                         {publicDecks
                                             .filter(deck => {
@@ -8064,7 +8099,7 @@ return (
                                                         background: 'var(--gradient-card)',
                                                         border: '2px solid var(--border-color)',
                                                         borderRadius: '12px',
-                                                        padding: '1.5rem',
+                                                        padding: window.innerWidth <= 600 ? '1rem' : '1.5rem',
                                                         cursor: 'pointer',
                                                         position: 'relative'
                                                     }}
@@ -8283,21 +8318,21 @@ return (
                             bottom: 0,
                             background: 'rgba(0, 0, 0, 0.85)',
                             display: 'flex',
-                            alignItems: 'center',
+                            alignItems: window.innerWidth <= 768 ? 'stretch' : 'center',
                             justifyContent: 'center',
                             zIndex: 1000,
-                            padding: '2rem'
+                            padding: window.innerWidth <= 768 ? '0' : '2rem'
                         }}
                         onClick={() => setSelectedDeck(null)}
                         >
                             <div style={{
                                 background: 'var(--bg-card)',
                                 border: '2px solid var(--accent)',
-                                borderRadius: '16px',
-                                padding: '2.5rem',
-                                maxWidth: '900px',
+                                borderRadius: window.innerWidth <= 768 ? '0' : '16px',
+                                padding: window.innerWidth <= 768 ? '1rem' : '2.5rem',
+                                maxWidth: window.innerWidth <= 768 ? '100%' : '900px',
                                 width: '100%',
-                                maxHeight: '90vh',
+                                maxHeight: window.innerWidth <= 768 ? '100vh' : '90vh',
                                 overflow: 'auto',
                                 position: 'relative'
                             }}
@@ -9579,34 +9614,9 @@ return (
             };
 
             return (
-                <div
-                    onClick={onClose}
-                    style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'rgba(0, 0, 0, 0.8)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000
-                }}>
-                    <div
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                        background: 'var(--bg-secondary)',
-                        border: '2px solid var(--gold)',
-                        borderRadius: '16px',
-                        padding: '2rem',
-                        maxWidth: '600px',
-                        width: '90%',
-                        position: 'relative',
-                        maxHeight: '90vh',
-                        overflow: 'auto'
-                    }}>
-                        <button 
+                <div className="modal-overlay" onClick={onClose} style={{zIndex: 1000}}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()} style={{maxWidth: '700px', padding: '2rem', overflowY: 'auto', position: 'relative'}}>
+                        <button
                             onClick={onClose}
                             style={{
                                 position: 'absolute',
@@ -9634,6 +9644,7 @@ return (
                         {/* Settings Tabs */}
                         <div style={{
                             display: 'flex',
+                            flexWrap: 'wrap',
                             gap: '0.5rem',
                             marginBottom: '1.5rem',
                             borderBottom: '2px solid var(--border-color)',
@@ -10391,7 +10402,7 @@ return (
                                 </div>
                                 {effectSettings?.skeletonParty && (
                                     <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
-                                        {[{key:'low',label:'🩻 Low (15)'},{key:'medium',label:'💀 Medium (30)'},{key:'large',label:'☠️ Large (50)'}].map(opt => (
+                                        {[{key:'low',label:'🩻 Low (15)'},{key:'medium',label:'💀 Medium (30)'},{key:'large',label:'☠️ Large (50)'},{key:'insane',label:'💀 INSANE (150)'}].map(opt => (
                                             <button key={opt.key} onClick={() => updateEffectSetting('skeletonIntensity', opt.key)}
                                                 style={{padding:'0.4rem 0.7rem',background:effectSettings?.skeletonIntensity===opt.key?'var(--gold)':'var(--bg-secondary)',border:`2px solid ${effectSettings?.skeletonIntensity===opt.key?'var(--gold)':'var(--border-color)'}`,borderRadius:'8px',color:effectSettings?.skeletonIntensity===opt.key?'var(--bg-primary)':'var(--text-primary)',cursor:'pointer',fontWeight:600,fontSize:'0.78rem',transition:'all 0.2s ease'}}>
                                                 {opt.label}
