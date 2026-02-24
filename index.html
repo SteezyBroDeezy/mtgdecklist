@@ -50,7 +50,6 @@
             color: var(--text-primary);
             min-height: 100vh;
             background-attachment: fixed;
-            min-width: max-content;
         }
 
         /* Fun Loading Overlay */
@@ -837,8 +836,12 @@
             padding: 1.5rem 2rem;
             position: sticky;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
             backdrop-filter: blur(10px);
+            width: 100vw;
+            box-sizing: border-box;
         }
 
         .header-content {
@@ -1064,6 +1067,15 @@
             .modal-body * {
                 max-width: 100%;
                 box-sizing: border-box;
+            }
+
+            /* Mana calculator — edge-to-edge on mobile */
+            .mana-calculator {
+                padding: 1rem 0.4rem;
+                margin: 0.5rem 0;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
             }
 
             .pip-counter {
@@ -1365,11 +1377,34 @@
         }
 
         .close-btn {
-            background: none;
-            border: none;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             color: var(--text-secondary);
             font-size: 2rem;
             cursor: pointer;
+            padding: 0.1rem 0.6rem;
+            line-height: 1;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .close-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .close-btn {
+                font-size: 2.2rem;
+                padding: 0.2rem 0.8rem;
+                min-width: 44px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
         }
 
         .modal-content-wrapper {
@@ -6242,14 +6277,21 @@ return (
                                         The easiest way to track your deck's structure
                                     </p>
                                     {!user && (
-                                        <p style={{
-                                            color: 'var(--gold)',
-                                            fontSize: '0.9rem',
-                                            fontStyle: 'italic',
-                                            marginTop: '0.5rem'
+                                        <div style={{
+                                            background: 'rgba(212, 175, 55, 0.12)',
+                                            border: '1px solid var(--gold)',
+                                            borderRadius: '10px',
+                                            padding: '0.7rem 1rem',
+                                            marginTop: '0.75rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.6rem',
+                                            fontSize: '0.88rem',
+                                            color: 'var(--gold)'
                                         }}>
-                                            💾 Create an account to save your decks
-                                        </p>
+                                            <span style={{fontSize: '1.2rem', flexShrink: 0}}>💾</span>
+                                            <span>Create a free account to save your decks to the cloud!</span>
+                                        </div>
                                     )}
                                 </div>
 
@@ -7440,7 +7482,7 @@ return (
                         <div className={`container ${pageTransitionClass}`} style={{
                             minHeight: '100vh',
                             background: 'var(--bg-primary)',
-                            padding: '1rem'
+                            padding: window.innerWidth <= 768 ? '0.75rem 0' : '1rem'
                         }}>
                             <div style={{
                                 maxWidth: '100%',
@@ -8329,7 +8371,7 @@ return (
                                 background: 'var(--bg-card)',
                                 border: '2px solid var(--accent)',
                                 borderRadius: window.innerWidth <= 768 ? '0' : '16px',
-                                padding: window.innerWidth <= 768 ? '1rem' : '2.5rem',
+                                padding: window.innerWidth <= 768 ? '0.75rem 0.35rem' : '2.5rem',
                                 maxWidth: window.innerWidth <= 768 ? '100%' : '900px',
                                 width: '100%',
                                 maxHeight: window.innerWidth <= 768 ? '100vh' : '90vh',
@@ -9618,16 +9660,8 @@ return (
                     <div className="modal" onClick={(e) => e.stopPropagation()} style={{maxWidth: '700px', padding: '2rem', overflowY: 'auto', position: 'relative'}}>
                         <button
                             onClick={onClose}
-                            style={{
-                                position: 'absolute',
-                                top: '1rem',
-                                right: '1rem',
-                                background: 'transparent',
-                                border: 'none',
-                                color: 'var(--text-muted)',
-                                fontSize: '1.5rem',
-                                cursor: 'pointer'
-                            }}
+                            className="close-btn"
+                            style={{position: 'absolute', top: '1rem', right: '1rem'}}
                         >
                             ×
                         </button>
@@ -13188,7 +13222,7 @@ return (
                                                                 {/* SUBCATEGORIES - Same grid style as main deck */}
                                                                 <div style={{
                                                                     display: 'grid',
-                                                                    gridTemplateColumns: window.innerWidth <= 480 ? '1fr' : (window.innerWidth <= 768 ? 'repeat(auto-fill, minmax(160px, 1fr))' : 'repeat(auto-fill, minmax(200px, 1fr))'),
+                                                                    gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))',
                                                                     gap: '0.75rem'
                                                                 }}>
                                                                 {majorGroup.categories.map(category => {
@@ -16852,7 +16886,7 @@ return (
                                                                 {/* SUBCATEGORIES - Same grid style as main deck */}
                                                                 <div style={{
                                                                     display: 'grid',
-                                                                    gridTemplateColumns: window.innerWidth <= 480 ? '1fr' : (window.innerWidth <= 768 ? 'repeat(auto-fill, minmax(160px, 1fr))' : 'repeat(auto-fill, minmax(200px, 1fr))'),
+                                                                    gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))',
                                                                     gap: '0.75rem'
                                                                 }}>
                                                                 {majorGroup.categories.map(category => {
