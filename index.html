@@ -42,6 +42,10 @@
             --gradient-card: linear-gradient(160deg, #4a3d30 0%, #3a2f24 100%);
         }
 
+        html {
+            background: #1a1612;
+        }
+
         body {
             font-family: 'Cinzel', serif;
             font-size: 1.1rem;
@@ -49,7 +53,6 @@
             background: linear-gradient(135deg, #1a1612 0%, #2d1f1a 35%, #1a1612 70%, #0f0d0b 100%);
             color: var(--text-primary);
             min-height: 100vh;
-            background-attachment: fixed;
         }
 
         /* Fun Loading Overlay */
@@ -581,6 +584,54 @@
             75%  { transform: translateY(calc(var(--g-ty, 0px) - 15px)) translateX(20px) rotate(270deg) scale(1.1); opacity: 0.8; }
             100% { transform: translateY(var(--g-ty, 0px)) translateX(0px) rotate(360deg) scale(1); opacity: 0.2; }
         }
+        @keyframes shootingStar {
+            0%   { transform: translateX(0) translateY(0) rotate(-35deg); opacity: 0; }
+            5%   { opacity: 1; }
+            85%  { opacity: 0.9; }
+            100% { transform: translateX(120vw) translateY(80vh) rotate(-35deg); opacity: 0; }
+        }
+        .weather-drop.shootingStars {
+            width: 3px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 50%, rgba(200,220,255,0) 100%);
+            animation: shootingStar linear;
+            position: fixed;
+            filter: drop-shadow(0 0 5px rgba(200,220,255,0.9));
+        }
+        @keyframes planetDrift {
+            0%   { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; }
+            5%   { opacity: 0.9; }
+            90%  { opacity: 0.9; }
+            100% { transform: translateX(120vw) translateY(var(--planet-dy, 30px)) rotate(20deg); opacity: 0; }
+        }
+        .weather-drop.planets {
+            position: fixed;
+            animation: planetDrift linear;
+            filter: drop-shadow(0 0 14px rgba(150,180,255,0.5));
+        }
+        @keyframes rocketLaunch {
+            0%   { transform: translateY(0) translateX(0) rotate(-5deg); opacity: 0; }
+            5%   { opacity: 1; }
+            85%  { opacity: 1; }
+            100% { transform: translateY(var(--rocket-dy, -120vh)) translateX(var(--rocket-dx, 20px)) rotate(-5deg); opacity: 0; }
+        }
+        .weather-drop.rockets {
+            position: fixed;
+            animation: rocketLaunch linear;
+            filter: drop-shadow(0 4px 10px rgba(255,140,0,0.7));
+        }
+        @keyframes zombieShuffle {
+            0%   { transform: translateX(0) translateY(0); opacity: 0; }
+            5%   { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { transform: translateX(120vw) translateY(var(--zombie-sway, 5px)); opacity: 0; }
+        }
+        .weather-drop.zombies {
+            position: fixed;
+            animation: zombieShuffle linear;
+            filter: drop-shadow(0 0 8px rgba(80,200,80,0.4));
+        }
         @keyframes dragonflyHover {
             0%   { transform: translateX(-120px) translateY(0) scaleX(1); opacity: 0; }
             4%   { opacity: 1; }
@@ -836,12 +887,14 @@
             padding: 1.5rem 2rem;
             position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
             z-index: 100;
             backdrop-filter: blur(10px);
-            width: 100vw;
-            box-sizing: border-box;
+        }
+
+        /* Spacer not needed with sticky — zero height */
+        .header-spacer {
+            height: 0;
+            flex-shrink: 0;
         }
 
         .header-content {
@@ -850,6 +903,85 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Shrink desktop header buttons at mid-range desktop widths so they always fit */
+        @media (max-width: 1100px) and (min-width: 769px) {
+            .app-header {
+                padding: 1rem 1rem;
+            }
+            .header-content .btn {
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.85rem !important;
+                gap: 0.4rem !important;
+            }
+            .header-content .btn span:first-child {
+                font-size: 1.2rem !important;
+            }
+            .logo-subtitle {
+                display: none;
+            }
+        }
+        @media (max-width: 900px) and (min-width: 769px) {
+            .header-content .btn span:last-child {
+                display: none;
+            }
+            .header-content .btn {
+                padding: 0.5rem 0.6rem !important;
+            }
+        }
+
+        /* === HEADER BUTTON THEMES === */
+        .header-theme-ember .btn-secondary {
+            border-color: #c04010 !important;
+            box-shadow: 0 0 8px rgba(200,80,20,0.4), inset 0 0 6px rgba(200,80,20,0.15);
+        }
+        .header-theme-ember .btn-secondary:hover {
+            box-shadow: 0 0 18px rgba(220,100,30,0.7), inset 0 0 10px rgba(220,100,30,0.25) !important;
+            border-color: #e05020 !important;
+        }
+
+        .header-theme-electric .btn-secondary {
+            border-color: #0080ff !important;
+            box-shadow: 0 0 8px rgba(0,140,255,0.4), inset 0 0 6px rgba(0,140,255,0.1);
+            animation: electricPulse 2s ease-in-out infinite;
+        }
+        .header-theme-electric .btn-secondary:hover {
+            box-shadow: 0 0 20px rgba(0,160,255,0.8), inset 0 0 12px rgba(0,160,255,0.2) !important;
+        }
+        @keyframes electricPulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(0,140,255,0.4), inset 0 0 6px rgba(0,140,255,0.1); }
+            50%      { box-shadow: 0 0 16px rgba(0,180,255,0.7), inset 0 0 10px rgba(0,180,255,0.2); }
+        }
+
+        .header-theme-blood .btn-secondary {
+            border-color: #8b0000 !important;
+            box-shadow: 0 0 8px rgba(160,0,0,0.5), inset 0 0 6px rgba(160,0,0,0.15);
+            animation: bloodPulse 3s ease-in-out infinite;
+        }
+        .header-theme-blood .btn-secondary:hover {
+            box-shadow: 0 0 18px rgba(200,0,0,0.7), inset 0 0 12px rgba(200,0,0,0.25) !important;
+            border-color: #cc0000 !important;
+        }
+        @keyframes bloodPulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(160,0,0,0.5), inset 0 0 6px rgba(160,0,0,0.15); }
+            50%      { box-shadow: 0 0 16px rgba(200,0,0,0.7), inset 0 0 10px rgba(200,0,0,0.2); }
+        }
+
+        .header-theme-void .btn-secondary {
+            border-color: #6020a0 !important;
+            box-shadow: 0 0 10px rgba(120,40,200,0.4), inset 0 0 8px rgba(100,30,180,0.15);
+            animation: voidShift 4s ease-in-out infinite;
+        }
+        .header-theme-void .btn-secondary:hover {
+            box-shadow: 0 0 22px rgba(140,50,220,0.8), inset 0 0 14px rgba(120,40,200,0.3) !important;
+            border-color: #8040c0 !important;
+        }
+        @keyframes voidShift {
+            0%   { box-shadow: 0 0 10px rgba(120,40,200,0.4), inset 0 0 8px rgba(100,30,180,0.15); }
+            50%  { box-shadow: 0 0 18px rgba(160,60,240,0.6), inset 0 0 12px rgba(140,50,220,0.25); }
+            100% { box-shadow: 0 0 10px rgba(120,40,200,0.4), inset 0 0 8px rgba(100,30,180,0.15); }
         }
 
         .logo {
@@ -1048,6 +1180,8 @@
         }
         
         @media (max-width: 768px) {
+
+
             .desktop-only {
                 display: none !important;
             }
@@ -1210,11 +1344,15 @@
             .app-header {
                 padding: 0.75rem 0.5rem;
             }
-            
+
+            .header-spacer {
+                height: 0;
+            }
+
             .header-content {
                 gap: 0.5rem;
             }
-            
+
             .header-content button {
                 padding: 0.75rem 1rem !important;
                 font-size: 1rem !important;
@@ -1786,11 +1924,15 @@
             .app-header {
                 padding: 0.75rem 0.5rem;
             }
-            
+
+            .header-spacer {
+                height: 0;
+            }
+
             .header-content {
                 gap: 0.5rem;
             }
-            
+
             .header-content button {
                 padding: 0.75rem 1rem !important;
                 font-size: 1rem !important;
@@ -3942,6 +4084,7 @@
             const [user, setUser] = useState(null);
             const [showAuthModal, setShowAuthModal] = useState(false);
             const [showSettings, setShowSettings] = useState(false);
+            const [showGamesModal, setShowGamesModal] = useState(false);
             const [showBugReportModal, setShowBugReportModal] = useState(false);
             const [selectedDecksToDelete, setSelectedDecksToDelete] = useState([]);
             const [deleteMode, setDeleteMode] = useState(false);
@@ -3971,7 +4114,7 @@
             const [siteTheme, setSiteTheme] = useState(() => {
                 const saved = localStorage.getItem('deckBuilderSiteTheme');
                 if (saved) return saved;
-                const themeKeys = ['bone','midnight','void','forest','crimson','ocean','neon','parchment','electric','cyberpunk','synthwave','toxic','bloodmoon','aurora','deepspace','candyshop','carnival','tropical','galaxy','lava','cotton_candy','rave'];
+                const themeKeys = ['bone','midnight','void','forest','crimson','ocean','neon','parchment','electric','cyberpunk','synthwave','toxic','bloodmoon','aurora','deepspace','candyshop','carnival','tropical','galaxy','lava','cotton_candy','rave','crypt','lich','pirate','graveyard'];
                 return themeKeys[Math.floor(Math.random() * themeKeys.length)];
             });
             const [randomThemeNotif, setRandomThemeNotif] = useState(() => !localStorage.getItem('deckBuilderSiteTheme'));
@@ -3993,7 +4136,8 @@
                     cursorTrail: 'none',
                     buttonRipple: true,
                     skeletonParty: false,
-                    skeletonIntensity: 'medium'
+                    skeletonIntensity: 'medium',
+                    headerTheme: 'none'
                 };
             });
 
@@ -4046,7 +4190,11 @@
                 magicDust:     { name: 'Magic Dust',       icon: '🔮' },
                 confettiRain:  { name: 'Confetti',         icon: '🎊' },
                 rainbowBubbles:{ name: 'Rainbow Bubbles',  icon: '🌈' },
-                galaxySpin:    { name: 'Galaxy',           icon: '🌌' }
+                galaxySpin:    { name: 'Galaxy',           icon: '🌌' },
+                shootingStars: { name: 'Shooting Stars',   icon: '🌠' },
+                planets:       { name: 'Floating Planets', icon: '🪐' },
+                rockets:       { name: 'Rockets',          icon: '🚀' },
+                zombies:       { name: 'Zombie Horde',     icon: '🧟' }
             };
 
             const CURSOR_TRAIL_OPTIONS = {
@@ -4177,6 +4325,10 @@
                     case 'rainbowBubbles': count = 18; break;
                     case 'galaxySpin': count = 60; break;
                     case 'dragonflies': count = 8; break;
+                    case 'shootingStars': count = 18; break;
+                    case 'planets': count = 6; break;
+                    case 'rockets': count = 10; break;
+                    case 'zombies': count = 12; break;
                     default: count = 30;
                 }
 
@@ -4217,6 +4369,10 @@
                         case 'rainbowBubbles': drop.duration = 7 + Math.random() * 6; break;
                         case 'galaxySpin': drop.duration = 10 + Math.random() * 15; break;
                         case 'dragonflies': drop.duration = 8 + Math.random() * 10; break;
+                        case 'shootingStars': drop.duration = 1.2 + Math.random() * 2; break;
+                        case 'planets': drop.duration = 25 + Math.random() * 20; break;
+                        case 'rockets': drop.duration = 3.5 + Math.random() * 3; break;
+                        case 'zombies': drop.duration = 14 + Math.random() * 10; break;
                         default: drop.duration = 5 + Math.random() * 5;
                     }
 
@@ -4236,6 +4392,8 @@
                         case 'magicDust': drop.emoji = ['✨','·','*','✦'][Math.floor(Math.random()*4)]; break;
                         case 'galaxySpin': drop.emoji = ['★','·','✦','✧','*'][Math.floor(Math.random()*5)]; break;
                         case 'dragonflies': drop.emoji = ['🦋','🐝','🦗','🪲'][Math.floor(Math.random()*4)]; break;
+                        case 'rockets': drop.emoji = '🚀'; break;
+                        case 'zombies': drop.emoji = ['🧟','🧟‍♂️','🧟‍♀️'][Math.floor(Math.random()*3)]; break;
                         default: drop.emoji = null;
                     }
 
@@ -4324,7 +4482,38 @@
                         drop.top = 10 + Math.random() * 75;
                         drop.dragonflyDy = (Math.random() - 0.5) * 50;
                     }
-                                        drops.push(drop);
+                    if (weatherType === 'shootingStars') {
+                        drop.top = Math.random() * 60;
+                        drop.left = Math.random() * 30; // start in left portion
+                        drop.delay = Math.random() * 10;
+                    }
+                    if (weatherType === 'planets') {
+                        const planetEmojis = ['🪐','🌍','🌕','🌑','🔴','🟠'];
+                        drop.emoji = planetEmojis[i % planetEmojis.length];
+                        drop.top = 5 + Math.random() * 80;
+                        drop.left = -5;
+                        drop.fontSize = 40 + Math.floor(Math.random() * 40);
+                        drop.planetDy = (Math.random() - 0.5) * 120;
+                        drop.delay = i * 6 + Math.random() * 5;
+                    }
+                    if (weatherType === 'rockets') {
+                        drop.emoji = '🚀';
+                        drop.left = 5 + Math.random() * 85;
+                        drop.top = 100 + Math.random() * 10; // start below screen
+                        drop.fontSize = 24 + Math.floor(Math.random() * 20);
+                        drop.rocketDx = (Math.random() - 0.5) * 80;
+                        drop.rocketDy = -(110 + Math.random() * 40);
+                        drop.delay = i * 3 + Math.random() * 4;
+                    }
+                    if (weatherType === 'zombies') {
+                        drop.emoji = ['🧟','🧟‍♂️','🧟‍♀️'][Math.floor(Math.random()*3)];
+                        drop.top = 78 + Math.random() * 12; // bottom area
+                        drop.left = -10;
+                        drop.fontSize = 28 + Math.floor(Math.random() * 18);
+                        drop.zombieSway = (Math.random() - 0.5) * 30;
+                        drop.delay = i * 4 + Math.random() * 5;
+                    }
+                    drops.push(drop);
                 }
                 setWeatherDrops(drops);
             }, [effectSettings?.weather]);
@@ -4441,6 +4630,10 @@
                             if (drop.birdDrift !== undefined) extraStyle['--bird-drift'] = `${drop.birdDrift}px`;
                             if (drop.gTy !== undefined) extraStyle['--g-ty'] = `${drop.gTy}px`;
                             if (drop.dragonflyDy !== undefined) extraStyle['--dragonfly-dy'] = `${drop.dragonflyDy}px`;
+                            if (drop.planetDy !== undefined) extraStyle['--planet-dy'] = `${drop.planetDy}px`;
+                            if (drop.rocketDx !== undefined) extraStyle['--rocket-dx'] = `${drop.rocketDx}px`;
+                            if (drop.rocketDy !== undefined) extraStyle['--rocket-dy'] = `${drop.rocketDy}px`;
+                            if (drop.zombieSway !== undefined) extraStyle['--zombie-sway'] = `${drop.zombieSway}px`;
                             const subClass = drop.subtype ? ` ${drop.subtype}` : '';
                             const isMoonEmoji = drop.isMoon;
                             return (
@@ -4851,6 +5044,30 @@
                     icon: '🎛️',
                     desc: 'Nightclub electric madness',
                     colors: { bgPrimary:'#000000', bgSecondary:'#080808', bgTertiary:'#101010', bgCard:'#1a1a1a', borderColor:'#39ff14', textPrimary:'#ffffff', textSecondary:'#ff00ff', textMuted:'#00ffff', accent:'#39ff14', accentBright:'#ff00ff', gold:'#39ff14', bone:'#ccffcc', rust:'#00cccc' }
+                },
+                crypt: {
+                    name: 'Bone Dungeon',
+                    icon: '🪦',
+                    desc: 'Cold stone crypt, mossy and ancient',
+                    colors: { bgPrimary:'#111310', bgSecondary:'#1a1f1a', bgTertiary:'#222920', bgCard:'#2a3328', borderColor:'#4a5e48', textPrimary:'#d8e8d0', textSecondary:'#a8b8a0', bone:'#c8dcc0', textMuted:'#708068', accent:'#4a6e44', accentBright:'#7aaa72', gold:'#8aaa72', rust:'#3a5e34' }
+                },
+                lich: {
+                    name: 'Lich King',
+                    icon: '👑',
+                    desc: 'Regal undead royalty — deep purples and dark gold',
+                    colors: { bgPrimary:'#0d0814', bgSecondary:'#160f22', bgTertiary:'#201530', bgCard:'#2c1d40', borderColor:'#5a3880', textPrimary:'#ecdcff', textSecondary:'#c0a0e0', bone:'#d8c0f0', textMuted:'#8860b0', accent:'#7040b0', accentBright:'#a060e8', gold:'#d4a0ff', rust:'#4a2070' }
+                },
+                pirate: {
+                    name: 'Cursed Pirate',
+                    icon: '☠️',
+                    desc: 'Dark seas, weathered wood, sea-green glows',
+                    colors: { bgPrimary:'#080e14', bgSecondary:'#0e1a22', bgTertiary:'#152230', bgCard:'#1c2e3e', borderColor:'#2e5060', textPrimary:'#d0eae0', textSecondary:'#90b8aa', bone:'#b8d8cc', textMuted:'#507060', accent:'#207060', accentBright:'#30a888', gold:'#40c0a0', rust:'#104840' }
+                },
+                graveyard: {
+                    name: 'Graveyard',
+                    icon: '🦇',
+                    desc: 'Dusty purple twilight, orange moon glow, bat black',
+                    colors: { bgPrimary:'#0e0a14', bgSecondary:'#160f1e', bgTertiary:'#1e1428', bgCard:'#281c34', borderColor:'#4a3060', textPrimary:'#e8d8f8', textSecondary:'#b898d8', bone:'#d8c0f0', textMuted:'#7850a0', accent:'#6030a0', accentBright:'#a060e0', gold:'#e08030', rust:'#401870' }
                 }
             };
 
@@ -5923,8 +6140,26 @@ return (
                             
                             {/* Mana Calc + Login/Settings Buttons */}
                             <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                                {/* Games Button (mobile) */}
+                                <button
+                                    className={btnClass("btn btn-secondary")}
+                                    onClick={() => setShowGamesModal(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: '45px',
+                                        height: '45px',
+                                        padding: '0.5rem',
+                                        fontSize: '1.5rem',
+                                        borderRadius: '8px'
+                                    }}
+                                    title="Skull Games"
+                                >
+                                    🎮
+                                </button>
                                 {/* Home Button */}
-                                <button 
+                                <button
                                     className={btnClass("btn btn-secondary")}
                                     onClick={() => { changeView('home'); scrollToTop(); }}
                                     style={{
@@ -6052,10 +6287,13 @@ return (
                         </div>
                     </header>
 
+                    {/* Spacer to push content below fixed header on mobile */}
+                    <div className="header-spacer mobile-header-only"></div>
+
                     {/* DESKTOP HEADER - Full Navigation */}
-                    <header className="app-header desktop-header-only">
+                    <header className={`app-header desktop-header-only${effectSettings?.headerTheme && effectSettings.headerTheme !== 'none' ? ` header-theme-${effectSettings.headerTheme}` : ''}`}>
                         <div className="header-content">
-                            <div className="logo" onClick={() => { changeView('home'); scrollToTop(); }} style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                            <div className="logo" onClick={() => { changeView('home'); scrollToTop(); }} style={{display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0}}>
                                 <svg onClick={handleSkullClick} className={getSkullClass()} width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
     <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
     <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
@@ -6076,8 +6314,8 @@ return (
                                     <div className="logo-subtitle">+ Mana Calculator</div>
                                 </div>
                             </div>
-                            <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-                                <button 
+                            <div style={{display: 'flex', gap: '1rem', alignItems: 'center', flexShrink: 0}}>
+                                <button
                                     className={btnClass("btn btn-secondary")}
                                     onClick={() => { changeView('home'); scrollToTop(); }}
                                     style={{
@@ -6122,8 +6360,24 @@ return (
                                     <span style={{fontSize: '1.8rem'}}>📚</span>
                                     <span>Browse Decks</span>
                                 </button>
+                                {/* Skull Games Button */}
+                                <button
+                                    className={btnClass("btn btn-secondary")}
+                                    onClick={() => setShowGamesModal(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.75rem',
+                                        padding: '0.75rem 1.5rem',
+                                        whiteSpace: 'nowrap',
+                                        fontSize: '1.1rem'
+                                    }}
+                                >
+                                    <span style={{fontSize: '1.8rem'}}>🎮</span>
+                                    <span>Skull Games</span>
+                                </button>
                                 {/* Mana Calculator - ALWAYS visible on desktop */}
-                                <button 
+                                <button
                                     className={btnClass("btn btn-secondary")}
                                     onClick={() => {
                                         changeView('home');
@@ -6224,7 +6478,10 @@ return (
                             </div>
                         </div>
                     </header>
-                    
+
+                    {/* Spacer to push content below fixed header on desktop */}
+                    <div className="header-spacer desktop-header-only"></div>
+
                     {view === 'home' && (
                         <div className={`container ${pageTransitionClass}`}>
                             {/* MOBILE-ONLY: Simplified Action Menu */}
@@ -7255,8 +7512,108 @@ return (
                             </div>
                         </div>
                     )}
+                    {/* ===== SKULL GAMES MODAL ===== */}
+                    {showGamesModal && (
+                        <div
+                            onClick={(e) => { if (e.target === e.currentTarget) setShowGamesModal(false); }}
+                            style={{
+                                position: 'fixed', inset: 0, zIndex: 9999,
+                                background: 'rgba(0,0,0,0.85)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                padding: '1rem'
+                            }}
+                        >
+                            <div style={{
+                                background: 'var(--bg-secondary)',
+                                border: '2px solid var(--border-color)',
+                                borderRadius: '16px',
+                                width: '100%',
+                                maxWidth: '960px',
+                                maxHeight: '90vh',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                overflow: 'hidden',
+                                boxShadow: '0 0 40px rgba(0,0,0,0.8)'
+                            }}>
+                                {/* Modal Header */}
+                                <div style={{
+                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                    padding: '1rem 1.5rem',
+                                    borderBottom: '2px solid var(--border-color)',
+                                    background: 'var(--bg-tertiary)',
+                                    flexShrink: 0
+                                }}>
+                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                        <span style={{fontSize: '2rem'}}>💀</span>
+                                        <div>
+                                            <h2 style={{
+                                                color: 'var(--bone)', margin: 0,
+                                                fontFamily: 'Pirata One, cursive',
+                                                fontSize: '1.8rem', letterSpacing: '2px'
+                                            }}>Skull Games Arcade</h2>
+                                            <p style={{color: 'var(--text-muted)', margin: 0, fontSize: '0.82rem'}}>
+                                                4 games — Runner · Snake · Slither · Shooter
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowGamesModal(false)}
+                                        style={{
+                                            background: 'none', border: '2px solid var(--border-color)',
+                                            color: 'var(--text-primary)', cursor: 'pointer',
+                                            borderRadius: '8px', width: '38px', height: '38px',
+                                            fontSize: '1.2rem', display: 'flex', alignItems: 'center',
+                                            justifyContent: 'center', transition: 'all 0.2s'
+                                        }}
+                                        title="Close"
+                                    >✕</button>
+                                </div>
+
+                                {/* iframe */}
+                                <div style={{flex: 1, overflow: 'hidden', minHeight: 0}}>
+                                    <iframe
+                                        src="https://steezybrodeezy.github.io/skull-games/"
+                                        title="Skull Games Arcade"
+                                        style={{
+                                            width: '100%', height: '100%',
+                                            border: 'none', display: 'block',
+                                            minHeight: '520px'
+                                        }}
+                                        allow="autoplay"
+                                        loading="lazy"
+                                    />
+                                </div>
+
+                                {/* Modal Footer */}
+                                <div style={{
+                                    padding: '0.75rem 1.5rem',
+                                    borderTop: '2px solid var(--border-color)',
+                                    background: 'var(--bg-tertiary)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                    flexShrink: 0
+                                }}>
+                                    <span style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>
+                                        🎮 Click inside the game area to focus · ESC closes this window
+                                    </span>
+                                    <a
+                                        href="https://steezybrodeezy.github.io/skull-games/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            color: 'var(--gold)', fontSize: '0.82rem',
+                                            textDecoration: 'none', display: 'flex',
+                                            alignItems: 'center', gap: '0.3rem'
+                                        }}
+                                    >
+                                        ↗ Open full screen
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {showCreateModal && (
-                        <CreateDeckModal 
+                        <CreateDeckModal
                             initialData={deckToCopy}
                             user={user}
                             setShowAuthModal={setShowAuthModal}
@@ -10419,6 +10776,27 @@ return (
                                         transition: 'all 0.2s ease',
                                         boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
                                     }}></div>
+                                </div>
+                            </div>
+
+                            {/* Header Button Theme Picker */}
+                            <div style={{marginTop:'1rem',padding:'1rem',background:'var(--bg-card)',borderRadius:'10px',border:'2px solid var(--border-color)'}}>
+                                <h4 style={{color:'var(--bone)',marginBottom:'0.25rem',fontSize:'1rem'}}>🎨 Header Button Theme</h4>
+                                <p style={{color:'var(--text-muted)',fontSize:'0.8rem',margin:'0 0 0.75rem 0'}}>Subtle color glow on top bar buttons.</p>
+                                <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
+                                    {[
+                                        {key:'none',    label:'⬜ None'},
+                                        {key:'ember',   label:'🔥 Ember'},
+                                        {key:'electric',label:'⚡ Electric'},
+                                        {key:'blood',   label:'🩸 Blood'},
+                                        {key:'void',    label:'🌀 Void'},
+                                    ].map(opt => (
+                                        <button key={opt.key}
+                                            onClick={() => updateEffectSetting('headerTheme', opt.key)}
+                                            style={{padding:'0.4rem 0.8rem',background:effectSettings?.headerTheme===opt.key?'var(--gold)':'var(--bg-secondary)',border:`2px solid ${effectSettings?.headerTheme===opt.key?'var(--gold)':'var(--border-color)'}`,borderRadius:'8px',color:effectSettings?.headerTheme===opt.key?'var(--bg-primary)':'var(--text-primary)',cursor:'pointer',fontWeight:600,fontSize:'0.82rem',transition:'all 0.2s ease'}}>
+                                            {opt.label}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
 
