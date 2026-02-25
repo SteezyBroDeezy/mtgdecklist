@@ -44,6 +44,7 @@
 
         html {
             background: #1a1612;
+            overflow-x: hidden;
         }
 
         body {
@@ -53,6 +54,7 @@
             background: linear-gradient(135deg, #1a1612 0%, #2d1f1a 35%, #1a1612 70%, #0f0d0b 100%);
             color: var(--text-primary);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Fun Loading Overlay */
@@ -889,6 +891,8 @@
             top: 0;
             z-index: 100;
             backdrop-filter: blur(10px);
+            max-width: 100vw;
+            box-sizing: border-box;
         }
 
         /* Spacer not needed with sticky — zero height */
@@ -898,23 +902,55 @@
         }
 
         .header-content {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 0.5rem;
+            flex-wrap: nowrap;
         }
 
-        /* Shrink desktop header buttons at mid-range desktop widths so they always fit */
-        @media (max-width: 1100px) and (min-width: 769px) {
+        /* Desktop header - compact single row */
+        .desktop-header-only .header-content {
+            gap: 0.4rem;
+        }
+        .desktop-header-only .header-content > div:last-child {
+            gap: 0.4rem !important;
+        }
+
+        /* Shrink desktop header buttons at larger widths */
+        @media (max-width: 1500px) and (min-width: 1301px) {
             .app-header {
-                padding: 1rem 1rem;
+                padding: 1rem 1.5rem;
             }
             .header-content .btn {
-                padding: 0.5rem 0.75rem !important;
-                font-size: 0.85rem !important;
+                padding: 0.5rem 0.8rem !important;
+                font-size: 0.9rem !important;
                 gap: 0.4rem !important;
+            }
+            .header-content .btn span:first-child {
+                font-size: 1.3rem !important;
+            }
+            .logo-subtitle {
+                display: none;
+            }
+            .header-btn-text-long {
+                display: none !important;
+            }
+            .header-btn-text-short {
+                display: inline !important;
+            }
+        }
+
+        @media (max-width: 1300px) and (min-width: 1101px) {
+            .app-header {
+                padding: 0.8rem 1rem;
+            }
+            .header-content .btn {
+                padding: 0.45rem 0.7rem !important;
+                font-size: 0.85rem !important;
+                gap: 0.35rem !important;
             }
             .header-content .btn span:first-child {
                 font-size: 1.2rem !important;
@@ -922,13 +958,53 @@
             .logo-subtitle {
                 display: none;
             }
+            .header-btn-text-long {
+                display: none !important;
+            }
+            .header-btn-text-short {
+                display: inline !important;
+            }
+            .logo > div > div:first-child {
+                font-size: 1.6rem !important;
+            }
         }
-        @media (max-width: 900px) and (min-width: 769px) {
-            .header-content .btn span:last-child {
-                display: none;
+
+        /* Shrink desktop header buttons at mid-range desktop widths so they always fit */
+        @media (max-width: 1100px) and (min-width: 769px) {
+            .app-header {
+                padding: 0.75rem 0.75rem;
             }
             .header-content .btn {
-                padding: 0.5rem 0.6rem !important;
+                padding: 0.4rem 0.5rem !important;
+                font-size: 0.8rem !important;
+                gap: 0.3rem !important;
+            }
+            .header-content .btn span:first-child {
+                font-size: 1.1rem !important;
+            }
+            .logo-subtitle {
+                display: none;
+            }
+            .header-btn-text-long {
+                display: none !important;
+            }
+            .header-btn-text-short {
+                display: inline !important;
+            }
+            .logo > div > div:first-child {
+                font-size: 1.4rem !important;
+            }
+        }
+        @media (max-width: 950px) and (min-width: 769px) {
+            .header-content .btn span:last-child,
+            .header-btn-text-short {
+                display: none !important;
+            }
+            .header-content .btn {
+                padding: 0.5rem 0.5rem !important;
+            }
+            .logo > div > div:first-child {
+                font-size: 1.2rem !important;
             }
         }
 
@@ -6293,7 +6369,7 @@ return (
                     {/* DESKTOP HEADER - Full Navigation */}
                     <header className={`app-header desktop-header-only${effectSettings?.headerTheme && effectSettings.headerTheme !== 'none' ? ` header-theme-${effectSettings.headerTheme}` : ''}`}>
                         <div className="header-content">
-                            <div className="logo" onClick={() => { changeView('home'); scrollToTop(); }} style={{display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0}}>
+                            <div className="logo" onClick={() => { changeView('home'); scrollToTop(); }} style={{display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0}}>
                                 <svg onClick={handleSkullClick} className={getSkullClass()} width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
     <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
     <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
@@ -6314,51 +6390,54 @@ return (
                                     <div className="logo-subtitle">+ Mana Calculator</div>
                                 </div>
                             </div>
-                            <div style={{display: 'flex', gap: '1rem', alignItems: 'center', flexShrink: 0}}>
+                            <div style={{display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'nowrap'}}>
                                 <button
                                     className={btnClass("btn btn-secondary")}
                                     onClick={() => { changeView('home'); scrollToTop(); }}
                                     style={{
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        gap: '0.75rem',
-                                        padding: '0.75rem 1.5rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.6rem 1rem',
                                         whiteSpace: 'nowrap',
-                                        fontSize: '1.1rem'
+                                        fontSize: '1rem'
                                     }}
                                 >
-                                    <span style={{fontSize: '1.8rem'}}>🏠</span>
-                                    <span>Home</span>
+                                    <span style={{fontSize: '1.5rem'}}>🏠</span>
+                                    <span className="header-btn-text-long">Home</span>
+                                    <span className="header-btn-text-short" style={{display: 'none'}}>Home</span>
                                 </button>
-                                <button 
+                                <button
                                     className={btnClass("btn btn-secondary")}
                                     onClick={() => setShowCreateModal(true)}
                                     style={{
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        gap: '0.75rem',
-                                        padding: '0.75rem 1.5rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.6rem 1rem',
                                         whiteSpace: 'nowrap',
-                                        fontSize: '1.1rem'
+                                        fontSize: '1rem'
                                     }}
                                 >
-                                    <span style={{fontSize: '1.8rem'}}>⚔️</span>
-                                    <span>Create Deck</span>
+                                    <span style={{fontSize: '1.5rem'}}>⚔️</span>
+                                    <span className="header-btn-text-long">Create Deck</span>
+                                    <span className="header-btn-text-short" style={{display: 'none'}}>Create</span>
                                 </button>
-                                <button 
+                                <button
                                     className={btnClass("btn btn-secondary")}
                                     onClick={() => changeView('browse')}
                                     style={{
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        gap: '0.75rem',
-                                        padding: '0.75rem 1.5rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.6rem 1rem',
                                         whiteSpace: 'nowrap',
-                                        fontSize: '1.1rem'
+                                        fontSize: '1rem'
                                     }}
                                 >
-                                    <span style={{fontSize: '1.8rem'}}>📚</span>
-                                    <span>Browse Decks</span>
+                                    <span style={{fontSize: '1.5rem'}}>📚</span>
+                                    <span className="header-btn-text-long">Browse Decks</span>
+                                    <span className="header-btn-text-short" style={{display: 'none'}}>Browse</span>
                                 </button>
                                 {/* Skull Games Button */}
                                 <button
@@ -6367,14 +6446,15 @@ return (
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '0.75rem',
-                                        padding: '0.75rem 1.5rem',
+                                        gap: '0.5rem',
+                                        padding: '0.6rem 1rem',
                                         whiteSpace: 'nowrap',
-                                        fontSize: '1.1rem'
+                                        fontSize: '1rem'
                                     }}
                                 >
-                                    <span style={{fontSize: '1.8rem'}}>🎮</span>
-                                    <span>Skull Games</span>
+                                    <span style={{fontSize: '1.5rem'}}>🎮</span>
+                                    <span className="header-btn-text-long">Skull Games</span>
+                                    <span className="header-btn-text-short" style={{display: 'none'}}>Games</span>
                                 </button>
                                 {/* Mana Calculator - ALWAYS visible on desktop */}
                                 <button
@@ -6388,91 +6468,87 @@ return (
                                             }
                                         }, 200);
                                     }}
-                                    style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+                                    style={{display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', whiteSpace: 'nowrap', fontSize: '1rem'}}
                                 >
-                                    <svg width="24" height="24" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{flexShrink: 0}}>
+                                    <svg width="20" height="20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{flexShrink: 0}}>
                                         {/* Potion Flask */}
-                                        <path d="M 24 8 L 24 22 L 20 32 Q 18 38 18 44 Q 18 52 22 56 Q 26 60 32 60 Q 38 60 42 56 Q 46 52 46 44 Q 46 38 44 32 L 40 22 L 40 8 Z" 
-                                              fill="rgba(66, 135, 245, 0.3)" 
-                                              stroke="var(--blue-mana)" 
+                                        <path d="M 24 8 L 24 22 L 20 32 Q 18 38 18 44 Q 18 52 22 56 Q 26 60 32 60 Q 38 60 42 56 Q 46 52 46 44 Q 46 38 44 32 L 40 22 L 40 8 Z"
+                                              fill="rgba(66, 135, 245, 0.3)"
+                                              stroke="var(--blue-mana)"
                                               strokeWidth="2.5"/>
                                         {/* Liquid inside */}
-                                        <path d="M 21 36 Q 20 40 20 44 Q 20 50 23 54 Q 27 58 32 58 Q 37 58 41 54 Q 44 50 44 44 Q 44 40 43 36 Z" 
+                                        <path d="M 21 36 Q 20 40 20 44 Q 20 50 23 54 Q 27 58 32 58 Q 37 58 41 54 Q 44 50 44 44 Q 44 40 43 36 Z"
                                               fill="rgba(136, 106, 234, 0.5)"/>
                                         {/* Cork/Stopper */}
-                                        <rect x="26" y="4" width="12" height="6" rx="2" 
-                                              fill="var(--bone)" 
-                                              stroke="var(--border-color)" 
+                                        <rect x="26" y="4" width="12" height="6" rx="2"
+                                              fill="var(--bone)"
+                                              stroke="var(--border-color)"
                                               strokeWidth="1.5"/>
                                         {/* Highlights */}
-                                        <ellipse cx="28" cy="30" rx="4" ry="8" 
+                                        <ellipse cx="28" cy="30" rx="4" ry="8"
                                                  fill="rgba(255, 255, 255, 0.3)"/>
                                         {/* Bubbles */}
                                         <circle cx="30" cy="48" r="2" fill="rgba(255, 255, 255, 0.4)"/>
                                         <circle cx="35" cy="45" r="1.5" fill="rgba(255, 255, 255, 0.4)"/>
                                         <circle cx="34" cy="52" r="1" fill="rgba(255, 255, 255, 0.4)"/>
                                     </svg>
-                                    <span>Mana Calculator</span>
+                                    <span className="header-btn-text-long">Mana Calculator</span>
+                                    <span className="header-btn-text-short" style={{display: 'none'}}>Mana</span>
                                 </button>
                                 {user ? (
                                     <>
                                         {/* My Decks - only when logged in */}
-                                        <button 
+                                        <button
                                             className={btnClass("btn btn-secondary")}
                                             onClick={() => changeView('mydecks')}
                                             style={{
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                gap: '0.75rem',
-                                                padding: '0.75rem 1.5rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.5rem',
+                                                padding: '0.6rem 1rem',
                                                 whiteSpace: 'nowrap',
-                                                fontSize: '1.1rem'
+                                                fontSize: '1rem'
                                             }}
                                         >
-                                            <span style={{fontSize: '1.8rem'}}>📚</span>
-                                            <span>My Decks</span>
+                                            <span style={{fontSize: '1.5rem'}}>📚</span>
+                                            <span className="header-btn-text-long">My Decks</span>
+                                            <span className="header-btn-text-short" style={{display: 'none'}}>Decks</span>
                                         </button>
-                                        <button 
+                                        <button
                                             className={btnClass("btn btn-secondary")}
                                             onClick={() => setShowSettings(true)}
                                             style={{
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 justifyContent: 'center',
-                                                width: '40px',
-                                                height: '40px',
-                                                padding: '0.5rem',
-                                                fontSize: '1.2rem'
+                                                width: '36px',
+                                                height: '36px',
+                                                padding: '0.4rem',
+                                                fontSize: '1.1rem'
                                             }}
                                             title="Account Settings"
                                         >
                                             ⚙️
                                         </button>
-                                        <button 
+                                        <button
                                             className={btnClass("btn btn-primary")}
                                             onClick={handleLogout}
-                                            style={{display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0.5rem 1.2rem', lineHeight: 1.3}}
+                                            style={{display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.8rem', lineHeight: 1.2, whiteSpace: 'nowrap'}}
                                         >
-                                            <span style={{fontWeight: 600, fontSize: '0.95rem'}}>
-                                                👤 {user.email}
-                                            </span>
-                                            <span style={{fontSize: '0.7rem', opacity: 0.9}}>
-                                                Click to Logout
-                                            </span>
+                                            <span style={{fontSize: '1.1rem'}}>👤</span>
+                                            <span className="header-btn-text-long" style={{fontWeight: 600, fontSize: '0.85rem'}}>{user.email}</span>
+                                            <span className="header-btn-text-short" style={{display: 'none', fontWeight: 600, fontSize: '0.85rem'}}>Logout</span>
                                         </button>
                                     </>
                                 ) : (
-                                    <button 
+                                    <button
                                         className={btnClass("btn btn-primary")}
                                         onClick={() => setShowAuthModal(true)}
-                                        style={{display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0.5rem 1.2rem', lineHeight: 1.3}}
+                                        style={{display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.8rem', whiteSpace: 'nowrap'}}
                                     >
-                                        <span style={{fontWeight: 600, fontSize: '0.95rem'}}>
-                                            Login / Sign Up
-                                        </span>
-                                        <span style={{fontSize: '0.7rem', opacity: 0.9}}>
-                                            Save your decklists free!
-                                        </span>
+                                        <span style={{fontSize: '1.1rem'}}>🔑</span>
+                                        <span className="header-btn-text-long" style={{fontWeight: 600, fontSize: '0.85rem'}}>Login / Sign Up</span>
+                                        <span className="header-btn-text-short" style={{display: 'none', fontWeight: 600, fontSize: '0.85rem'}}>Login</span>
                                     </button>
                                 )}
                             </div>
