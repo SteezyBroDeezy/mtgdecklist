@@ -1405,7 +1405,20 @@
                 width: 100%;
                 margin-bottom: 1rem;
             }
-            
+
+            /* Deck grids - full width on mobile */
+            div[style*="gridTemplateColumns"] {
+                grid-template-columns: 1fr !important;
+                padding: 0 0.25rem !important;
+            }
+
+            /* Deck cards - full width and proper spacing */
+            .deck-card-animated {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
             /* Modal on mobile - full screen */
             .mobile-modal {
                 width: 100% !important;
@@ -1513,6 +1526,21 @@
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 2rem;
             margin-top: 2rem;
+        }
+
+        /* Mobile deck cards - full width */
+        @media (max-width: 768px) {
+            .deck-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem;
+                padding: 0 0.5rem;
+            }
+
+            .deck-card-animated {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
         }
 
         .deck-card {
@@ -1985,7 +2013,20 @@
                 width: 100%;
                 margin-bottom: 1rem;
             }
-            
+
+            /* Deck grids - full width on mobile */
+            div[style*="gridTemplateColumns"] {
+                grid-template-columns: 1fr !important;
+                padding: 0 0.25rem !important;
+            }
+
+            /* Deck cards - full width and proper spacing */
+            .deck-card-animated {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
             /* Modal on mobile - full screen */
             .mobile-modal {
                 width: 100% !important;
@@ -6254,21 +6295,22 @@ return (
                                 
                                 {/* Mana Calc Button (logged out) or My Decks Button (logged in) */}
                                 {user ? (
-                                    <button 
+                                    <button
                                         className={btnClass("btn btn-secondary")}
                                         onClick={() => changeView('browse')}
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '0.3rem',
-                                            padding: '0.5rem 0.75rem',
-                                            fontSize: '0.85rem',
-                                            borderRadius: '8px',
-                                            whiteSpace: 'nowrap'
+                                            justifyContent: 'center',
+                                            width: '45px',
+                                            height: '45px',
+                                            padding: '0.5rem',
+                                            fontSize: '1.5rem',
+                                            borderRadius: '8px'
                                         }}
+                                        title="My Decks"
                                     >
                                         📚
-                                        My Decks
                                     </button>
                                 ) : (
                                     <button 
@@ -6607,7 +6649,7 @@ return (
                                         ✨ Track Ratios, Not Card Names ✨
                                     </p>
                                     <p style={{color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.5rem'}}>
-                                        The easiest way to track your deck's structure
+                                        The easiest way to track your commander deck's structure
                                     </p>
                                     {!user && (
                                         <div style={{
@@ -7166,12 +7208,9 @@ return (
                                                                     <div className="deck-card-art-bg" style={{backgroundImage: `url(${deck.commanderArt})`, borderRadius: '10px'}} />
                                                                 )}
                                                                 <div className="deck-card-content">
-                                                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--accent-bright)', marginBottom: '0.75rem', fontSize: '1.3rem'}}>
-                                                                        {deck.name}
-                                                                    </h3>
-                                                                    {/* Commander Card Thumbnail — right-floated */}
+                                                                    {/* Commander Card Thumbnail — positioned at top right */}
                                                                     {deck.commander && (
-                                                                        <div style={{float: 'right', display: 'flex', gap: '0.3rem', marginLeft: '0.75rem', marginBottom: '0.5rem'}}>
+                                                                        <div style={{float: 'right', display: 'flex', gap: '0.3rem', marginLeft: '0.75rem', marginBottom: '0.5rem', marginTop: '-0.25rem'}}>
                                                                             <img
                                                                                 src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.commander)}`}
                                                                                 alt={deck.commander}
@@ -7188,7 +7227,10 @@ return (
                                                                             )}
                                                                         </div>
                                                                     )}
-                                                                    <div style={{display: 'flex', gap: '0.3rem', marginBottom: '0.75rem'}}>
+                                                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--accent-bright)', marginBottom: '0.75rem', fontSize: '1.3rem', wordWrap: 'break-word', overflowWrap: 'break-word'}}>
+                                                                        {deck.name}
+                                                                    </h3>
+                                                                    <div style={{display: 'flex', gap: '0.3rem', marginBottom: '0.75rem'}}
                                                                         {deck.colors && deck.colors.map(color => (
                                                                             <div key={color} className={`mana-pip ${effectSettings.manaPulse ? 'mana-pip-animated' : ''} pip-${color}`}></div>
                                                                         ))}
@@ -7596,16 +7638,17 @@ return (
                                 position: 'fixed', inset: 0, zIndex: 9999,
                                 background: 'rgba(0,0,0,0.85)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                padding: '1rem'
+                                padding: window.innerWidth <= 768 ? '0' : '1rem'
                             }}
                         >
                             <div style={{
                                 background: 'var(--bg-secondary)',
-                                border: '2px solid var(--border-color)',
-                                borderRadius: '16px',
+                                border: window.innerWidth <= 768 ? 'none' : '2px solid var(--border-color)',
+                                borderRadius: window.innerWidth <= 768 ? '0' : '16px',
                                 width: '100%',
-                                maxWidth: '960px',
-                                maxHeight: '90vh',
+                                maxWidth: window.innerWidth <= 768 ? '100%' : '960px',
+                                height: window.innerWidth <= 768 ? '100%' : 'auto',
+                                maxHeight: window.innerWidth <= 768 ? '100%' : '90vh',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 overflow: 'hidden',
@@ -7635,10 +7678,10 @@ return (
                                     <button
                                         onClick={() => setShowGamesModal(false)}
                                         style={{
-                                            background: 'none', border: '2px solid var(--border-color)',
+                                            background: 'var(--bg-secondary)', border: '2px solid var(--border-color)',
                                             color: 'var(--text-primary)', cursor: 'pointer',
-                                            borderRadius: '8px', width: '38px', height: '38px',
-                                            fontSize: '1.2rem', display: 'flex', alignItems: 'center',
+                                            borderRadius: '8px', width: '50px', height: '50px',
+                                            fontSize: '1.8rem', display: 'flex', alignItems: 'center',
                                             justifyContent: 'center', transition: 'all 0.2s'
                                         }}
                                         title="Close"
@@ -7653,7 +7696,7 @@ return (
                                         style={{
                                             width: '100%', height: '100%',
                                             border: 'none', display: 'block',
-                                            minHeight: '520px'
+                                            minHeight: window.innerWidth <= 768 ? '100%' : '520px'
                                         }}
                                         allow="autoplay"
                                         loading="lazy"
@@ -7662,26 +7705,35 @@ return (
 
                                 {/* Modal Footer */}
                                 <div style={{
-                                    padding: '0.75rem 1.5rem',
+                                    padding: '1rem 1.5rem',
                                     borderTop: '2px solid var(--border-color)',
                                     background: 'var(--bg-tertiary)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     flexShrink: 0
                                 }}>
-                                    <span style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>
-                                        🎮 Click inside the game area to focus · ESC closes this window
-                                    </span>
                                     <a
                                         href="https://steezybrodeezy.github.io/skull-games/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         style={{
-                                            color: 'var(--gold)', fontSize: '0.82rem',
-                                            textDecoration: 'none', display: 'flex',
-                                            alignItems: 'center', gap: '0.3rem'
+                                            background: 'linear-gradient(135deg, var(--gold) 0%, #b8860b 100%)',
+                                            color: '#000',
+                                            fontSize: '1.3rem',
+                                            fontWeight: 'bold',
+                                            textDecoration: 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '0.5rem',
+                                            padding: '1rem 2rem',
+                                            borderRadius: '12px',
+                                            border: '2px solid var(--gold)',
+                                            boxShadow: '0 4px 15px rgba(212, 175, 55, 0.4)',
+                                            width: window.innerWidth <= 768 ? '100%' : 'auto',
+                                            textAlign: 'center'
                                         }}
                                     >
-                                        ↗ Open full screen
+                                        ↗ Open Full Screen
                                     </a>
                                 </div>
                             </div>
@@ -8184,7 +8236,7 @@ return (
                                                             left: '1rem',
                                                             zIndex: 10
                                                         }}>
-                                                            <input 
+                                                            <input
                                                                 type="checkbox"
                                                                 checked={selectedDecksToDelete.includes(deck.id)}
                                                                 onChange={() => toggleDeckSelection(deck.id)}
@@ -8213,23 +8265,15 @@ return (
                                                             EXAMPLE
                                                         </div>
                                                     )}
-                                                    <h3 style={{
-                                                        fontFamily: 'MedievalSharp, cursive',
-                                                        color: 'var(--bone)',
-                                                        marginBottom: '0.5rem',
-                                                        fontSize: '1.3rem',
-                                                        paddingRight: deck.isExample ? '5rem' : '0'
-                                                    }}>
-                                                        {deck.name}
-                                                    </h3>
-                                                    {/* Commander Card Thumbnail(s) — right-floated */}
+                                                    {/* Commander Card Thumbnail(s) — positioned at top right */}
                                                     {deck.commander && (
                                                         <div style={{
                                                             float: 'right',
                                                             display: 'flex',
                                                             gap: '0.3rem',
                                                             marginLeft: '0.75rem',
-                                                            marginBottom: '0.5rem'
+                                                            marginBottom: '0.5rem',
+                                                            marginTop: '-0.25rem'
                                                         }}>
                                                             <img
                                                                 src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.commander)}`}
@@ -8257,6 +8301,17 @@ return (
                                                             )}
                                                         </div>
                                                     )}
+                                                    <h3 style={{
+                                                        fontFamily: 'MedievalSharp, cursive',
+                                                        color: 'var(--bone)',
+                                                        marginBottom: '0.5rem',
+                                                        fontSize: '1.3rem',
+                                                        paddingRight: deck.isExample ? '5rem' : '0',
+                                                        wordWrap: 'break-word',
+                                                        overflowWrap: 'break-word'
+                                                    }}>
+                                                        {deck.name}
+                                                    </h3>
                                                     <div style={{
                                                         display: 'flex',
                                                         gap: '0.5rem',
@@ -8600,22 +8655,15 @@ return (
                                                         />
                                                     )}
                                                     <div className="deck-card-content">
-                                                    <h3 style={{
-                                                        fontFamily: 'Pirata One, cursive',
-                                                        color: 'var(--accent-bright)',
-                                                        marginBottom: '0.75rem',
-                                                        fontSize: '1.3rem'
-                                                    }}>
-                                                        {deck.name}
-                                                    </h3>
-                                                    {/* Commander Card Thumbnail(s) — right-floated */}
+                                                    {/* Commander Card Thumbnail(s) — positioned at top right */}
                                                     {deck.commander && (
                                                         <div style={{
                                                             float: 'right',
                                                             display: 'flex',
                                                             gap: '0.3rem',
                                                             marginLeft: '0.75rem',
-                                                            marginBottom: '0.5rem'
+                                                            marginBottom: '0.5rem',
+                                                            marginTop: '-0.25rem'
                                                         }}>
                                                             <img
                                                                 src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.commander)}`}
@@ -8643,6 +8691,16 @@ return (
                                                             )}
                                                         </div>
                                                     )}
+                                                    <h3 style={{
+                                                        fontFamily: 'Pirata One, cursive',
+                                                        color: 'var(--accent-bright)',
+                                                        marginBottom: '0.75rem',
+                                                        fontSize: '1.3rem',
+                                                        wordWrap: 'break-word',
+                                                        overflowWrap: 'break-word'
+                                                    }}>
+                                                        {deck.name}
+                                                    </h3>
                                                     <div style={{
                                                         display: 'flex',
                                                         gap: '0.3rem',
@@ -8895,17 +8953,25 @@ return (
                                             {selectedDeck.strategy}
                                         </div>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => setSelectedDeck(null)}
                                         style={{
-                                            background: 'transparent',
-                                            border: 'none',
-                                            fontSize: '2rem',
+                                            background: 'var(--bg-secondary)',
+                                            border: '2px solid var(--border-color)',
+                                            fontSize: '2.5rem',
                                             cursor: 'pointer',
-                                            color: 'var(--text-muted)',
-                                            padding: '0',
-                                            lineHeight: 1
+                                            color: 'var(--text-primary)',
+                                            padding: '0.5rem 1rem',
+                                            lineHeight: 1,
+                                            borderRadius: '8px',
+                                            minWidth: '55px',
+                                            minHeight: '55px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            flexShrink: 0
                                         }}
+                                        title="Close"
                                     >
                                         ×
                                     </button>
