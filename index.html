@@ -7230,7 +7230,7 @@ return (
                                                                     <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--accent-bright)', marginBottom: '0.75rem', fontSize: '1.3rem', wordWrap: 'break-word', overflowWrap: 'break-word'}}>
                                                                         {deck.name}
                                                                     </h3>
-                                                                    <div style={{display: 'flex', gap: '0.3rem', marginBottom: '0.75rem'}}
+                                                                    <div style={{display: 'flex', gap: '0.3rem', marginBottom: '0.75rem'}}>
                                                                         {deck.colors && deck.colors.map(color => (
                                                                             <div key={color} className={`mana-pip ${effectSettings.manaPulse ? 'mana-pip-animated' : ''} pip-${color}`}></div>
                                                                         ))}
