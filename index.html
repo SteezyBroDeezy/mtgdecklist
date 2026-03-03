@@ -1143,8 +1143,26 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
-            position: relative;
-            z-index: 3;
+        }
+
+        /* Full-width deck grid for Browse and My Decks views */
+        .container.full-width-decks {
+            max-width: 100%;
+            padding: 2rem 1rem;
+        }
+
+        .container.full-width-decks > div {
+            max-width: 100% !important;
+            padding: 1rem !important;
+        }
+
+        @media (max-width: 768px) {
+            .container.full-width-decks {
+                padding: 1rem 0.5rem;
+            }
+            .container.full-width-decks > div {
+                padding: 0.5rem !important;
+            }
         }
 
         .hero {
@@ -6293,7 +6311,7 @@ return (
                                     🏠
                                 </button>
                                 
-                                {/* Mana Calc Button (logged out) or My Decks Button (logged in) */}
+                                {/* Mana Calc Button (logged out) or Browse Decks Button (logged in) */}
                                 {user ? (
                                     <button
                                         className={btnClass("btn btn-secondary")}
@@ -6308,9 +6326,9 @@ return (
                                             fontSize: '1.5rem',
                                             borderRadius: '8px'
                                         }}
-                                        title="My Decks"
+                                        title="Browse Decks"
                                     >
-                                        📚
+                                        🧭
                                     </button>
                                 ) : (
                                     <button 
@@ -6477,7 +6495,7 @@ return (
                                         fontSize: '1rem'
                                     }}
                                 >
-                                    <span style={{fontSize: '1.5rem'}}>📚</span>
+                                    <span style={{fontSize: '1.5rem'}}>🧭</span>
                                     <span className="header-btn-text-long">Browse Decks</span>
                                     <span className="header-btn-text-short" style={{display: 'none'}}>Browse</span>
                                 </button>
@@ -6552,7 +6570,7 @@ return (
                                                 fontSize: '1rem'
                                             }}
                                         >
-                                            <span style={{fontSize: '1.5rem'}}>📚</span>
+                                            <span style={{fontSize: '1.5rem'}}>🎴</span>
                                             <span className="header-btn-text-long">My Decks</span>
                                             <span className="header-btn-text-short" style={{display: 'none'}}>Decks</span>
                                         </button>
@@ -6679,11 +6697,11 @@ return (
                                         <span>Create Deck</span>
                                     </button>
 
-                                    <button 
+                                    <button
                                         className={btnClass("mobile-action-button btn btn-secondary")}
                                         onClick={() => changeView('browse')}
                                     >
-                                        <span>📚</span>
+                                        <span>🧭</span>
                                         <span>Browse Decks</span>
                                     </button>
 
@@ -6723,11 +6741,11 @@ return (
                                     </button>
 
                                     {user ? (
-                                        <button 
+                                        <button
                                             className={btnClass("mobile-action-button btn btn-secondary")}
                                             onClick={() => changeView('mydecks')}
                                         >
-                                            <span>📚</span>
+                                            <span>🎴</span>
                                             <span>My Decks</span>
                                         </button>
                                     ) : (
@@ -6960,18 +6978,18 @@ return (
                                         <span style={{fontSize: '1.5rem'}}>⚔️</span>
                                         <span>Create a New Deck</span>
                                     </button>
-                                    <button 
-                                        className={btnClass("btn btn-secondary")} 
+                                    <button
+                                        className={btnClass("btn btn-secondary")}
                                         onClick={() => changeView('browse')}
                                         style={{
-                                            padding: '1.2rem 2.5rem', 
+                                            padding: '1.2rem 2.5rem',
                                             fontSize: '1.2rem',
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: '0.8rem'
                                         }}
                                     >
-                                        <span style={{fontSize: '1.5rem'}}>📚</span>
+                                        <span style={{fontSize: '1.5rem'}}>🧭</span>
                                         <span>Browse Public Decks</span>
                                     </button>
                                     <button
@@ -8036,7 +8054,7 @@ return (
 
                     {/* My Decks View */}
                     {view === 'mydecks' && (
-                        <div className={`container ${pageTransitionClass}`}>
+                        <div className={`container full-width-decks ${pageTransitionClass}`}>
                             <div style={{
                                 maxWidth: '1200px',
                                 margin: window.innerWidth <= 768 ? '1rem auto' : '3rem auto',
@@ -8051,20 +8069,21 @@ return (
                                     gap: '1rem'
                                 }}>
                                     <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                        {/* Treasure Chest Icon for My Decks */}
                                         <svg onClick={handleSkullClick} className={getSkullClass()} width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
-                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            {/* Chest Base */}
+                                            <rect x="6" y="28" width="52" height="28" rx="4" fill="var(--rust)" stroke="var(--border-color)" strokeWidth="2"/>
+                                            {/* Chest Lid */}
+                                            <path d="M6 28 Q6 14 32 14 Q58 14 58 28 L58 28 L6 28 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2"/>
+                                            {/* Gold Bands */}
+                                            <rect x="4" y="26" width="56" height="6" rx="2" fill="var(--gold)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            <rect x="28" y="14" width="8" height="42" fill="var(--gold)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            {/* Lock */}
+                                            <circle cx="32" cy="38" r="6" fill="var(--gold)" stroke="var(--border-color)" strokeWidth="1.5"/>
+                                            <rect x="30" y="36" width="4" height="6" rx="1" fill="var(--border-color)"/>
+                                            {/* Sparkles */}
+                                            <circle cx="18" cy="22" r="2" fill="rgba(255,255,255,0.6)"/>
+                                            <circle cx="46" cy="20" r="1.5" fill="rgba(255,255,255,0.5)"/>
                                         </svg>
                                         <h1 style={{
                                             fontFamily: 'Pirata One, cursive',
@@ -8090,20 +8109,21 @@ return (
                                                 {decks.filter(d => !d.isExample).length}/100
                                             </span>
                                         </h1>
+                                        {/* Treasure Chest Icon for My Decks */}
                                         <svg onClick={handleSkullClick} className={getSkullClass()} width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
-                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            {/* Chest Base */}
+                                            <rect x="6" y="28" width="52" height="28" rx="4" fill="var(--rust)" stroke="var(--border-color)" strokeWidth="2"/>
+                                            {/* Chest Lid */}
+                                            <path d="M6 28 Q6 14 32 14 Q58 14 58 28 L58 28 L6 28 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2"/>
+                                            {/* Gold Bands */}
+                                            <rect x="4" y="26" width="56" height="6" rx="2" fill="var(--gold)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            <rect x="28" y="14" width="8" height="42" fill="var(--gold)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            {/* Lock */}
+                                            <circle cx="32" cy="38" r="6" fill="var(--gold)" stroke="var(--border-color)" strokeWidth="1.5"/>
+                                            <rect x="30" y="36" width="4" height="6" rx="1" fill="var(--border-color)"/>
+                                            {/* Sparkles */}
+                                            <circle cx="18" cy="22" r="2" fill="rgba(255,255,255,0.6)"/>
+                                            <circle cx="46" cy="20" r="1.5" fill="rgba(255,255,255,0.5)"/>
                                         </svg>
                                     </div>
                                     <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
@@ -8471,7 +8491,7 @@ return (
 
                     {/* Browse Public Decks View */}
                     {view === 'browse' && (
-                        <div className={`container ${pageTransitionClass}`}>
+                        <div className={`container full-width-decks ${pageTransitionClass}`}>
                             <div style={{
                                 maxWidth: '1200px',
                                 margin: '3rem auto',
@@ -8486,20 +8506,24 @@ return (
                                     gap: '1rem'
                                 }}>
                                     <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                        {/* Compass/Globe Icon for Browse Decks */}
                                         <svg onClick={handleSkullClick} className={getSkullClass()} width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
-                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            {/* Outer Ring */}
+                                            <circle cx="32" cy="32" r="28" fill="var(--bg-tertiary)" stroke="var(--gold)" strokeWidth="3"/>
+                                            {/* Inner Ring */}
+                                            <circle cx="32" cy="32" r="22" fill="none" stroke="var(--bone)" strokeWidth="2"/>
+                                            {/* Compass Rose */}
+                                            <polygon points="32,8 36,28 32,32 28,28" fill="var(--red-mana)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            <polygon points="32,56 28,36 32,32 36,36" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            <polygon points="8,32 28,28 32,32 28,36" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            <polygon points="56,32 36,36 32,32 36,28" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            {/* Center */}
+                                            <circle cx="32" cy="32" r="4" fill="var(--gold)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            {/* Direction Markers */}
+                                            <text x="32" y="7" textAnchor="middle" fill="var(--gold)" fontSize="6" fontWeight="bold">N</text>
+                                            <text x="32" y="62" textAnchor="middle" fill="var(--text-muted)" fontSize="5">S</text>
+                                            <text x="5" y="34" textAnchor="middle" fill="var(--text-muted)" fontSize="5">W</text>
+                                            <text x="59" y="34" textAnchor="middle" fill="var(--text-muted)" fontSize="5">E</text>
                                         </svg>
                                         <h1 style={{
                                             fontFamily: 'Pirata One, cursive',
@@ -8509,24 +8533,28 @@ return (
                                         }}>
                                             Browse Public Decks
                                         </h1>
+                                        {/* Compass/Globe Icon for Browse Decks */}
                                         <svg onClick={handleSkullClick} className={getSkullClass()} width="45" height="45" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
-                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
+                                            {/* Outer Ring */}
+                                            <circle cx="32" cy="32" r="28" fill="var(--bg-tertiary)" stroke="var(--gold)" strokeWidth="3"/>
+                                            {/* Inner Ring */}
+                                            <circle cx="32" cy="32" r="22" fill="none" stroke="var(--bone)" strokeWidth="2"/>
+                                            {/* Compass Rose */}
+                                            <polygon points="32,8 36,28 32,32 28,28" fill="var(--red-mana)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            <polygon points="32,56 28,36 32,32 36,36" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            <polygon points="8,32 28,28 32,32 28,36" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            <polygon points="56,32 36,36 32,32 36,28" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            {/* Center */}
+                                            <circle cx="32" cy="32" r="4" fill="var(--gold)" stroke="var(--border-color)" strokeWidth="1"/>
+                                            {/* Direction Markers */}
+                                            <text x="32" y="7" textAnchor="middle" fill="var(--gold)" fontSize="6" fontWeight="bold">N</text>
+                                            <text x="32" y="62" textAnchor="middle" fill="var(--text-muted)" fontSize="5">S</text>
+                                            <text x="5" y="34" textAnchor="middle" fill="var(--text-muted)" fontSize="5">W</text>
+                                            <text x="59" y="34" textAnchor="middle" fill="var(--text-muted)" fontSize="5">E</text>
                                         </svg>
                                     </div>
                                     <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-                                        <button 
+                                        <button
                                             className={btnClass("btn btn-secondary")}
                                             onClick={() => {
                                                 loadPublicDecks();
