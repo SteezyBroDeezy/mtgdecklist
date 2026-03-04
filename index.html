@@ -6320,39 +6320,6 @@ return (
                             
                             {/* Mobile Header Buttons */}
                             <div style={{display: 'flex', gap: '0.4rem', alignItems: 'center'}}>
-                                {/* My Decks Button - ONLY when logged in, prominent position */}
-                                {user && (
-                                    <button
-                                        className={btnClass("btn btn-primary")}
-                                        onClick={() => changeView('mydecks')}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '0.3rem',
-                                            padding: '0.5rem 0.75rem',
-                                            fontSize: '0.85rem',
-                                            borderRadius: '8px',
-                                            border: '2px solid var(--gold)',
-                                            background: 'linear-gradient(145deg, var(--bg-tertiary), var(--bg-secondary))'
-                                        }}
-                                        title="My Decks"
-                                    >
-                                        {/* Card Deck SVG Icon */}
-                                        <svg width="20" height="20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{flexShrink: 0}}>
-                                            {/* Back card */}
-                                            <rect x="8" y="6" width="36" height="48" rx="4" fill="var(--bg-tertiary)" stroke="var(--border-color)" strokeWidth="2"/>
-                                            {/* Middle card */}
-                                            <rect x="14" y="10" width="36" height="48" rx="4" fill="var(--bg-secondary)" stroke="var(--accent)" strokeWidth="2"/>
-                                            {/* Front card */}
-                                            <rect x="20" y="14" width="36" height="48" rx="4" fill="var(--bone)" stroke="var(--gold)" strokeWidth="2"/>
-                                            {/* Card symbol */}
-                                            <text x="38" y="44" textAnchor="middle" fill="var(--gold)" fontSize="18" fontWeight="bold">♠</text>
-                                        </svg>
-                                        <span style={{fontWeight: 600}}>My Decks</span>
-                                    </button>
-                                )}
-
                                 {/* Home Button */}
                                 <button
                                     className={btnClass("btn btn-secondary")}
@@ -6371,6 +6338,34 @@ return (
                                 >
                                     🏠
                                 </button>
+
+                                {/* My Decks Button - ONLY when logged in, icon only, same size */}
+                                {user && (
+                                    <button
+                                        className={btnClass("btn btn-secondary")}
+                                        onClick={() => changeView('mydecks')}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            width: '42px',
+                                            height: '42px',
+                                            padding: '0.5rem',
+                                            borderRadius: '8px',
+                                            border: '2px solid var(--gold)',
+                                            background: 'linear-gradient(145deg, var(--bg-tertiary), var(--bg-secondary))'
+                                        }}
+                                        title="My Decks"
+                                    >
+                                        {/* Card Deck SVG Icon */}
+                                        <svg width="24" height="24" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="8" y="6" width="36" height="48" rx="4" fill="var(--bg-tertiary)" stroke="var(--border-color)" strokeWidth="2"/>
+                                            <rect x="14" y="10" width="36" height="48" rx="4" fill="var(--bg-secondary)" stroke="var(--accent)" strokeWidth="2"/>
+                                            <rect x="20" y="14" width="36" height="48" rx="4" fill="var(--bone)" stroke="var(--gold)" strokeWidth="2"/>
+                                            <text x="38" y="44" textAnchor="middle" fill="var(--gold)" fontSize="18" fontWeight="bold">♠</text>
+                                        </svg>
+                                    </button>
+                                )}
 
                                 {/* Games Button (mobile) */}
                                 <button
