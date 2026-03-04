@@ -11,8 +11,15 @@
     <!-- EmailJS for bug report notifications -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
+        window.emailjsReady = false;
         (function() {
-            emailjs.init("W7xqPmA4N-cLvrA3M");
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init("W7xqPmA4N-cLvrA3M");
+                window.emailjsReady = true;
+                console.log('✅ EmailJS initialized successfully');
+            } else {
+                console.error('❌ EmailJS not loaded');
+            }
         })();
     </script>
     <style>
@@ -5603,18 +5610,29 @@
 
                     // Send email notification via EmailJS
                     try {
-                        console.log('📧 Sending email notification...');
-                        await emailjs.send('service_x285rvl', 'template_rqcv4ji', {
-                            user_email: email?.trim() || 'anonymous',
-                            user_id: user?.uid || 'anonymous',
-                            description: description.trim(),
-                            user_agent: navigator.userAgent,
-                            page_url: window.location.href,
-                            timestamp: timestamp
-                        });
-                        console.log('✅ Email notification sent!');
+                        console.log('📧 Attempting to send email notification...');
+                        console.log('EmailJS ready:', window.emailjsReady);
+                        console.log('EmailJS object:', typeof window.emailjs);
+
+                        if (typeof window.emailjs !== 'undefined' && window.emailjs.send) {
+                            const emailParams = {
+                                user_email: email?.trim() || 'anonymous',
+                                user_id: user?.uid || 'anonymous',
+                                description: description.trim(),
+                                user_agent: navigator.userAgent,
+                                page_url: window.location.href,
+                                timestamp: timestamp
+                            };
+                            console.log('📧 Sending with params:', emailParams);
+
+                            const response = await window.emailjs.send('service_x285rvl', 'template_rqcv4ji', emailParams);
+                            console.log('✅ Email notification sent!', response);
+                        } else {
+                            console.error('❌ EmailJS not available - window.emailjs:', window.emailjs);
+                        }
                     } catch (emailError) {
                         console.error('⚠️ Email notification failed:', emailError);
+                        console.error('Error details:', emailError.message, emailError.text);
                         // Don't fail the whole submission if email fails
                     }
 
