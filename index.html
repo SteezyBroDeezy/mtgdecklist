@@ -8,6 +8,13 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- EmailJS for bug report notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        (function() {
+            emailjs.init("W7xqPmA4N-cLvrA3M");
+        })();
+    </script>
     <style>
         * {
             margin: 0;
@@ -5566,7 +5573,7 @@
             const submitBugReport = async (description, email) => {
                 console.log('🐛 Bug report submission started');
                 console.log('Description length:', description?.length);
-                
+
                 if (!description || description.trim().length < 10) {
                     alert('❌ Please provide a detailed description (at least 10 characters).');
                     return false;
@@ -5581,6 +5588,8 @@
 
                 try {
                     console.log('📝 Attempting to save to Firebase...');
+                    const timestamp = new Date().toLocaleString();
+
                     await db.collection('bug-reports').add({
                         description: description.trim(),
                         email: email?.trim() || 'anonymous',
@@ -5590,7 +5599,25 @@
                         url: window.location.href
                     });
 
-                    console.log('✅ Bug report submitted successfully!');
+                    console.log('✅ Bug report saved to Firebase!');
+
+                    // Send email notification via EmailJS
+                    try {
+                        console.log('📧 Sending email notification...');
+                        await emailjs.send('service_x285rvl', 'template_rqcv4ji', {
+                            user_email: email?.trim() || 'anonymous',
+                            user_id: user?.uid || 'anonymous',
+                            description: description.trim(),
+                            user_agent: navigator.userAgent,
+                            page_url: window.location.href,
+                            timestamp: timestamp
+                        });
+                        console.log('✅ Email notification sent!');
+                    } catch (emailError) {
+                        console.error('⚠️ Email notification failed:', emailError);
+                        // Don't fail the whole submission if email fails
+                    }
+
                     return true;
                 } catch (error) {
                     console.error('❌ Error submitting bug report:', error);
@@ -6273,26 +6300,41 @@ return (
                                 </svg>
                             </div>
                             
-                            {/* Mana Calc + Login/Settings Buttons */}
-                            <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
-                                {/* Games Button (mobile) */}
-                                <button
-                                    className={btnClass("btn btn-secondary")}
-                                    onClick={() => setShowGamesModal(true)}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        width: '45px',
-                                        height: '45px',
-                                        padding: '0.5rem',
-                                        fontSize: '1.5rem',
-                                        borderRadius: '8px'
-                                    }}
-                                    title="Skull Games"
-                                >
-                                    🎮
-                                </button>
+                            {/* Mobile Header Buttons */}
+                            <div style={{display: 'flex', gap: '0.4rem', alignItems: 'center'}}>
+                                {/* My Decks Button - ONLY when logged in, prominent position */}
+                                {user && (
+                                    <button
+                                        className={btnClass("btn btn-primary")}
+                                        onClick={() => changeView('mydecks')}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '0.3rem',
+                                            padding: '0.5rem 0.75rem',
+                                            fontSize: '0.85rem',
+                                            borderRadius: '8px',
+                                            border: '2px solid var(--gold)',
+                                            background: 'linear-gradient(145deg, var(--bg-tertiary), var(--bg-secondary))'
+                                        }}
+                                        title="My Decks"
+                                    >
+                                        {/* Card Deck SVG Icon */}
+                                        <svg width="20" height="20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{flexShrink: 0}}>
+                                            {/* Back card */}
+                                            <rect x="8" y="6" width="36" height="48" rx="4" fill="var(--bg-tertiary)" stroke="var(--border-color)" strokeWidth="2"/>
+                                            {/* Middle card */}
+                                            <rect x="14" y="10" width="36" height="48" rx="4" fill="var(--bg-secondary)" stroke="var(--accent)" strokeWidth="2"/>
+                                            {/* Front card */}
+                                            <rect x="20" y="14" width="36" height="48" rx="4" fill="var(--bone)" stroke="var(--gold)" strokeWidth="2"/>
+                                            {/* Card symbol */}
+                                            <text x="38" y="44" textAnchor="middle" fill="var(--gold)" fontSize="18" fontWeight="bold">♠</text>
+                                        </svg>
+                                        <span style={{fontWeight: 600}}>My Decks</span>
+                                    </button>
+                                )}
+
                                 {/* Home Button */}
                                 <button
                                     className={btnClass("btn btn-secondary")}
@@ -6301,108 +6343,72 @@ return (
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        width: '45px',
-                                        height: '45px',
+                                        width: '42px',
+                                        height: '42px',
                                         padding: '0.5rem',
-                                        fontSize: '1.5rem',
+                                        fontSize: '1.3rem',
                                         borderRadius: '8px'
                                     }}
+                                    title="Home"
                                 >
                                     🏠
                                 </button>
-                                
-                                {/* Mana Calc Button (logged out) or Browse Decks Button (logged in) */}
+
+                                {/* Games Button (mobile) */}
+                                <button
+                                    className={btnClass("btn btn-secondary")}
+                                    onClick={() => setShowGamesModal(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: '42px',
+                                        height: '42px',
+                                        padding: '0.5rem',
+                                        fontSize: '1.3rem',
+                                        borderRadius: '8px'
+                                    }}
+                                    title="Skull Games"
+                                >
+                                    🎮
+                                </button>
+
+                                {/* Settings Button - ALWAYS visible */}
+                                <button
+                                    className={btnClass("btn btn-secondary")}
+                                    onClick={() => setShowSettings(true)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: '42px',
+                                        height: '42px',
+                                        padding: '0.5rem',
+                                        fontSize: '1.3rem',
+                                        borderRadius: '8px'
+                                    }}
+                                    title="Settings"
+                                >
+                                    ⚙️
+                                </button>
+
+                                {/* Login/Sign Out Button */}
                                 {user ? (
                                     <button
                                         className={btnClass("btn btn-secondary")}
-                                        onClick={() => changeView('browse')}
+                                        onClick={() => {
+                                            auth.signOut();
+                                            changeView('home');
+                                        }}
                                         style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            width: '45px',
-                                            height: '45px',
-                                            padding: '0.5rem',
-                                            fontSize: '1.5rem',
+                                            padding: '0.5rem 0.75rem',
+                                            fontSize: '0.8rem',
+                                            whiteSpace: 'nowrap',
                                             borderRadius: '8px'
                                         }}
-                                        title="Browse Decks"
                                     >
-                                        🧭
+                                        Sign Out
                                     </button>
-                                ) : (
-                                    <button 
-                                        className={btnClass("btn btn-secondary")}
-                                        onClick={() => changeView('calculator')}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '0.3rem',
-                                            padding: '0.5rem 0.75rem',
-                                            fontSize: '0.85rem',
-                                            borderRadius: '8px',
-                                            whiteSpace: 'nowrap'
-                                        }}
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{flexShrink: 0}}>
-                                            {/* Potion Flask */}
-                                            <path d="M 24 8 L 24 22 L 20 32 Q 18 38 18 44 Q 18 52 22 56 Q 26 60 32 60 Q 38 60 42 56 Q 46 52 46 44 Q 46 38 44 32 L 40 22 L 40 8 Z" 
-                                                  fill="rgba(66, 135, 245, 0.3)" 
-                                                  stroke="var(--blue-mana)" 
-                                                  strokeWidth="2.5"/>
-                                            {/* Liquid inside */}
-                                            <path d="M 21 36 Q 20 40 20 44 Q 20 50 23 54 Q 27 58 32 58 Q 37 58 41 54 Q 44 50 44 44 Q 44 40 43 36 Z" 
-                                                  fill="rgba(136, 106, 234, 0.5)"/>
-                                            {/* Cork/Stopper */}
-                                            <rect x="26" y="4" width="12" height="6" rx="2" 
-                                                  fill="var(--bone)" 
-                                                  stroke="var(--border-color)" 
-                                                  strokeWidth="1.5"/>
-                                            {/* Highlights */}
-                                            <ellipse cx="28" cy="30" rx="4" ry="8" 
-                                                     fill="rgba(255, 255, 255, 0.3)"/>
-                                            {/* Bubbles */}
-                                            <circle cx="30" cy="48" r="2" fill="rgba(255, 255, 255, 0.4)"/>
-                                            <circle cx="35" cy="45" r="1.5" fill="rgba(255, 255, 255, 0.4)"/>
-                                            <circle cx="34" cy="52" r="1" fill="rgba(255, 255, 255, 0.4)"/>
-                                        </svg>
-                                        Mana Calc
-                                    </button>
-                                )}
-                                
-                                {user ? (
-                                    <>
-                                        <button 
-                                            className={btnClass("btn btn-secondary")}
-                                            onClick={() => setShowSettings(true)}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                width: '45px',
-                                                height: '45px',
-                                                padding: '0.5rem',
-                                                fontSize: '1.5rem',
-                                                borderRadius: '8px'
-                                            }}
-                                        >
-                                            ⚙️
-                                        </button>
-                                        <button 
-                                            className={btnClass("btn btn-secondary")}
-                                            onClick={() => {
-                                                auth.signOut();
-                                                changeView('home');
-                                            }}
-                                            style={{
-                                                padding: '0.5rem 1rem',
-                                                fontSize: '0.9rem',
-                                                whiteSpace: 'nowrap'
-                                            }}
-                                        >
-                                            Sign Out
-                                        </button>
-                                    </>
                                 ) : (
                                     <button 
                                         className={btnClass("btn btn-primary")}
@@ -7947,8 +7953,8 @@ return (
                         />
                     )}
 
-                    {/* Settings Modal */}
-                    {showSettings && user && (
+                    {/* Settings Modal - Now available to everyone */}
+                    {showSettings && (
                         <SettingsModal
                             onClose={() => setShowSettings(false)}
                             user={user}
@@ -7957,6 +7963,7 @@ return (
                             removeFromPublicDecks={removeFromPublicDecks}
                             loadPublicDecks={loadPublicDecks}
                             onShowBugReport={() => setShowBugReportModal(true)}
+                            onShowAuth={() => setShowAuthModal(true)}
                             accentColor={accentColor}
                             setAccentColor={setAccentColor}
                             seasonalTheme={seasonalTheme}
@@ -10144,10 +10151,11 @@ return (
 
 
         // Settings Modal Component
-        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport, accentColor, setAccentColor, seasonalTheme, setSeasonalTheme, ACCENT_COLORS, SEASONAL_THEMES, achievements, siteTheme, setSiteTheme, SITE_THEMES, effectSettings, updateEffectSetting }) {
+        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport, accentColor, setAccentColor, seasonalTheme, setSeasonalTheme, ACCENT_COLORS, SEASONAL_THEMES, achievements, siteTheme, setSiteTheme, SITE_THEMES, effectSettings, updateEffectSetting, onShowAuth }) {
             const [bulkPrivacy, setBulkPrivacy] = useState('public');
             const [updating, setUpdating] = useState(false);
-            const [activeTab, setActiveTab] = useState('privacy'); // privacy, appearance, effects, achievements
+            // Default to 'appearance' for non-logged in users, 'privacy' for logged in
+            const [activeTab, setActiveTab] = useState(user ? 'privacy' : 'appearance');
 
             const userDecks = decks.filter(deck => 
                 !deck.isExample && 
@@ -10249,11 +10257,59 @@ return (
                         <h2 style={{
                             fontFamily: 'Pirata One, cursive',
                             color: 'var(--gold)',
-                            marginBottom: '1.5rem',
+                            marginBottom: '1rem',
                             fontSize: '2rem'
                         }}>
                             ⚙️ Settings
                         </h2>
+
+                        {/* Banner for non-logged in users */}
+                        {!user && (
+                            <div style={{
+                                background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(139, 69, 19, 0.15) 100%)',
+                                border: '2px solid var(--gold)',
+                                borderRadius: '12px',
+                                padding: '1rem 1.25rem',
+                                marginBottom: '1.5rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '1rem',
+                                flexWrap: 'wrap'
+                            }}>
+                                <div style={{flex: 1, minWidth: '200px'}}>
+                                    <div style={{
+                                        color: 'var(--gold)',
+                                        fontWeight: 700,
+                                        fontSize: '1rem',
+                                        marginBottom: '0.25rem'
+                                    }}>
+                                        🎨 Customize Your Experience!
+                                    </div>
+                                    <div style={{
+                                        color: 'var(--text-secondary)',
+                                        fontSize: '0.85rem'
+                                    }}>
+                                        Create an account to save your theme and effect settings.
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => { onClose(); onShowAuth && onShowAuth(); }}
+                                    style={{
+                                        padding: '0.6rem 1.25rem',
+                                        background: 'var(--gold)',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        color: 'var(--bg-primary)',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                        fontSize: '0.9rem',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
+                                    🔑 Create Account
+                                </button>
+                            </div>
+                        )}
 
                         {/* Settings Tabs */}
                         <div style={{
@@ -10265,10 +10321,11 @@ return (
                             paddingBottom: '0.5rem'
                         }}>
                             {[
-                                { id: 'privacy', label: '🔒 Privacy' },
+                                // Only show Privacy tab for logged in users
+                                ...(user ? [{ id: 'privacy', label: '🔒 Privacy' }] : []),
                                 { id: 'appearance', label: '🎨 Theme' },
                                 { id: 'effects', label: '✨ Effects' },
-                                { id: 'achievements', label: '🏆 Badges' }
+                                ...(user ? [{ id: 'achievements', label: '🏆 Badges' }] : [])
                             ].map(tab => (
                                 <button
                                     key={tab.id}
@@ -11167,9 +11224,12 @@ return (
 
             // Authentication Modal Component
     function AuthModal({ onClose, onSignUp, onLogin }) {
-        const [isSignUp, setIsSignUp] = useState(true);
+        const [isSignUp, setIsSignUp] = useState(false); // Default to Login
         const [email, setEmail] = useState('');
         const [password, setPassword] = useState('');
+        const [confirmPassword, setConfirmPassword] = useState(''); // For sign up confirmation
+        const [signUpStep, setSignUpStep] = useState(1); // Step 1: email, Step 2: password
+        const [emailChecking, setEmailChecking] = useState(false);
         const [isForgotPassword, setIsForgotPassword] = useState(false);
         const [resetEmailSent, setResetEmailSent] = useState(false);
 
@@ -11263,23 +11323,9 @@ return (
                             marginBottom: '1.5rem',
                             borderBottom: '1px solid var(--border-color)'
                         }}>
+                            {/* Login tab - PRIMARY */}
                             <button
-                                onClick={() => setIsSignUp(true)}
-                                style={{
-                                    flex: 1,
-                                    background: 'transparent',
-                                    border: 'none',
-                                    color: isSignUp ? 'var(--gold)' : 'var(--text-muted)',
-                                    padding: '0.75rem',
-                                    cursor: 'pointer',
-                                    borderBottom: isSignUp ? '2px solid var(--gold)' : 'none',
-                                    fontWeight: isSignUp ? 600 : 400
-                                }}
-                            >
-                                Sign Up
-                            </button>
-                            <button
-                                onClick={() => setIsSignUp(false)}
+                                onClick={() => { setIsSignUp(false); setSignUpStep(1); }}
                                 style={{
                                     flex: 1,
                                     background: 'transparent',
@@ -11291,7 +11337,23 @@ return (
                                     fontWeight: !isSignUp ? 600 : 400
                                 }}
                             >
-                                Login
+                                🔑 Login
+                            </button>
+                            {/* Create Account tab - SECONDARY */}
+                            <button
+                                onClick={() => { setIsSignUp(true); setSignUpStep(1); setEmail(''); setPassword(''); setConfirmPassword(''); }}
+                                style={{
+                                    flex: 1,
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: isSignUp ? 'var(--gold)' : 'var(--text-muted)',
+                                    padding: '0.75rem',
+                                    cursor: 'pointer',
+                                    borderBottom: isSignUp ? '2px solid var(--gold)' : 'none',
+                                    fontWeight: isSignUp ? 600 : 400
+                                }}
+                            >
+                                ✨ Create Account
                             </button>
                         </div>
                     )}
@@ -11425,8 +11487,267 @@ return (
                                 </button>
                             </form>
                         )
+                    ) : isSignUp ? (
+                        // CREATE ACCOUNT - Multi-step form
+                        <div>
+                            {/* Step indicator */}
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                gap: '0.5rem',
+                                marginBottom: '1.5rem'
+                            }}>
+                                <div style={{
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '50%',
+                                    background: 'var(--gold)',
+                                    color: 'var(--bg-primary)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: '0.9rem'
+                                }}>1</div>
+                                <div style={{
+                                    width: '40px',
+                                    height: '2px',
+                                    background: signUpStep >= 2 ? 'var(--gold)' : 'var(--border-color)',
+                                    alignSelf: 'center'
+                                }}/>
+                                <div style={{
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '50%',
+                                    background: signUpStep >= 2 ? 'var(--gold)' : 'var(--border-color)',
+                                    color: signUpStep >= 2 ? 'var(--bg-primary)' : 'var(--text-muted)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: '0.9rem'
+                                }}>2</div>
+                            </div>
+
+                            {signUpStep === 1 ? (
+                                // Step 1: Email
+                                <form onSubmit={async (e) => {
+                                    e.preventDefault();
+                                    if (!email) return;
+
+                                    setEmailChecking(true);
+                                    try {
+                                        // Check if email/username is already taken
+                                        const methods = await auth.fetchSignInMethodsForEmail(email.includes('@') ? email : email + '@deckbuilder.local');
+                                        if (methods.length > 0) {
+                                            alert('This email/username is already registered. Please login or use a different one.');
+                                            setEmailChecking(false);
+                                            return;
+                                        }
+                                        // Email is available, proceed to step 2
+                                        setSignUpStep(2);
+                                    } catch (error) {
+                                        // If error is invalid-email, the email format is wrong
+                                        if (error.code === 'auth/invalid-email') {
+                                            // For usernames, we can proceed (Firebase will handle it)
+                                            setSignUpStep(2);
+                                        } else {
+                                            console.log('Email check:', error);
+                                            // Proceed anyway for other errors
+                                            setSignUpStep(2);
+                                        }
+                                    }
+                                    setEmailChecking(false);
+                                }}>
+                                    <div style={{marginBottom: '1.5rem'}}>
+                                        <label style={{
+                                            display: 'block',
+                                            marginBottom: '0.5rem',
+                                            color: 'var(--text-secondary)',
+                                            fontWeight: 600
+                                        }}>
+                                            Step 1: Enter Your Email or Username
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                background: 'var(--bg-tertiary)',
+                                                border: '2px solid var(--border-color)',
+                                                borderRadius: '8px',
+                                                color: 'var(--text-primary)',
+                                                fontSize: '1rem'
+                                            }}
+                                            placeholder="email@example.com or username"
+                                            autoFocus
+                                        />
+                                        <div style={{
+                                            fontSize: '0.8rem',
+                                            color: 'var(--accent-bright)',
+                                            marginTop: '0.75rem',
+                                            padding: '0.75rem',
+                                            background: 'rgba(212, 175, 55, 0.1)',
+                                            borderRadius: '8px',
+                                            border: '1px solid var(--gold)',
+                                            lineHeight: '1.5'
+                                        }}>
+                                            💡 <strong>Tip:</strong> Using an email allows you to reset your password if you get locked out of your account.
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary"
+                                        disabled={emailChecking}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            fontSize: '1rem',
+                                            fontWeight: 600,
+                                            opacity: emailChecking ? 0.7 : 1
+                                        }}
+                                    >
+                                        {emailChecking ? 'Checking...' : 'Continue →'}
+                                    </button>
+                                </form>
+                            ) : (
+                                // Step 2: Password
+                                <form onSubmit={(e) => {
+                                    e.preventDefault();
+                                    if (password !== confirmPassword) {
+                                        alert('Passwords do not match. Please try again.');
+                                        return;
+                                    }
+                                    if (password.length < 6) {
+                                        alert('Password must be at least 6 characters.');
+                                        return;
+                                    }
+                                    onSignUp(email, password);
+                                }}>
+                                    <div style={{
+                                        marginBottom: '1rem',
+                                        padding: '0.75rem',
+                                        background: 'var(--bg-tertiary)',
+                                        borderRadius: '8px',
+                                        fontSize: '0.9rem'
+                                    }}>
+                                        <span style={{color: 'var(--text-muted)'}}>Creating account for: </span>
+                                        <strong style={{color: 'var(--gold)'}}>{email}</strong>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSignUpStep(1)}
+                                            style={{
+                                                marginLeft: '0.5rem',
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: 'var(--accent-bright)',
+                                                cursor: 'pointer',
+                                                fontSize: '0.8rem',
+                                                textDecoration: 'underline'
+                                            }}
+                                        >
+                                            Change
+                                        </button>
+                                    </div>
+
+                                    <div style={{marginBottom: '1rem'}}>
+                                        <label style={{
+                                            display: 'block',
+                                            marginBottom: '0.5rem',
+                                            color: 'var(--text-secondary)',
+                                            fontWeight: 600
+                                        }}>
+                                            Create Password
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                            minLength={6}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                background: 'var(--bg-tertiary)',
+                                                border: '2px solid var(--border-color)',
+                                                borderRadius: '8px',
+                                                color: 'var(--text-primary)',
+                                                fontSize: '1rem'
+                                            }}
+                                            placeholder="At least 6 characters"
+                                            autoFocus
+                                        />
+                                    </div>
+
+                                    <div style={{marginBottom: '1.5rem'}}>
+                                        <label style={{
+                                            display: 'block',
+                                            marginBottom: '0.5rem',
+                                            color: 'var(--text-secondary)',
+                                            fontWeight: 600
+                                        }}>
+                                            Confirm Password
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            required
+                                            minLength={6}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                background: 'var(--bg-tertiary)',
+                                                border: `2px solid ${confirmPassword && password !== confirmPassword ? 'var(--red-mana)' : 'var(--border-color)'}`,
+                                                borderRadius: '8px',
+                                                color: 'var(--text-primary)',
+                                                fontSize: '1rem'
+                                            }}
+                                            placeholder="Type password again"
+                                        />
+                                        {confirmPassword && password !== confirmPassword && (
+                                            <div style={{
+                                                color: 'var(--red-mana)',
+                                                fontSize: '0.8rem',
+                                                marginTop: '0.5rem'
+                                            }}>
+                                                ⚠️ Passwords do not match
+                                            </div>
+                                        )}
+                                        {confirmPassword && password === confirmPassword && password.length >= 6 && (
+                                            <div style={{
+                                                color: 'var(--green-mana)',
+                                                fontSize: '0.8rem',
+                                                marginTop: '0.5rem'
+                                            }}>
+                                                ✓ Passwords match
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary"
+                                        disabled={password !== confirmPassword || password.length < 6}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            fontSize: '1rem',
+                                            fontWeight: 600,
+                                            opacity: (password !== confirmPassword || password.length < 6) ? 0.5 : 1
+                                        }}
+                                    >
+                                        ✨ Create Account
+                                    </button>
+                                </form>
+                            )}
+                        </div>
                     ) : (
-                        // Normal Login/Signup Form
+                        // LOGIN Form
                         <form onSubmit={handleSubmit}>
                             <div style={{marginBottom: '1rem'}}>
                                 <label style={{
@@ -11437,7 +11758,7 @@ return (
                                     Username or Email
                                 </label>
                                 <input
-                                    type={isSignUp ? "text" : "text"}
+                                    type="text"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -11450,19 +11771,8 @@ return (
                                         color: 'var(--text-primary)',
                                         fontSize: '1rem'
                                     }}
-                                    placeholder={isSignUp ? "username or email@example.com" : "username or email@example.com"}
+                                    placeholder="username or email@example.com"
                                 />
-                                {isSignUp && (
-                                    <div style={{
-                                        fontSize: '0.75rem',
-                                        color: 'var(--text-muted)',
-                                        marginTop: '0.5rem',
-                                        fontStyle: 'italic',
-                                        lineHeight: '1.4'
-                                    }}>
-                                        💡 Tip: Using an email allows you to reset your password if you get locked out of your account.
-                                    </div>
-                                )}
                             </div>
 
                             <div style={{marginBottom: '1.5rem'}}>
@@ -11488,30 +11798,28 @@ return (
                                         color: 'var(--text-primary)',
                                         fontSize: '1rem'
                                     }}
-                                    placeholder="At least 6 characters"
+                                    placeholder="Your password"
                                 />
-                                {!isSignUp && (
-                                    <div style={{
-                                        marginTop: '0.5rem',
-                                        textAlign: 'right'
-                                    }}>
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsForgotPassword(true)}
-                                            style={{
-                                                background: 'transparent',
-                                                border: 'none',
-                                                color: 'var(--gold)',
-                                                fontSize: '0.8rem',
-                                                cursor: 'pointer',
-                                                textDecoration: 'underline',
-                                                padding: '0.25rem'
-                                            }}
-                                        >
-                                            Forgot Password?
-                                        </button>
-                                    </div>
-                                )}
+                                <div style={{
+                                    marginTop: '0.5rem',
+                                    textAlign: 'right'
+                                }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsForgotPassword(true)}
+                                        style={{
+                                            background: 'transparent',
+                                            border: 'none',
+                                            color: 'var(--gold)',
+                                            fontSize: '0.8rem',
+                                            cursor: 'pointer',
+                                            textDecoration: 'underline',
+                                            padding: '0.25rem'
+                                        }}
+                                    >
+                                        Forgot Password?
+                                    </button>
+                                </div>
                             </div>
 
                             <button
@@ -11524,7 +11832,7 @@ return (
                                     fontWeight: 600
                                 }}
                             >
-                                {isSignUp ? 'Create Account' : 'Login'}
+                                🔑 Login
                             </button>
                         </form>
                     )}
@@ -11536,9 +11844,9 @@ return (
                             color: 'var(--text-muted)',
                             fontSize: '0.85rem'
                         }}>
-                            {isSignUp 
+                            {isSignUp
                                 ? 'Already have an account? Switch to Login above.'
-                                : "Don't have an account? Switch to Sign Up above."}
+                                : "Don't have an account? Create one above!"}
                         </p>
                     )}
                 </div>
