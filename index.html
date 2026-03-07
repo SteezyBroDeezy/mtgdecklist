@@ -6407,6 +6407,10 @@ return (
                                             changeView('home');
                                         }}
                                         style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            height: '42px',
                                             padding: '0.5rem 0.75rem',
                                             fontSize: '0.8rem',
                                             whiteSpace: 'nowrap',
@@ -6416,15 +6420,18 @@ return (
                                         Sign Out
                                     </button>
                                 ) : (
-                                    <button 
+                                    <button
                                         className={btnClass("btn btn-primary")}
                                         onClick={() => setShowAuthModal(true)}
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
+                                            justifyContent: 'center',
                                             gap: '0.5rem',
+                                            height: '42px',
                                             padding: '0.5rem 1rem',
-                                            fontSize: '0.9rem'
+                                            fontSize: '0.9rem',
+                                            borderRadius: '8px'
                                         }}
                                     >
                                         <span>🔑</span>
@@ -6472,7 +6479,8 @@ return (
                                         gap: '0.5rem',
                                         padding: '0.6rem 1rem',
                                         whiteSpace: 'nowrap',
-                                        fontSize: '1rem'
+                                        fontSize: '1rem',
+                                        height: '40px'
                                     }}
                                 >
                                     <span style={{fontSize: '1.5rem'}}>🏠</span>
@@ -6488,7 +6496,8 @@ return (
                                         gap: '0.5rem',
                                         padding: '0.6rem 1rem',
                                         whiteSpace: 'nowrap',
-                                        fontSize: '1rem'
+                                        fontSize: '1rem',
+                                        height: '40px'
                                     }}
                                 >
                                     <span style={{fontSize: '1.5rem'}}>⚔️</span>
@@ -6504,7 +6513,8 @@ return (
                                         gap: '0.5rem',
                                         padding: '0.6rem 1rem',
                                         whiteSpace: 'nowrap',
-                                        fontSize: '1rem'
+                                        fontSize: '1rem',
+                                        height: '40px'
                                     }}
                                 >
                                     <span style={{fontSize: '1.5rem'}}>🧭</span>
@@ -6521,7 +6531,8 @@ return (
                                         gap: '0.5rem',
                                         padding: '0.6rem 1rem',
                                         whiteSpace: 'nowrap',
-                                        fontSize: '1rem'
+                                        fontSize: '1rem',
+                                        height: '40px'
                                     }}
                                 >
                                     <span style={{fontSize: '1.5rem'}}>🎮</span>
@@ -6540,7 +6551,7 @@ return (
                                             }
                                         }, 200);
                                     }}
-                                    style={{display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', whiteSpace: 'nowrap', fontSize: '1rem'}}
+                                    style={{display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', whiteSpace: 'nowrap', fontSize: '1rem', height: '40px'}}
                                 >
                                     <svg width="20" height="20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{flexShrink: 0}}>
                                         {/* Potion Flask */}
@@ -6578,7 +6589,8 @@ return (
                                             gap: '0.5rem',
                                             padding: '0.6rem 1rem',
                                             whiteSpace: 'nowrap',
-                                            fontSize: '1rem'
+                                            fontSize: '1rem',
+                                            height: '40px'
                                         }}
                                     >
                                         <span style={{fontSize: '1.5rem'}}>🃏</span>
@@ -6595,10 +6607,10 @@ return (
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        width: '36px',
-                                        height: '36px',
+                                        width: '40px',
+                                        height: '40px',
                                         padding: '0.4rem',
-                                        fontSize: '1.1rem'
+                                        fontSize: '1.3rem'
                                     }}
                                     title="Settings"
                                 >
@@ -6610,7 +6622,7 @@ return (
                                     <button
                                         className={btnClass("btn btn-secondary")}
                                         onClick={handleLogout}
-                                        style={{display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.8rem', lineHeight: 1.2, whiteSpace: 'nowrap'}}
+                                        style={{display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.8rem', lineHeight: 1.2, whiteSpace: 'nowrap', height: '40px'}}
                                     >
                                         <span style={{fontSize: '1.1rem'}}>👤</span>
                                         <span className="header-btn-text-long" style={{fontWeight: 600, fontSize: '0.85rem'}}>{user.email}</span>
@@ -6620,7 +6632,7 @@ return (
                                     <button
                                         className={btnClass("btn btn-primary")}
                                         onClick={() => setShowAuthModal(true)}
-                                        style={{display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.8rem', whiteSpace: 'nowrap'}}
+                                        style={{display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.8rem', whiteSpace: 'nowrap', height: '40px'}}
                                     >
                                         <span style={{fontSize: '1.1rem'}}>🔑</span>
                                         <span className="header-btn-text-long" style={{fontWeight: 600, fontSize: '0.85rem'}}>Login</span>
