@@ -6075,6 +6075,128 @@ const saveDeckToFirebase = async (deck) => {
     auth.signOut();
 };
 
+            // Admin delete deck from public decks (admin only)
+            const adminDeleteDeck = async (deckId, deckName) => {
+                if (user?.email !== 'j0e_howard@hotmail.com') {
+                    alert('⛔ Unauthorized: Admin access required');
+                    return;
+                }
+
+                try {
+                    // Delete from publicDecks collection
+                    await db.collection("publicDecks").doc(deckId).delete();
+
+                    // Refresh public decks list
+                    await loadPublicDecks();
+
+                    alert(`✅ Successfully deleted "${deckName}" from Browse Decks`);
+                    console.log(`🗑️ Admin deleted public deck: ${deckName} (${deckId})`);
+                } catch (error) {
+                    console.error("Error deleting deck:", error);
+                    alert(`❌ Failed to delete deck: ${error.message}`);
+                }
+            };
+
+            // Admin: Find and cleanup orphaned decks
+            const [orphanedDecks, setOrphanedDecks] = useState([]);
+            const [scanningOrphans, setScanningOrphans] = useState(false);
+
+            const scanForOrphanedDecks = async () => {
+                if (user?.email !== 'j0e_howard@hotmail.com') {
+                    alert('⛔ Unauthorized: Admin access required');
+                    return;
+                }
+
+                setScanningOrphans(true);
+                try {
+                    // Get all public decks
+                    const publicSnapshot = await db.collection("publicDecks").get();
+                    const orphans = [];
+
+                    for (const doc of publicSnapshot.docs) {
+                        const deckData = doc.data();
+                        const userId = deckData.userId;
+                        const originalDeckId = deckData.originalDeckId;
+
+                        // Check if the original deck still exists
+                        let isOrphan = false;
+                        let reason = '';
+
+                        if (originalDeckId) {
+                            const originalDoc = await db.collection("decks").doc(originalDeckId).get();
+                            if (!originalDoc.exists) {
+                                isOrphan = true;
+                                reason = 'Original deck deleted';
+                            }
+                        }
+
+                        // Check if user still exists (optional - might be slow)
+                        if (!isOrphan && userId) {
+                            const userDoc = await db.collection("users").doc(userId).get();
+                            if (!userDoc.exists) {
+                                // User doc doesn't exist, but this might be normal for older decks
+                                // Check if user has ANY decks
+                                const userDecks = await db.collection("decks").where("userId", "==", userId).limit(1).get();
+                                if (userDecks.empty) {
+                                    isOrphan = true;
+                                    reason = 'User account deleted or inactive';
+                                }
+                            }
+                        }
+
+                        if (isOrphan) {
+                            orphans.push({
+                                id: doc.id,
+                                name: deckData.name,
+                                commander: deckData.commander,
+                                reason: reason,
+                                createdAt: deckData.createdAt,
+                                userId: userId
+                            });
+                        }
+                    }
+
+                    setOrphanedDecks(orphans);
+                    if (orphans.length === 0) {
+                        alert('✅ No orphaned decks found! All public decks are linked properly.');
+                    } else {
+                        alert(`⚠️ Found ${orphans.length} orphaned deck(s). Review them below.`);
+                    }
+                } catch (error) {
+                    console.error("Error scanning for orphans:", error);
+                    alert(`❌ Error scanning: ${error.message}`);
+                } finally {
+                    setScanningOrphans(false);
+                }
+            };
+
+            const deleteOrphanedDeck = async (deckId, deckName) => {
+                if (confirm(`Delete orphaned deck "${deckName}"?`)) {
+                    await adminDeleteDeck(deckId, deckName);
+                    setOrphanedDecks(prev => prev.filter(d => d.id !== deckId));
+                }
+            };
+
+            const deleteAllOrphanedDecks = async () => {
+                if (orphanedDecks.length === 0) return;
+
+                if (!confirm(`⚠️ Delete ALL ${orphanedDecks.length} orphaned decks?\n\nThis cannot be undone!`)) {
+                    return;
+                }
+
+                try {
+                    for (const deck of orphanedDecks) {
+                        await db.collection("publicDecks").doc(deck.id).delete();
+                    }
+                    await loadPublicDecks();
+                    setOrphanedDecks([]);
+                    alert(`✅ Successfully deleted ${orphanedDecks.length} orphaned decks`);
+                } catch (error) {
+                    console.error("Error deleting orphaned decks:", error);
+                    alert(`❌ Error: ${error.message}`);
+                }
+            };
+
               // Delete decks function
             const handleDeleteDecks = async () => {
                 if (selectedDecksToDelete.length === 0) {
@@ -7998,6 +8120,13 @@ return (
                             SITE_THEMES={SITE_THEMES}
                             effectSettings={effectSettings}
                             updateEffectSetting={updateEffectSetting}
+                            // Admin props
+                            publicDecks={publicDecks}
+                            orphanedDecks={orphanedDecks}
+                            scanningOrphans={scanningOrphans}
+                            scanForOrphanedDecks={scanForOrphanedDecks}
+                            deleteOrphanedDeck={deleteOrphanedDeck}
+                            deleteAllOrphanedDecks={deleteAllOrphanedDecks}
                         />
                     )}
 
@@ -8870,6 +8999,39 @@ return (
                                                         <span>Click to View</span>
                                                     </div>
                                                     </div>{/* End deck-card-content */}
+
+                                                    {/* Admin Delete Button - Only visible to admin */}
+                                                    {user?.email === 'j0e_howard@hotmail.com' && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (confirm(`🗑️ ADMIN DELETE\n\nAre you sure you want to delete "${deck.name}"?\n\nThis will permanently remove it from Browse Decks.`)) {
+                                                                    adminDeleteDeck(deck.id, deck.name);
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: '8px',
+                                                                left: '8px',
+                                                                width: '32px',
+                                                                height: '32px',
+                                                                borderRadius: '50%',
+                                                                background: 'rgba(220, 53, 69, 0.9)',
+                                                                border: '2px solid #ff6b6b',
+                                                                color: 'white',
+                                                                fontSize: '1rem',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                zIndex: 10,
+                                                                boxShadow: '0 2px 8px rgba(0,0,0,0.4)'
+                                                            }}
+                                                            title="Admin: Delete this deck"
+                                                        >
+                                                            🗑️
+                                                        </button>
+                                                    )}
                                                 </div>
                                             ))}
                                     </div>
@@ -10173,7 +10335,7 @@ return (
 
 
         // Settings Modal Component
-        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport, accentColor, setAccentColor, seasonalTheme, setSeasonalTheme, ACCENT_COLORS, SEASONAL_THEMES, achievements, siteTheme, setSiteTheme, SITE_THEMES, effectSettings, updateEffectSetting, onShowAuth }) {
+        function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport, accentColor, setAccentColor, seasonalTheme, setSeasonalTheme, ACCENT_COLORS, SEASONAL_THEMES, achievements, siteTheme, setSiteTheme, SITE_THEMES, effectSettings, updateEffectSetting, onShowAuth, publicDecks, orphanedDecks, scanningOrphans, scanForOrphanedDecks, deleteOrphanedDeck, deleteAllOrphanedDecks }) {
             const [bulkPrivacy, setBulkPrivacy] = useState('public');
             const [updating, setUpdating] = useState(false);
             // Default to 'appearance' for non-logged in users, 'privacy' for logged in
@@ -10347,7 +10509,9 @@ return (
                                 ...(user ? [{ id: 'privacy', label: '🔒 Privacy' }] : []),
                                 { id: 'appearance', label: '🎨 Theme' },
                                 { id: 'effects', label: '✨ Effects' },
-                                ...(user ? [{ id: 'achievements', label: '🏆 Badges' }] : [])
+                                ...(user ? [{ id: 'achievements', label: '🏆 Badges' }] : []),
+                                // Admin tab - only for admin user
+                                ...(user?.email === 'j0e_howard@hotmail.com' ? [{ id: 'admin', label: '🛡️ Admin' }] : [])
                             ].map(tab => (
                                 <button
                                     key={tab.id}
@@ -11236,6 +11400,241 @@ return (
                                 fontSize: '0.9rem'
                             }}>
                                 Current Progress: {achievements?.decksCreated || 0} decks created
+                            </div>
+                        </div>
+                        )}
+
+                        {/* Admin Tab - Only for admin user */}
+                        {activeTab === 'admin' && user?.email === 'j0e_howard@hotmail.com' && (
+                        <div style={{
+                            background: 'var(--bg-tertiary)',
+                            borderRadius: '12px',
+                            padding: '1.5rem'
+                        }}>
+                            <h3 style={{
+                                color: 'var(--gold)',
+                                marginBottom: '1rem',
+                                fontSize: '1.3rem',
+                                fontFamily: 'Pirata One, cursive',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}>
+                                🛡️ Admin Tools
+                            </h3>
+
+                            <p style={{
+                                color: 'var(--text-secondary)',
+                                marginBottom: '1.5rem',
+                                fontSize: '0.9rem'
+                            }}>
+                                Manage public decks and clean up orphaned entries.
+                            </p>
+
+                            {/* Orphan Deck Scanner */}
+                            <div style={{
+                                background: 'var(--bg-card)',
+                                border: '2px solid var(--border-color)',
+                                borderRadius: '10px',
+                                padding: '1.25rem',
+                                marginBottom: '1rem'
+                            }}>
+                                <h4 style={{
+                                    color: 'var(--bone)',
+                                    marginBottom: '0.75rem',
+                                    fontSize: '1.1rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem'
+                                }}>
+                                    🔍 Orphaned Deck Scanner
+                                </h4>
+                                <p style={{
+                                    color: 'var(--text-muted)',
+                                    fontSize: '0.85rem',
+                                    marginBottom: '1rem'
+                                }}>
+                                    Find public decks where the original deck was deleted or the user account no longer exists.
+                                </p>
+                                <button
+                                    onClick={scanForOrphanedDecks}
+                                    disabled={scanningOrphans}
+                                    style={{
+                                        padding: '0.75rem 1.5rem',
+                                        background: scanningOrphans ? 'var(--text-muted)' : 'linear-gradient(135deg, #4a90d9 0%, #357abd 100%)',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        color: 'white',
+                                        fontWeight: 600,
+                                        cursor: scanningOrphans ? 'not-allowed' : 'pointer',
+                                        fontSize: '0.95rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem'
+                                    }}
+                                >
+                                    {scanningOrphans ? (
+                                        <>⏳ Scanning...</>
+                                    ) : (
+                                        <>🔍 Scan for Orphaned Decks</>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* Orphaned Decks Results */}
+                            {orphanedDecks.length > 0 && (
+                                <div style={{
+                                    background: 'rgba(220, 53, 69, 0.1)',
+                                    border: '2px solid rgba(220, 53, 69, 0.5)',
+                                    borderRadius: '10px',
+                                    padding: '1.25rem',
+                                    marginBottom: '1rem'
+                                }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        marginBottom: '1rem'
+                                    }}>
+                                        <h4 style={{
+                                            color: '#ff6b6b',
+                                            margin: 0,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem'
+                                        }}>
+                                            ⚠️ Found {orphanedDecks.length} Orphaned Deck(s)
+                                        </h4>
+                                        <button
+                                            onClick={deleteAllOrphanedDecks}
+                                            style={{
+                                                padding: '0.5rem 1rem',
+                                                background: '#dc3545',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                color: 'white',
+                                                fontWeight: 600,
+                                                cursor: 'pointer',
+                                                fontSize: '0.85rem'
+                                            }}
+                                        >
+                                            🗑️ Delete All
+                                        </button>
+                                    </div>
+                                    <div style={{
+                                        maxHeight: '300px',
+                                        overflowY: 'auto',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '0.5rem'
+                                    }}>
+                                        {orphanedDecks.map(deck => (
+                                            <div
+                                                key={deck.id}
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    padding: '0.75rem',
+                                                    background: 'var(--bg-card)',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid var(--border-color)'
+                                                }}
+                                            >
+                                                <div>
+                                                    <div style={{
+                                                        color: 'var(--bone)',
+                                                        fontWeight: 600,
+                                                        fontSize: '0.95rem'
+                                                    }}>
+                                                        {deck.name}
+                                                    </div>
+                                                    <div style={{
+                                                        color: 'var(--text-muted)',
+                                                        fontSize: '0.8rem'
+                                                    }}>
+                                                        {deck.commander} • {deck.reason}
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => deleteOrphanedDeck(deck.id, deck.name)}
+                                                    style={{
+                                                        padding: '0.4rem 0.75rem',
+                                                        background: 'rgba(220, 53, 69, 0.8)',
+                                                        border: 'none',
+                                                        borderRadius: '6px',
+                                                        color: 'white',
+                                                        cursor: 'pointer',
+                                                        fontSize: '0.8rem'
+                                                    }}
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Quick Stats */}
+                            <div style={{
+                                background: 'var(--bg-card)',
+                                border: '2px solid var(--border-color)',
+                                borderRadius: '10px',
+                                padding: '1.25rem'
+                            }}>
+                                <h4 style={{
+                                    color: 'var(--bone)',
+                                    marginBottom: '0.75rem',
+                                    fontSize: '1.1rem'
+                                }}>
+                                    📊 Quick Stats
+                                </h4>
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(2, 1fr)',
+                                    gap: '0.75rem',
+                                    fontSize: '0.9rem'
+                                }}>
+                                    <div style={{
+                                        padding: '0.75rem',
+                                        background: 'var(--bg-tertiary)',
+                                        borderRadius: '8px',
+                                        textAlign: 'center'
+                                    }}>
+                                        <div style={{color: 'var(--gold)', fontSize: '1.5rem', fontWeight: 700}}>
+                                            {publicDecks?.length || 0}
+                                        </div>
+                                        <div style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>
+                                            Public Decks
+                                        </div>
+                                    </div>
+                                    <div style={{
+                                        padding: '0.75rem',
+                                        background: 'var(--bg-tertiary)',
+                                        borderRadius: '8px',
+                                        textAlign: 'center'
+                                    }}>
+                                        <div style={{color: '#ff6b6b', fontSize: '1.5rem', fontWeight: 700}}>
+                                            {orphanedDecks?.length || 0}
+                                        </div>
+                                        <div style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>
+                                            Orphaned
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{
+                                marginTop: '1rem',
+                                padding: '0.75rem',
+                                background: 'rgba(212, 175, 55, 0.1)',
+                                border: '1px solid var(--gold)',
+                                borderRadius: '8px',
+                                fontSize: '0.85rem',
+                                color: 'var(--text-secondary)'
+                            }}>
+                                💡 <strong>Tip:</strong> You can also delete decks directly from Browse Decks - look for the red 🗑️ button on each card.
                             </div>
                         </div>
                         )}
