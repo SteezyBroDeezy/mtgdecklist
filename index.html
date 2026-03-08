@@ -92,6 +92,72 @@
             100% { background-position: 200% center; }
         }
 
+        /* Sites Navigation Bar */
+        .sites-bar {
+            background: linear-gradient(135deg, #2a241f 0%, #1a1612 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.4rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-family: 'Segoe UI', sans-serif;
+            position: sticky;
+            top: 0;
+            z-index: 10001;
+        }
+        .sites-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .sites-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.7rem;
+        }
+        .site-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.2s ease;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .site-link:hover {
+            color: var(--gold);
+        }
+        .site-link.current {
+            color: var(--gold);
+            cursor: default;
+        }
+        .sites-bar .sites-message {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+        @media (max-width: 768px) {
+            .sites-bar {
+                padding: 0.3rem 0.75rem;
+                gap: 0.5rem;
+            }
+            .sites-links {
+                gap: 0.75rem;
+            }
+            .sites-label {
+                display: none;
+            }
+            .site-link {
+                font-size: 0.75rem;
+            }
+            .sites-bar .sites-message {
+                display: none;
+            }
+        }
+
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -6370,6 +6436,17 @@ return (
                             </div>
                         </div>
                     )}
+
+                    {/* Sites Navigation Bar */}
+                    <div className="sites-bar">
+                        <div className="sites-links">
+                            <span className="sites-label">MTG Suite:</span>
+                            <a href="https://steezybrodeezy.github.io/mtg-card-search/" className="site-link">🔍 Card Search</a>
+                            <a href="https://steezybrodeezy.github.io/mtgpricetracker/" className="site-link">📊 Price Oracle</a>
+                            <span className="site-link current">💀 Deck Skeleton</span>
+                        </div>
+                        <span className="sites-message">✨ One account syncs across all three!</span>
+                    </div>
 
                     {/* MOBILE HEADER - Logo + Title + Buttons */}
                     <header className="app-header mobile-header-only" style={{display: 'none'}}>
