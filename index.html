@@ -5831,7 +5831,7 @@
                     });
                     await Promise.all(deletePromises);
                     console.log(`🗑️ Cleaned up ${deleted} public decks not belonging to current user`);
-                    await loadPublicDecks();
+                    await loadPublicDecks(true);
                     alert(`✅ Removed ${deleted} public deck(s) not belonging to your account.`);
                 } catch (error) {
                     console.error("Error cleaning up public decks:", error);
@@ -5839,7 +5839,18 @@
             };
 
             // Load all public decks
-            const loadPublicDecks = async () => {
+            // Cache timestamp to avoid reloading public decks too frequently
+            const publicDecksCacheRef = React.useRef({ lastLoaded: 0 });
+            
+            const loadPublicDecks = async (forceReload = false) => {
+                // Only reload if 5+ minutes have passed (or forced)
+                const now = Date.now();
+                const cacheAge = now - publicDecksCacheRef.current.lastLoaded;
+                if (!forceReload && cacheAge < 300000 && publicDecksCacheRef.current.lastLoaded > 0) {
+                    console.log("📦 Using cached public decks (age: " + Math.round(cacheAge/1000) + "s)");
+                    return;
+                }
+                
                 console.log("Loading public decks...");
                 try {
                     const snapshot = await db.collection("publicDecks")
@@ -5852,15 +5863,20 @@
                         const data = doc.data();
                         decks.push({
                             ...data,
-                            id: doc.id,  // Use the publicDecks document ID (override any id in data)
-                            publicDeckId: doc.id  // Also store as publicDeckId for clarity
+                            id: doc.id,
+                            publicDeckId: doc.id
                         });
                     });
                     
                     setPublicDecks(decks);
+                    publicDecksCacheRef.current.lastLoaded = now;
                     console.log("✅ Loaded", decks.length, "public decks");
                 } catch (error) {
-                    console.error("❌ Error loading public decks:", error);
+                    if (error.code === 'resource-exhausted') {
+                        console.warn("⚠️ Firebase quota exceeded - using cached public decks");
+                    } else {
+                        console.error("❌ Error loading public decks:", error);
+                    }
                 }
             };
 
@@ -5883,58 +5899,51 @@
 
             // Increment view count when someone views a deck
             const incrementViewCount = async (publicDeckId) => {
-                console.log("🔢 incrementViewCount called with ID:", publicDeckId);
                 try {
-                    // First, get the deck to check if viewCount exists
-                    const deckRef = db.collection("publicDecks").doc(publicDeckId);
-                    console.log("📖 Fetching deck document...");
-                    const deckDoc = await deckRef.get();
+                    // Single write operation - no read needed!
+                    // FieldValue.increment works even if the field doesn't exist yet
+                    await db.collection("publicDecks").doc(publicDeckId).update({
+                        viewCount: firebase.firestore.FieldValue.increment(1)
+                    });
+                    console.log("✅ View count incremented for deck:", publicDeckId);
                     
-                    if (deckDoc.exists) {
-                        const data = deckDoc.data();
-                        console.log("✅ Deck found, current viewCount:", data.viewCount);
-                        // If viewCount doesn't exist, initialize it first
-                        if (data.viewCount === undefined) {
-                            console.log("🆕 viewCount doesn't exist, initializing to 1...");
-                            await deckRef.update({ viewCount: 1 });
-                            console.log("✅ View count initialized to 1 for deck:", publicDeckId);
-                        } else {
-                            console.log("➕ Incrementing existing viewCount...");
-                            await deckRef.update({
-                                viewCount: firebase.firestore.FieldValue.increment(1)
-                            });
-                            console.log("✅ View count incremented for deck:", publicDeckId);
-                        }
-                    } else {
-                        console.log("❌ Deck document not found:", publicDeckId);
-                    }
+                    // Update local state instead of reloading all public decks
+                    setPublicDecks(prev => prev.map(d => 
+                        d.id === publicDeckId 
+                            ? { ...d, viewCount: (d.viewCount || 0) + 1 } 
+                            : d
+                    ));
                 } catch (error) {
-                    console.error("❌ Error incrementing view count:", error);
+                    // Gracefully handle quota exceeded - don't break the UI
+                    if (error.code === 'resource-exhausted') {
+                        console.warn("⚠️ Firebase quota exceeded - view count not updated");
+                    } else {
+                        console.error("❌ Error incrementing view count:", error);
+                    }
                 }
             };
 
             // Increment build similar count when someone builds similar
             const incrementBuildCount = async (publicDeckId) => {
                 try {
-                    // First, get the deck to check if buildSimilarCount exists
-                    const deckRef = db.collection("publicDecks").doc(publicDeckId);
-                    const deckDoc = await deckRef.get();
+                    // Single write operation - no read needed!
+                    await db.collection("publicDecks").doc(publicDeckId).update({
+                        buildSimilarCount: firebase.firestore.FieldValue.increment(1)
+                    });
+                    console.log("✅ Build count incremented for deck:", publicDeckId);
                     
-                    if (deckDoc.exists) {
-                        const data = deckDoc.data();
-                        // If buildSimilarCount doesn't exist, initialize it first
-                        if (data.buildSimilarCount === undefined) {
-                            await deckRef.update({ buildSimilarCount: 1 });
-                            console.log("✅ Build count initialized to 1 for deck:", publicDeckId);
-                        } else {
-                            await deckRef.update({
-                                buildSimilarCount: firebase.firestore.FieldValue.increment(1)
-                            });
-                            console.log("✅ Build count incremented for deck:", publicDeckId);
-                        }
-                    }
+                    // Update local state instead of reloading all public decks
+                    setPublicDecks(prev => prev.map(d => 
+                        d.id === publicDeckId 
+                            ? { ...d, buildSimilarCount: (d.buildSimilarCount || 0) + 1 } 
+                            : d
+                    ));
                 } catch (error) {
-                    console.error("❌ Error incrementing build count:", error);
+                    if (error.code === 'resource-exhausted') {
+                        console.warn("⚠️ Firebase quota exceeded - build count not updated");
+                    } else {
+                        console.error("❌ Error incrementing build count:", error);
+                    }
                 }
             };
                     
@@ -6006,7 +6015,7 @@ const saveDeckToFirebase = async (deck) => {
         if (deck.isPublic) {
             await addToPublicDecks({...deckWithUser, id: docRef.id});
             // Refresh public decks list
-            await loadPublicDecks();
+            await loadPublicDecks(true);
         }
         
         // Show success with count
@@ -6046,7 +6055,11 @@ const saveDeckToFirebase = async (deck) => {
                     setDecks(firebaseDecks);
                     console.log("Loaded", firebaseDecks.length, "decks from Firebase (with migrations applied)");
                 } catch (error) {
-                    console.error("Error loading decks:", error);
+                    if (error.code === 'resource-exhausted') {
+                        console.warn("⚠️ Firebase quota exceeded - could not load decks. Try again later.");
+                    } else {
+                        console.error("Error loading decks:", error);
+                    }
                 }
             };
 
@@ -6153,7 +6166,7 @@ const saveDeckToFirebase = async (deck) => {
                     await db.collection("publicDecks").doc(deckId).delete();
 
                     // Refresh public decks list
-                    await loadPublicDecks();
+                    await loadPublicDecks(true);
 
                     alert(`✅ Successfully deleted "${deckName}" from Browse Decks`);
                     console.log(`🗑️ Admin deleted public deck: ${deckName} (${deckId})`);
@@ -6254,7 +6267,7 @@ const saveDeckToFirebase = async (deck) => {
                     for (const deck of orphanedDecks) {
                         await db.collection("publicDecks").doc(deck.id).delete();
                     }
-                    await loadPublicDecks();
+                    await loadPublicDecks(true);
                     setOrphanedDecks([]);
                     alert(`✅ Successfully deleted ${orphanedDecks.length} orphaned decks`);
                 } catch (error) {
@@ -6326,7 +6339,7 @@ const saveDeckToFirebase = async (deck) => {
                     
                     // Reload decks and public decks
                     await loadDecksFromFirebase(user.uid);
-                    await loadPublicDecks();
+                    await loadPublicDecks(true);
 
                     // Reset delete mode
                     setSelectedDecksToDelete([]);
@@ -7446,7 +7459,6 @@ return (
                                                                 onMouseLeave={(e) => effectSettings.cardTilt && resetCardTilt(e.currentTarget)}
                                                                 onClick={async () => {
                                                                     await incrementViewCount(deck.id);
-                                                                    await loadPublicDecks();
                                                                     setSelectedDeck(deck);
                                                                 }}
                                                             >
@@ -8129,7 +8141,7 @@ return (
 
                                     // Reload decks from Firebase
                                     await loadDecksFromFirebase(user.uid);
-                                    await loadPublicDecks();
+                                    await loadPublicDecks(true);
 
                                     hideLoading();
                                     triggerConfetti();
@@ -8793,7 +8805,7 @@ return (
                                         <button
                                             className={btnClass("btn btn-secondary")}
                                             onClick={() => {
-                                                loadPublicDecks();
+                                                loadPublicDecks(true);
                                                 alert('🔄 Public decks refreshed!');
                                             }}
                                             style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}
@@ -8903,8 +8915,6 @@ return (
                                                         console.log("🖱️ Deck card clicked, ID:", deck.id);
                                                         // Increment view count when deck is clicked
                                                         await incrementViewCount(deck.id);
-                                                        // Reload public decks to show updated count
-                                                        await loadPublicDecks();
                                                         setSelectedDeck(deck);
                                                     }}
                                                 >
@@ -10367,8 +10377,6 @@ return (
                                                 // Increment build count if this is a public deck (has viewCount field)
                                                 if (selectedDeck.viewCount !== undefined && selectedDeck.id) {
                                                     await incrementBuildCount(selectedDeck.id);
-                                                    // Reload public decks to show updated count
-                                                    await loadPublicDecks();
                                                 }
                                                 // Set the deck to copy and open create modal
                                                 setDeckToCopy(selectedDeck);
@@ -10495,7 +10503,7 @@ return (
                         });
                     });
                     
-                    await loadPublicDecks(); // Reload public decks
+                    await loadPublicDecks(true); // Reload public decks
                     window.location.reload(); // Refresh to show updated decks
                 } catch (error) {
                     console.error("Error updating decks:", error);
