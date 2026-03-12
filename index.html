@@ -3,24 +3,35 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck Skeleton + Mana Calculator v2.9.0 PIP-SECTIONS-EXPANDABLE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=MedievalSharp&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- EmailJS for bug report notifications -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <title>MTG Deck Skeleton + Mana Calculator</title>
+    
+    <!-- Preconnect to external domains - starts DNS/TCP/TLS early -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.scryfall.com" crossorigin>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+    
+    <!-- React, ReactDOM, Babel moved BELOW the loading screen so users see it instantly -->
+    <!-- EmailJS for bug report notifications - deferred to not block page render -->
     <script>
         window.emailjsReady = false;
-        (function() {
+        window.initEmailJS = function() {
+            if (window.emailjsReady) return;
             if (typeof emailjs !== 'undefined') {
                 emailjs.init("W7xqPmA4N-cLvrA3M");
                 window.emailjsReady = true;
-                console.log('✅ EmailJS initialized successfully');
-            } else {
-                console.error('❌ EmailJS not loaded');
             }
-        })();
+        };
+        // Load EmailJS after page renders
+        window.addEventListener('load', function() {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
+            script.onload = function() { window.initEmailJS(); };
+            document.head.appendChild(script);
+        });
     </script>
     <style>
         * {
@@ -62,7 +73,7 @@
         }
 
         body {
-            font-family: 'Cinzel', serif;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             font-size: 1.1rem;
             font-weight: 600;
             background: linear-gradient(135deg, #1a1612 0%, #2d1f1a 35%, #1a1612 70%, #0f0d0b 100%);
@@ -191,7 +202,7 @@
 
         .loading-text {
             margin-top: 2rem;
-            font-family: 'MedievalSharp', cursive;
+            font-family: inherit;
             font-size: 1.5rem;
             color: var(--gold);
             background: linear-gradient(90deg, var(--gold), var(--accent-bright), var(--gold));
@@ -998,6 +1009,20 @@
         .desktop-header-only .header-content > div:last-child {
             gap: 0.4rem !important;
         }
+        /* Logo should shrink rather than clip */
+        .desktop-header-only .logo {
+            overflow: hidden;
+            min-width: 0;
+            flex-shrink: 1;
+        }
+        .desktop-header-only .logo > div {
+            overflow: hidden;
+        }
+        .desktop-header-only .logo > div > div:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
         /* Shrink desktop header buttons at larger widths */
         @media (max-width: 1500px) and (min-width: 1301px) {
@@ -1005,15 +1030,12 @@
                 padding: 1rem 1.5rem;
             }
             .header-content .btn {
-                padding: 0.5rem 0.8rem !important;
-                font-size: 0.9rem !important;
-                gap: 0.4rem !important;
+                padding: 0.5rem 0.7rem !important;
+                font-size: 0.85rem !important;
+                gap: 0.3rem !important;
             }
             .header-content .btn span:first-child {
-                font-size: 1.3rem !important;
-            }
-            .logo-subtitle {
-                display: none;
+                font-size: 1.2rem !important;
             }
             .header-btn-text-long {
                 display: none !important;
@@ -1028,24 +1050,18 @@
                 padding: 0.8rem 1rem;
             }
             .header-content .btn {
-                padding: 0.45rem 0.7rem !important;
-                font-size: 0.85rem !important;
-                gap: 0.35rem !important;
+                padding: 0.4rem 0.55rem !important;
+                font-size: 0.8rem !important;
+                gap: 0.25rem !important;
             }
             .header-content .btn span:first-child {
-                font-size: 1.2rem !important;
-            }
-            .logo-subtitle {
-                display: none;
+                font-size: 1.1rem !important;
             }
             .header-btn-text-long {
                 display: none !important;
             }
             .header-btn-text-short {
                 display: inline !important;
-            }
-            .logo > div > div:first-child {
-                font-size: 1.6rem !important;
             }
         }
 
@@ -1055,15 +1071,12 @@
                 padding: 0.75rem 0.75rem;
             }
             .header-content .btn {
-                padding: 0.4rem 0.5rem !important;
-                font-size: 0.8rem !important;
-                gap: 0.3rem !important;
+                padding: 0.4rem 0.45rem !important;
+                font-size: 0.75rem !important;
+                gap: 0.2rem !important;
             }
             .header-content .btn span:first-child {
-                font-size: 1.1rem !important;
-            }
-            .logo-subtitle {
-                display: none;
+                font-size: 1rem !important;
             }
             .header-btn-text-long {
                 display: none !important;
@@ -1071,8 +1084,8 @@
             .header-btn-text-short {
                 display: inline !important;
             }
-            .logo > div > div:first-child {
-                font-size: 1.4rem !important;
+            .logo-title-full {
+                display: none !important;
             }
         }
         @media (max-width: 950px) and (min-width: 769px) {
@@ -1081,10 +1094,7 @@
                 display: none !important;
             }
             .header-content .btn {
-                padding: 0.5rem 0.5rem !important;
-            }
-            .logo > div > div:first-child {
-                font-size: 1.2rem !important;
+                padding: 0.45rem 0.45rem !important;
             }
         }
 
@@ -1141,16 +1151,12 @@
         }
 
         .logo {
-            font-family: 'Pirata One', cursive;
-            font-size: 2.2rem;
+            font-family: 'Righteous', cursive;
+            font-size: 1.2rem;
             font-weight: 400;
-            background: linear-gradient(135deg, var(--bone) 0%, var(--gold) 50%, var(--bone) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--bone);
             cursor: pointer;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            letter-spacing: 2px;
+            letter-spacing: 0.5px;
         }
 
         .logo-subtitle {
@@ -1159,7 +1165,6 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-top: 0.3rem;
-            font-family: 'MedievalSharp', cursive;
         }
 
         .btn {
@@ -1170,7 +1175,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 1.1rem;
-            font-family: 'Cinzel', serif;
+            font-family: inherit;
             letter-spacing: 1px;
             position: relative;
             overflow: hidden;
@@ -1203,7 +1208,7 @@
         input, select, textarea {
             font-size: 1.1rem !important;
             font-weight: 600 !important;
-            font-family: 'Cinzel', serif !important;
+            font-family: inherit !important;
             position: relative;
             z-index: 3;
         }
@@ -1211,11 +1216,11 @@
         label {
             font-size: 1.2rem !important;
             font-weight: 700 !important;
-            font-family: 'Cinzel', serif !important;
+            font-family: inherit !important;
         }
 
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'Cinzel', serif !important;
+            
             font-weight: 900 !important;
         }
 
@@ -1253,13 +1258,11 @@
         }
 
         .hero h1 {
-            font-family: 'Cinzel', serif;
+            font-family: 'Righteous', cursive;
             font-size: 3.5rem;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--accent-bright) 50%, var(--gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--gold);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
         }
 
         .btn-primary {
@@ -1708,7 +1711,7 @@
         }
 
         .modal-title {
-            font-family: 'Cinzel Decorative', serif;
+            font-family: 'Righteous', cursive;
             font-size: 2.5rem;
             font-weight: 700;
             color: var(--gold);
@@ -1836,7 +1839,7 @@
         }
 
         .calculator-title {
-            font-family: 'Cinzel Decorative', serif;
+            font-family: inherit;
             font-size: 2rem;
             font-weight: 700;
             color: var(--gold);
@@ -2212,14 +2215,41 @@
     </style>
 </head>
 <body>
-    <div id="root">
-        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: Arial, sans-serif;">
-            <div style="width: 60px; height: 60px; border: 4px solid rgba(66, 135, 245, 0.3); border-top: 4px solid #4287f5; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <p style="margin-top: 1.5rem; font-size: 1.1rem;">Loading Deck Builder...</p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #888;">If this persists, check your browser console</p>
-            <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+    <!-- INSTANT LOADING SCREEN - shows before React/Babel even start loading -->
+    <div id="instant-loader" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#1a1612 0%,#2d1f1a 35%,#1a1612 70%,#0f0d0b 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity 0.4s ease;">
+        <div style="text-align:center;">
+            <div style="font-size:3rem;margin-bottom:0.5rem;cursor:pointer;" onclick="this.style.transform='scale(1.5) rotate(360deg)';this.style.transition='transform 0.5s';setTimeout(()=>{this.style.transform='';},600);">💀</div>
+            <h1 style="font-family:'Righteous',cursive;color:#c9a772;font-size:1.8rem;margin:0;">MTG Deck Skeleton</h1>
+            <div style="margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:0.75rem;">
+                <div style="width:40px;height:40px;border:3px solid rgba(201,167,114,0.2);border-top:3px solid #c9a772;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+            </div>
+            <p id="loading-msg" style="margin-top:1rem;font-size:0.95rem;color:#a89884;font-family:sans-serif;">Summoning the deck builder...</p>
+            <script>
+                (function(){
+                    var msgs=['Summoning the deck builder...','Shuffling the library...','Tapping all lands...','Drawing seven cards...','Resolving the stack...','Searching for Sol Ring...','Paying the commander tax...','Exiling with prejudice...'];
+                    var el=document.getElementById('loading-msg');
+                    if(el)el.textContent=msgs[Math.floor(Math.random()*msgs.length)];
+                })();
+            </script>
         </div>
+        <style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
     </div>
+    <script>
+        // Dismiss loader as soon as React app renders
+        window._dismissLoader = function() {
+            const loader = document.getElementById('instant-loader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(function() { loader.style.display = 'none'; }, 400);
+            }
+        };
+    </script>
+    <div id="root"></div>
+
+    <!-- Core scripts load AFTER loading screen is visible -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- Firebase Scripts -->
     <!-- NOTE: To delete non-J0E_HOWARD decks, use the Firebase Console (https://console.firebase.google.com/)
@@ -2230,7 +2260,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
   try {
-      console.log("Starting Firebase initialization...");
       
       // Your Firebase configuration (unified: mtg-card-search-e0ed3)
       const firebaseConfig = {
@@ -2247,7 +2276,6 @@
           firebase.initializeApp(firebaseConfig);
           window.auth = firebase.auth();
           window.db = firebase.firestore();
-          console.log("✅ Firebase initialized successfully!");
       } else {
           console.error("❌ Firebase not loaded!");
       }
@@ -2258,20 +2286,11 @@
 
     <script type="text/babel">
         // Debug logging for mobile
-        console.log("🚀 Starting app initialization...");
-        console.log("📱 User Agent:", navigator.userAgent);
-        console.log("📐 Window size:", window.innerWidth, "x", window.innerHeight);
-        console.log("🔥 Firebase available:", typeof firebase !== 'undefined');
-        console.log("⚛️ React available:", typeof React !== 'undefined');
-        console.log("⚛️ ReactDOM available:", typeof ReactDOM !== 'undefined');
 
         const { useState, useEffect, useMemo } = React;
 
 
         // DETAILED Firebase check
-        console.log("🔍 Checking window.auth:", typeof window.auth, window.auth);
-        console.log("🔍 Checking window.db:", typeof window.db, window.db);
-        console.log("🔍 Checking firebase:", typeof firebase);
         
         // Get Firebase references from window
         const auth = window.auth || (typeof firebase !== 'undefined' ? firebase.auth() : null);
@@ -2280,11 +2299,9 @@
         // Store back on window if we just created them
         if (auth && !window.auth) {
             window.auth = auth;
-            console.log("✅ Created window.auth");
         }
         if (db && !window.db) {
             window.db = db;
-            console.log("✅ Created window.db");
         }
         
         // Verify Firebase is ready
@@ -2293,7 +2310,6 @@
             console.error("auth:", auth, "db:", db);
             console.error("window.auth:", window.auth, "window.db:", window.db);
         } else {
-            console.log("✅ Firebase auth and db ready!");
         }
         // ============================================
         // SIMPLIFIED DECK CATEGORIES - Version 30
@@ -2802,12 +2818,10 @@
                     migrated[newId] = (migrated[newId] || 0) + migrated[oldId];
                     // Keep old ID for backwards compatibility but mark migration happened
                     hasMigrations = true;
-                    console.log(`📦 Migrated category: ${oldId} -> ${newId} (${migrated[oldId]} cards)`);
                 }
             });
 
             if (hasMigrations) {
-                console.log('✅ Deck category migration complete');
             }
 
             return migrated;
@@ -3250,10 +3264,8 @@
                 const randomIndex = Math.floor(Math.random() * FUNNY_MANA_QUOTES.length);
                 setRandomQuote(FUNNY_MANA_QUOTES[randomIndex]);
 
-                console.log('✅ About to set results:', result);
                 setManaCalculation(result);
                 setShowResults(true);
-                console.log('✅ Results set! showResults should be true now');
             };
 
             const updatePipCount = (color, type, value) => {
@@ -3320,7 +3332,7 @@
                             lineHeight: '1.6'
                         }}>
                             <h3 style={{
-                                fontFamily: 'Pirata One, cursive',
+                                
                                 color: 'var(--gold)',
                                 marginTop: 0,
                                 marginBottom: '1rem',
@@ -4501,6 +4513,68 @@
             // Weather effect state
             const [weatherDrops, setWeatherDrops] = useState([]);
 
+            // ============================================
+            // EASTER EGGS - Secret fun stuff!
+            // ============================================
+            
+            // 🎮 KONAMI CODE: ↑↑↓↓←→←→BA
+            const konamiSequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+            const konamiProgress = React.useRef([]);
+            
+            useEffect(() => {
+                const handleKonami = (e) => {
+                    konamiProgress.current.push(e.key);
+                    konamiProgress.current = konamiProgress.current.slice(-10);
+                    if (konamiProgress.current.join(',') === konamiSequence.join(',')) {
+                        // MEGA SKULL PARTY!
+                        konamiProgress.current = [];
+                        triggerSkullExplosion();
+                        triggerConfetti();
+                        setTimeout(() => triggerSkullExplosion(), 500);
+                        setTimeout(() => triggerConfetti(), 1000);
+                        setTimeout(() => triggerSkullExplosion(), 1500);
+                        // Flash the background
+                        document.body.style.transition = 'filter 0.3s';
+                        document.body.style.filter = 'hue-rotate(180deg)';
+                        setTimeout(() => { document.body.style.filter = 'hue-rotate(90deg)'; }, 600);
+                        setTimeout(() => { document.body.style.filter = 'hue-rotate(270deg)'; }, 1200);
+                        setTimeout(() => { document.body.style.filter = ''; }, 1800);
+                        setEasterEggType({ type: 'rainbow', message: '🎮 KONAMI CODE ACTIVATED! 🎮💀🎉' });
+                        setShowEasterEgg(true);
+                        setTimeout(() => { setShowEasterEgg(false); setEasterEggType(null); }, 4000);
+                    }
+                };
+                window.addEventListener('keydown', handleKonami);
+                return () => window.removeEventListener('keydown', handleKonami);
+            }, []);
+
+            // 🔮 SECRET WORD: Type "skull" anywhere to trigger
+            const secretWordProgress = React.useRef('');
+            useEffect(() => {
+                const handleSecretWord = (e) => {
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                    secretWordProgress.current += e.key.toLowerCase();
+                    secretWordProgress.current = secretWordProgress.current.slice(-10);
+                    if (secretWordProgress.current.includes('skull')) {
+                        secretWordProgress.current = '';
+                        // Skull eyes glow
+                        triggerSkullExplosion();
+                        setEasterEggType({ type: 'giant', message: '☠️ You summoned the SKULL LORD! ☠️' });
+                        setShowEasterEgg(true);
+                        setTimeout(() => { setShowEasterEgg(false); setEasterEggType(null); }, 3000);
+                    }
+                    if (secretWordProgress.current.includes('mana')) {
+                        secretWordProgress.current = '';
+                        triggerConfetti();
+                        setEasterEggType({ type: 'rainbow', message: '🔮 MANA SURGE! ✨🔮✨' });
+                        setShowEasterEgg(true);
+                        setTimeout(() => { setShowEasterEgg(false); setEasterEggType(null); }, 3000);
+                    }
+                };
+                window.addEventListener('keypress', handleSecretWord);
+                return () => window.removeEventListener('keypress', handleSecretWord);
+            }, []);
+
             // Generate weather drops
             useEffect(() => {
                 const weatherType = effectSettings?.weather || 'none';
@@ -5644,8 +5718,6 @@
 
             // Bug Report Submission
             const submitBugReport = async (description, email) => {
-                console.log('🐛 Bug report submission started');
-                console.log('Description length:', description?.length);
 
                 if (!description || description.trim().length < 10) {
                     alert('❌ Please provide a detailed description (at least 10 characters).');
@@ -5660,7 +5732,6 @@
                 }
 
                 try {
-                    console.log('📝 Attempting to save to Firebase...');
                     const timestamp = new Date().toLocaleString();
 
                     await db.collection('bug-reports').add({
@@ -5672,13 +5743,9 @@
                         url: window.location.href
                     });
 
-                    console.log('✅ Bug report saved to Firebase!');
 
                     // Send email notification via EmailJS
                     try {
-                        console.log('📧 Attempting to send email notification...');
-                        console.log('EmailJS ready:', window.emailjsReady);
-                        console.log('EmailJS object:', typeof window.emailjs);
 
                         if (typeof window.emailjs !== 'undefined' && window.emailjs.send) {
                             const emailParams = {
@@ -5689,10 +5756,8 @@
                                 page_url: window.location.href,
                                 timestamp: timestamp
                             };
-                            console.log('📧 Sending with params:', emailParams);
 
                             const response = await window.emailjs.send('service_x285rvl', 'template_dbrk4oh', emailParams);
-                            console.log('✅ Email notification sent!', response);
                         } else {
                             console.error('❌ EmailJS not available - window.emailjs:', window.emailjs);
                         }
@@ -5733,10 +5798,8 @@
             
             // Add deck to public collection (preventing duplicates)
             const addToPublicDecks = async (deck) => {
-                console.log("addToPublicDecks called with:", deck);
                 
                 if (!deck.isPublic) {
-                    console.log("Deck is not public, skipping");
                     return;
                 }
                 
@@ -5752,7 +5815,6 @@
                         .get();
                     
                     if (!existingDeck.empty) {
-                        console.log("Deck already in public collection, updating...");
                         // Update existing public deck
                         const docId = existingDeck.docs[0].id;
                         await db.collection("publicDecks").doc(docId).update({
@@ -5773,18 +5835,10 @@
                             gamePlan: deck.gamePlan || '',
                             updatedAt: new Date()
                         });
-                        console.log("✅ Public deck updated successfully!");
                         return;
                     }
                     
                     // Add new public deck
-                    console.log("Adding new public deck with data:", {
-                        name: deck.name,
-                        commander: deck.commander,
-                        originalDeckId: deck.id,
-                        userId: deck.userId
-                    });
-                    
                     await db.collection("publicDecks").add({
                         ...deck,
                         originalDeckId: deck.id,
@@ -5794,7 +5848,6 @@
                         createdAt: deck.createdAt || new Date(),
                         updatedAt: new Date()
                     });
-                    console.log("✅ Deck added to public collection!");
                 } catch (error) {
                     console.error("❌ Error adding to public collection:", error);
                 }
@@ -5809,7 +5862,6 @@
                     
                     const deletePromises = snapshot.docs.map(doc => doc.ref.delete());
                     await Promise.all(deletePromises);
-                    console.log("Deck removed from public collection!");
                 } catch (error) {
                     console.error("Error removing from public collection:", error);
                 }
@@ -5847,11 +5899,9 @@
                 const now = Date.now();
                 const cacheAge = now - publicDecksCacheRef.current.lastLoaded;
                 if (!forceReload && cacheAge < 300000 && publicDecksCacheRef.current.lastLoaded > 0) {
-                    console.log("📦 Using cached public decks (age: " + Math.round(cacheAge/1000) + "s)");
                     return;
                 }
                 
-                console.log("Loading public decks...");
                 try {
                     const snapshot = await db.collection("publicDecks")
                         .orderBy("updatedAt", "desc")
@@ -5861,21 +5911,43 @@
                     const decks = [];
                     snapshot.forEach((doc) => {
                         const data = doc.data();
-                        decks.push({
-                            ...data,
-                            id: doc.id,
-                            publicDeckId: doc.id
-                        });
+                        // Convert Firestore timestamps to serializable format for localStorage
+                        const serializable = { ...data, id: doc.id, publicDeckId: doc.id };
+                        if (serializable.updatedAt?.toDate) serializable.updatedAt = serializable.updatedAt.toDate().toISOString();
+                        if (serializable.createdAt?.toDate) serializable.createdAt = serializable.createdAt.toDate().toISOString();
+                        decks.push(serializable);
                     });
                     
                     setPublicDecks(decks);
                     publicDecksCacheRef.current.lastLoaded = now;
-                    console.log("✅ Loaded", decks.length, "public decks");
+                    
+                    // Save to localStorage as offline fallback
+                    try {
+                        localStorage.setItem('publicDecksCache', JSON.stringify({
+                            decks: decks,
+                            savedAt: now
+                        }));
+                    } catch (storageErr) {
+                        console.warn("⚠️ Could not cache to localStorage:", storageErr);
+                    }
                 } catch (error) {
                     if (error.code === 'resource-exhausted') {
-                        console.warn("⚠️ Firebase quota exceeded - using cached public decks");
+                        console.warn("⚠️ Firebase quota exceeded - loading from localStorage fallback...");
                     } else {
                         console.error("❌ Error loading public decks:", error);
+                    }
+                    // Fallback: load from localStorage if Firestore fails
+                    try {
+                        const cached = localStorage.getItem('publicDecksCache');
+                        if (cached) {
+                            const parsed = JSON.parse(cached);
+                            setPublicDecks(parsed.decks || []);
+                            const cacheAgeMin = Math.round((now - parsed.savedAt) / 60000);
+                        } else {
+                            console.warn("⚠️ No localStorage cache available");
+                        }
+                    } catch (cacheErr) {
+                        console.error("❌ Could not load from localStorage:", cacheErr);
                     }
                 }
             };
@@ -5905,7 +5977,6 @@
                     await db.collection("publicDecks").doc(publicDeckId).update({
                         viewCount: firebase.firestore.FieldValue.increment(1)
                     });
-                    console.log("✅ View count incremented for deck:", publicDeckId);
                     
                     // Update local state instead of reloading all public decks
                     setPublicDecks(prev => prev.map(d => 
@@ -5930,7 +6001,6 @@
                     await db.collection("publicDecks").doc(publicDeckId).update({
                         buildSimilarCount: firebase.firestore.FieldValue.increment(1)
                     });
-                    console.log("✅ Build count incremented for deck:", publicDeckId);
                     
                     // Update local state instead of reloading all public decks
                     setPublicDecks(prev => prev.map(d => 
@@ -6078,6 +6148,9 @@ const saveDeckToFirebase = async (deck) => {
                         setDecks([]);
                     }
                 });
+                
+                // Dismiss the instant loading screen now that React has mounted
+                if (window._dismissLoader) window._dismissLoader();
                 
                 return () => unsubscribe();
             }, []);
@@ -6407,7 +6480,7 @@ return (
                                 fontWeight: 700,
                                 color: 'var(--bg-primary)',
                                 textAlign: 'center',
-                                fontFamily: 'Pirata One, cursive'
+                                
                             }}>
                                 {easterEggType.message}
                             </div>
@@ -6490,45 +6563,16 @@ return (
                                 cursor: 'pointer',
                                 flex: 1
                             }}>
-                                <svg width="35" height="35" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
-                                    <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                    <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                    <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                    <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                    <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                    <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                    <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                    <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                    <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                </svg>
+                                <span style={{fontSize: '1.8rem', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>💀</span>
                                 <span style={{
-                                    fontFamily: 'Pirata One, cursive',
+                                    
                                     fontSize: '1.3rem',
                                     color: 'var(--bone)',
-                                    whiteSpace: 'nowrap',
-                                    fontFamily: 'Pirata One, cursive'
+                                    whiteSpace: 'nowrap'
                                 }}>
                                     MTG Deck Skeleton
                                 </span>
-                                <svg width="35" height="35" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
-                                    <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                    <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                    <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                    <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                    <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                    <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                    <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                    <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                    <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                </svg>
+                                <span style={{fontSize: '1.8rem', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>💀</span>
                             </div>
                             
                             {/* Mobile Header Buttons */}
@@ -6661,26 +6705,10 @@ return (
                     {/* DESKTOP HEADER - Full Navigation */}
                     <header className={`app-header desktop-header-only${effectSettings?.headerTheme && effectSettings.headerTheme !== 'none' ? ` header-theme-${effectSettings.headerTheme}` : ''}`}>
                         <div className="header-content">
-                            <div className="logo" onClick={() => { changeView('home'); scrollToTop(); }} style={{display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0}}>
-                                <svg onClick={handleSkullClick} className={getSkullClass()} width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
-    <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-    <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-    <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-    <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-    <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-    <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-    <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-    <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-    <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-    <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-    <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-    <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-    <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-</svg>
-                                <div>
-                                    <div style={{fontSize: '2.2rem', lineHeight: 1, fontFamily: 'Pirata One, cursive', fontWeight: 400, letterSpacing: '2px'}}>MTG Deck Skeleton</div>
-                                    <div className="logo-subtitle">+ Mana Calculator</div>
-                                </div>
+                            <div className="logo" onClick={() => { changeView('home'); scrollToTop(); }} style={{display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, flexShrink: 0}}>
+                                <span onClick={handleSkullClick} className={getSkullClass()} style={{fontSize: '1.8rem', cursor: 'pointer', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>💀</span>
+                                <span className="logo-title-full" style={{fontSize: '1.2rem', fontWeight: 700, color: 'var(--bone)', whiteSpace: 'nowrap', letterSpacing: '0.5px'}}>Deck Skeleton</span>
+                                <span className="logo-title-short" style={{fontSize: '1.1rem', fontWeight: 700, color: 'var(--bone)', whiteSpace: 'nowrap', display: 'none'}}>Deck Skeleton</span>
                             </div>
                             <div style={{display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'nowrap'}}>
                                 <button
@@ -6865,45 +6893,17 @@ return (
                             <div className="mobile-simple-home" style={{display: 'none'}}>
                                 <div style={{textAlign: 'center', marginBottom: '2rem'}}>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1rem'}}>
-                                        <svg onClick={handleSkullClick} className={getSkullClass()} width="50" height="50" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
-                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        </svg>
-                                        <h1 style={{fontFamily: 'Cinzel Decorative, serif', fontSize: '2.5rem', fontWeight: 700, color: 'var(--gold)', margin: 0, textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
+                                        <span onClick={handleSkullClick} className={getSkullClass()} style={{fontSize: '2.8rem', cursor: 'pointer', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>💀</span>
+                                        <h1 style={{fontFamily: 'Righteous, cursive', fontSize: '2.5rem', fontWeight: 700, color: 'var(--gold)', margin: 0, textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
                                             MTG Deck Skeleton
                                         </h1>
-                                        <svg onClick={handleSkullClick} className={getSkullClass()} width="50" height="50" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
-                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        </svg>
+                                        <span onClick={handleSkullClick} className={getSkullClass()} style={{fontSize: '2.8rem', cursor: 'pointer', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>💀</span>
                                     </div>
                                     <p style={{
                                         color: 'var(--gold)',
                                         fontSize: '1.1rem',
                                         fontWeight: 600,
-                                        fontFamily: 'MedievalSharp, cursive'
+                                        
                                     }}>
                                         ✨ Track Ratios, Not Card Names ✨
                                     </p>
@@ -7089,7 +7089,7 @@ return (
                                             color: 'var(--text-secondary)'
                                         }}>
                                             <p style={{marginBottom: '0.8rem', fontWeight: 600, color: 'rgba(66, 135, 245, 0.9)'}}>
-                                                Calculate your optimal mana base for Commander
+                                                Calculate your optimal mana base for any format
                                             </p>
                                             <p style={{marginBottom: '0.8rem'}}>
                                                 📊 <strong>How it works:</strong> Enter your color pip requirements (single, double, triple pips) and total lands
@@ -7138,47 +7138,20 @@ return (
                             <div className="desktop-home-content">
                             <div className="hero">
                                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1rem'}}>
-                                    <svg onClick={handleSkullClick} className={getSkullClass()} width="60" height="60" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
-                                        <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                        <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                        <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                        <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                        <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                        <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                        <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                        <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                        <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    </svg>
-                                    <h1 style={{
-                                        fontFamily: 'Cinzel Decorative, serif', 
+                                    <span onClick={handleSkullClick} className={getSkullClass()} style={{fontSize: '3.5rem', cursor: 'pointer', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>💀</span>
+                                    <h1 onDoubleClick={() => { triggerConfetti(); triggerSkullExplosion(); setEasterEggType({ type: 'dance', message: '🎉 You found a secret! Double-click master! 🎉' }); setShowEasterEgg(true); setTimeout(() => { setShowEasterEgg(false); setEasterEggType(null); }, 3000); }} style={{
+                                         
                                         fontSize: '3.5rem', 
                                         fontWeight: 700,
                                         letterSpacing: '2px', 
                                         margin: 0,
                                         color: 'var(--gold)',
-                                        textShadow: '3px 3px 6px rgba(0,0,0,0.7)'
+                                        textShadow: '3px 3px 6px rgba(0,0,0,0.7)',
+                                        cursor: 'default'
                                     }}>MTG Deck Skeleton</h1>
-                                    <svg onClick={handleSkullClick} className={getSkullClass()} width="60" height="60" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))', cursor: 'pointer'}}>
-                                        <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                        <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                        <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                        <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                        <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                        <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                        <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                        <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                        <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                    </svg>
+                                    <span onClick={handleSkullClick} className={getSkullClass()} style={{fontSize: '3.5rem', cursor: 'pointer', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>💀</span>
                                 </div>
-                                <h2 style={{fontFamily: 'MedievalSharp, cursive', fontSize: '1.5rem', color: 'var(--bone)', marginTop: '0.5rem', marginBottom: '1.5rem'}}>+ Mana Calculator</h2>
+                                <h2 style={{fontSize: '1.3rem', color: 'var(--bone)', marginTop: '0.5rem', marginBottom: '1.5rem', fontWeight: 400}}>+ Mana Calculator</h2>
                                 
                                 {/* Desktop: Simple tagline */}
                                 <div className="desktop-only">
@@ -7188,12 +7161,12 @@ return (
                                         marginBottom: '0.75rem',
                                         lineHeight: '1.4',
                                         fontWeight: 600,
-                                        fontFamily: 'MedievalSharp, cursive'
+                                        
                                     }}>
                                         ✨ Track Ratios, Not Card Names ✨
                                     </p>
                                     <p style={{fontSize: '1rem', color: 'var(--text-secondary)', marginBottom: '2rem', lineHeight: '1.5'}}>
-                                        The easiest way to track your Commander deck's structure. Just count categories — no typing card names needed.
+                                        The easiest way to track your deck's structure. Just count categories — no typing card names needed.
                                     </p>
                                 </div>
                                 
@@ -7263,13 +7236,13 @@ return (
                                         marginBottom: '0.75rem',
                                         lineHeight: '1.4',
                                         fontWeight: 600,
-                                        fontFamily: 'MedievalSharp, cursive',
+                                        
                                         textAlign: 'center'
                                     }}>
                                         ✨ Track Ratios, Not Card Names ✨
                                     </p>
                                     <p style={{fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.5', textAlign: 'center'}}>
-                                        The easiest way to track your Commander deck's structure.
+                                        The easiest way to track your deck's structure.
                                     </p>
 
                                     {/* Main Info Button */}
@@ -7393,7 +7366,7 @@ return (
                                 {publicDecks && publicDecks.length > 0 && (
                                     <div style={{maxWidth: '1100px', margin: '0 auto 3rem auto', padding: '0 1rem'}}>
                                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem'}}>
-                                            <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', fontSize: '1.8rem', margin: 0}}>
+                                            <h3 style={{ color: 'var(--gold)', fontSize: '1.8rem', margin: 0}}>
                                                 📚 Featured Public Decks
                                             </h3>
                                             <button
@@ -7473,6 +7446,7 @@ return (
                                                                                 src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.commander)}`}
                                                                                 alt={deck.commander}
                                                                                 style={{height: '120px', borderRadius: '6px', border: '1.5px solid var(--gold)', boxShadow: '0 3px 12px rgba(0,0,0,0.5)'}}
+                                                                                loading="lazy"
                                                                                 onError={(e) => { e.target.style.display = 'none'; }}
                                                                             />
                                                                             {deck.hasSecondCommander && deck.secondCommander && (
@@ -7480,12 +7454,13 @@ return (
                                                                                     src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(deck.secondCommander)}`}
                                                                                     alt={deck.secondCommander}
                                                                                     style={{height: '120px', borderRadius: '6px', border: '1.5px solid var(--gold)', boxShadow: '0 3px 12px rgba(0,0,0,0.5)'}}
-                                                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                                                    loading="lazy"
+                                                                                onError={(e) => { e.target.style.display = 'none'; }}
                                                                                 />
                                                                             )}
                                                                         </div>
                                                                     )}
-                                                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--accent-bright)', marginBottom: '0.75rem', fontSize: '1.3rem', wordWrap: 'break-word', overflowWrap: 'break-word'}}>
+                                                                    <h3 style={{ color: 'var(--accent-bright)', marginBottom: '0.75rem', fontSize: '1.05rem', wordWrap: 'break-word', overflowWrap: 'break-word'}}>
                                                                         {deck.name}
                                                                     </h3>
                                                                     <div style={{display: 'flex', gap: '0.3rem', marginBottom: '0.75rem'}}>
@@ -7560,7 +7535,7 @@ return (
                                     >
                                         <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
                                             <span style={{fontSize: '1.3rem'}}>📊</span>
-                                            <span style={{fontFamily: 'Pirata One, cursive', fontSize: '1.3rem', color: 'var(--gold)'}}>What is MTG Deck Skeleton?</span>
+                                            <span style={{ fontSize: '1.3rem', color: 'var(--gold)'}}>What is MTG Deck Skeleton?</span>
                                         </div>
                                         <span style={{fontSize: '1rem', color: 'var(--text-muted)', display: 'inline-block', transform: showTrackInfo ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease'}}>▼</span>
                                     </button>
@@ -7573,7 +7548,7 @@ return (
                                     textAlign: 'left'
                                 }}>
                                     <h2 style={{
-                                        fontFamily: 'Pirata One, cursive',
+                                        
                                         fontSize: '2.2rem',
                                         color: 'var(--gold)',
                                         marginBottom: '1.5rem',
@@ -7676,7 +7651,7 @@ return (
                                 {false && <div style={{display:'none'}}>
                                     <div style={{textAlign: 'center', marginBottom: '2rem'}}>
                                         <h2 style={{
-                                            fontFamily: 'Pirata One, cursive',
+                                            
                                             fontSize: '2.2rem',
                                             color: 'var(--gold)',
                                             marginBottom: '0.5rem'
@@ -7699,7 +7674,7 @@ return (
                                         {/* Deck Header */}
                                         <div style={{marginBottom: '1.5rem'}}>
                                             <h3 style={{
-                                                fontFamily: 'Pirata One, cursive',
+                                                
                                                 fontSize: '1.8rem',
                                                 color: 'var(--accent-bright)',
                                                 marginBottom: '0.5rem'
@@ -7847,7 +7822,7 @@ return (
                                         }}>
                                             <span style={{fontSize: '1.8rem'}}>⚗️</span>
                                             <span style={{
-                                                fontFamily: 'Pirata One, cursive',
+                                                
                                                 fontSize: '1.5rem',
                                                 color: 'var(--gold)',
                                                 fontWeight: 700
@@ -7856,7 +7831,7 @@ return (
                                             </span>
                                         </div>
                                         <p style={{fontSize: '1.1rem', color: 'var(--text-secondary)', maxWidth: '700px', margin: '0 auto'}}>
-                                            Calculate the perfect land distribution for your Commander deck based on color requirements
+                                            Calculate the perfect land distribution for your deck based on color requirements
                                         </p>
                                     </div>
 
@@ -7925,7 +7900,7 @@ return (
                                         <div>
                                             <h2 style={{
                                                 color: 'var(--bone)', margin: 0,
-                                                fontFamily: 'Pirata One, cursive',
+                                                
                                                 fontSize: '1.8rem', letterSpacing: '2px'
                                             }}>Skull Games Arcade</h2>
                                             <p style={{color: 'var(--text-muted)', margin: 0, fontSize: '0.82rem'}}>
@@ -8066,12 +8041,6 @@ return (
                                 // Use deck.id (from props) as the source of truth
                                 const deckId = deckToEdit.id;
                                 
-                                console.log("=== SAVE DECK DEBUG ===");
-                                console.log("Deck ID:", deckId);
-                                console.log("User UID:", user.uid);
-                                console.log("Deck userId:", deckToEdit.userId);
-                                console.log("UpdatedDeck data:", updatedDeck);
-                                console.log("=====================");
 
                                 // Verify ownership
                                 if (deckToEdit.userId && deckToEdit.userId !== user.uid) {
@@ -8269,23 +8238,9 @@ return (
                                         gap: '0.8rem',
                                         flex: 1
                                     }}>
-                                        <svg width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>
-                                            <path d="M32 2C15.5 2 2 15.5 2 32c0 10 4.9 18.9 12.4 24.4v6.6c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-3.2h13.6v3.2c0 1.5 1.2 2.7 2.7 2.7h5.4c1.5 0 2.7-1.2 2.7-2.7v-6.6C57.1 50.9 62 42 62 32 62 15.5 48.5 2 32 2z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="2" strokeLinejoin="miter"/>
-                                            <ellipse cx="22" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <ellipse cx="42" cy="26" rx="6" ry="8" fill="#000"/>
-                                            <path d="M22 28 L20 32 L22 34 M42 28 L44 32 L42 34" stroke="rgba(139, 111, 71, 0.3)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M28 34 Q32 37 36 34" fill="none" stroke="#000" strokeWidth="2"/>
-                                            <path d="M32 36 L32 40" stroke="#000" strokeWidth="1.5"/>
-                                            <rect x="26" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="29" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="32" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <rect x="35" y="40" width="3" height="8" rx="0.5" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                            <path d="M15 30 Q12 32 15 34 M49 30 Q52 32 49 34" stroke="rgba(139, 111, 71, 0.4)" strokeWidth="1.5" fill="none"/>
-                                            <path d="M18 32 C18 28, 20 26, 22 26 M46 32 C46 28, 44 26, 42 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none"/>
-                                            <path d="M10 40 L14 36 L14 44 Z M54 40 L50 36 L50 44 Z" fill="var(--bone)" stroke="var(--border-color)" strokeWidth="0.8"/>
-                                        </svg>
+                                        <span style={{fontSize: '2.2rem', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>💀</span>
                                         <h2 style={{
-                                            fontFamily: 'Pirata One, cursive',
+                                            
                                             color: 'var(--gold)',
                                             margin: 0,
                                             fontSize: '1.8rem'
@@ -8334,7 +8289,7 @@ return (
                                             <circle cx="46" cy="20" r="1.5" fill="rgba(255,255,255,0.5)"/>
                                         </svg>
                                         <h1 style={{
-                                            fontFamily: 'Pirata One, cursive',
+                                            
                                             fontSize: '2.5rem',
                                             color: 'var(--bone)',
                                             margin: 0,
@@ -8352,7 +8307,7 @@ return (
                                                 color: 'var(--gold)',
                                                 fontSize: '1rem',
                                                 fontWeight: 600,
-                                                fontFamily: 'Cinzel, serif'
+                                                
                                             }}>
                                                 {decks.filter(d => !d.isExample).length}/100
                                             </span>
@@ -8447,7 +8402,7 @@ return (
                                                 borderRadius: '12px',
                                                 color: 'var(--text-primary)',
                                                 fontSize: '1.1rem',
-                                                fontFamily: 'Cinzel'
+                                                
                                             }}
                                         />
                                     </div>
@@ -8552,7 +8507,8 @@ return (
                                                                     border: '1.5px solid var(--gold)',
                                                                     boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
                                                                 }}
-                                                                onError={(e) => { e.target.style.display = 'none'; }}
+                                                                loading="lazy"
+                                                                                onError={(e) => { e.target.style.display = 'none'; }}
                                                             />
                                                             {deck.hasSecondCommander && deck.secondCommander && (
                                                                 <img
@@ -8564,16 +8520,17 @@ return (
                                                                         border: '1.5px solid var(--gold)',
                                                                         boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
                                                                     }}
-                                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                                    loading="lazy"
+                                                                                onError={(e) => { e.target.style.display = 'none'; }}
                                                                 />
                                                             )}
                                                         </div>
                                                     )}
                                                     <h3 style={{
-                                                        fontFamily: 'MedievalSharp, cursive',
+                                                        
                                                         color: 'var(--bone)',
                                                         marginBottom: '0.5rem',
-                                                        fontSize: '1.3rem',
+                                                        fontSize: '1.05rem',
                                                         paddingRight: deck.isExample ? '5rem' : '0',
                                                         wordWrap: 'break-word',
                                                         overflowWrap: 'break-word'
@@ -8774,7 +8731,7 @@ return (
                                             <text x="59" y="34" textAnchor="middle" fill="var(--text-muted)" fontSize="5">E</text>
                                         </svg>
                                         <h1 style={{
-                                            fontFamily: 'Pirata One, cursive',
+                                            
                                             fontSize: '2.5rem',
                                             color: 'var(--bone)',
                                             margin: 0
@@ -8839,7 +8796,7 @@ return (
                                             borderRadius: '12px',
                                             color: 'var(--text-primary)',
                                             fontSize: '1.1rem',
-                                            fontFamily: 'Cinzel'
+                                            
                                         }}
                                     />
                                 </div>
@@ -8863,7 +8820,7 @@ return (
                                             borderRadius: '8px',
                                             color: 'var(--text-primary)',
                                             fontSize: '1rem',
-                                            fontFamily: 'Pirata One, cursive',
+                                            
                                             cursor: 'pointer',
                                             minWidth: '200px'
                                         }}
@@ -8912,7 +8869,6 @@ return (
                                                     onMouseMove={(e) => effectSettings.cardTilt && handleCardTilt(e, e.currentTarget)}
                                                     onMouseLeave={(e) => effectSettings.cardTilt && resetCardTilt(e.currentTarget)}
                                                     onClick={async () => {
-                                                        console.log("🖱️ Deck card clicked, ID:", deck.id);
                                                         // Increment view count when deck is clicked
                                                         await incrementViewCount(deck.id);
                                                         setSelectedDeck(deck);
@@ -8948,7 +8904,8 @@ return (
                                                                     border: '1.5px solid var(--gold)',
                                                                     boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
                                                                 }}
-                                                                onError={(e) => { e.target.style.display = 'none'; }}
+                                                                loading="lazy"
+                                                                                onError={(e) => { e.target.style.display = 'none'; }}
                                                             />
                                                             {deck.hasSecondCommander && deck.secondCommander && (
                                                                 <img
@@ -8960,16 +8917,17 @@ return (
                                                                         border: '1.5px solid var(--gold)',
                                                                         boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
                                                                     }}
-                                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                                    loading="lazy"
+                                                                                onError={(e) => { e.target.style.display = 'none'; }}
                                                                 />
                                                             )}
                                                         </div>
                                                     )}
                                                     <h3 style={{
-                                                        fontFamily: 'Pirata One, cursive',
+                                                        
                                                         color: 'var(--accent-bright)',
                                                         marginBottom: '0.75rem',
-                                                        fontSize: '1.3rem',
+                                                        fontSize: '1.05rem',
                                                         wordWrap: 'break-word',
                                                         overflowWrap: 'break-word'
                                                     }}>
@@ -9202,7 +9160,7 @@ return (
                                     {/* Left side: Title and deck info */}
                                     <div style={{flex: 1, minWidth: 0}}>
                                         <h2 style={{
-                                            fontFamily: 'Pirata One, cursive',
+                                            
                                             fontSize: window.innerWidth <= 768 ? '1.6rem' : '2rem',
                                             color: 'var(--gold)',
                                             marginBottom: '0.5rem',
@@ -9307,7 +9265,7 @@ return (
                                                 marginTop: '0.25rem'
                                             }}>
                                                 <img
-                                                    src={selectedDeck.commanderArt}
+                                                    loading="lazy" src={selectedDeck.commanderArt}
                                                     alt="Commander"
                                                     style={{
                                                         width: window.innerWidth <= 768 ? '55px' : '70px',
@@ -9320,7 +9278,7 @@ return (
                                                 />
                                                 {selectedDeck.commanderArt2 && (
                                                     <img
-                                                        src={selectedDeck.commanderArt2}
+                                                        loading="lazy" src={selectedDeck.commanderArt2}
                                                         alt="Partner Commander"
                                                         style={{
                                                             width: window.innerWidth <= 768 ? '55px' : '70px',
@@ -10298,14 +10256,12 @@ return (
                                                     // If this is the user's own deck from Browse, find and open the personal version
                                                     if (view === 'browse' && user && selectedDeck.userId === user.uid) {
                                                         try {
-                                                            console.log("Finding personal version of deck:", selectedDeck.name);
 
                                                             // Try to find by ID first
                                                             let personalDeck = decks.find(d => d.id === selectedDeck.id);
 
                                                             // If not found by ID, search by name and commander
                                                             if (!personalDeck) {
-                                                                console.log("Not found by ID, searching by name and commander...");
                                                                 personalDeck = decks.find(d =>
                                                                     d.name === selectedDeck.name &&
                                                                     d.commander === selectedDeck.commander &&
@@ -10314,7 +10270,6 @@ return (
                                                             }
 
                                                             if (personalDeck) {
-                                                                console.log("✅ Found personal deck!", personalDeck.id);
                                                                 // Close preview
                                                                 setSelectedDeck(null);
                                                                 // Open edit modal with personal deck
@@ -10322,7 +10277,6 @@ return (
                                                                 setShowEditModal(true);
                                                             } else {
                                                                 // Not found in loaded decks - try fetching from Firestore
-                                                                console.log("Not in loaded decks, querying Firestore...");
 
                                                                 const querySnapshot = await db.collection("decks")
                                                                     .where("userId", "==", user.uid)
@@ -10333,13 +10287,11 @@ return (
 
                                                                 if (!querySnapshot.empty) {
                                                                     const doc = querySnapshot.docs[0];
-                                                                    console.log("✅ Found in Firestore!", doc.id);
                                                                     setSelectedDeck(null);
                                                                     setDeckToEdit({ ...doc.data(), id: doc.id });
                                                                     setShowEditModal(true);
                                                                 } else {
                                                                     // Deck not found in personal collection - just view it read-only
-                                                                    console.log("⚠️ Deck not found in personal collection, opening view-only");
                                                                     setSelectedDeck(null);
                                                                     setDeckToEdit({...selectedDeck, viewOnly: true});
                                                                     setShowEditModal(true);
@@ -10421,6 +10373,36 @@ return (
 
 
         // Settings Modal Component
+        // Rotating Easter Egg Hints Component
+        function EasterEggHints() {
+            const hints = [
+                '🤫 Psst... try clicking a skull 5 times quickly!',
+                '🎮 Gamers know: ↑↑↓↓←→←→BA unlocks something...',
+                '⌨️ Type "skull" anywhere on the page... if you dare.',
+                '🔮 Whisper "mana" to the page and see what happens...',
+                '🖱️ Try double-clicking the main title on the homepage!',
+                '💀 The loading screen skull has a secret too...',
+                '🎲 Refresh the page — the loading message changes every time!',
+                '⚡ There are 5+ hidden easter eggs. Can you find them all?'
+            ];
+            const [currentHint, setCurrentHint] = React.useState(0);
+
+            React.useEffect(() => {
+                const startIndex = Math.floor(Math.random() * hints.length);
+                setCurrentHint(startIndex);
+                const interval = setInterval(() => {
+                    setCurrentHint(prev => (prev + 1) % hints.length);
+                }, 5000);
+                return () => clearInterval(interval);
+            }, []);
+
+            return (
+                <p style={{color: 'var(--gold)', fontSize: '0.9rem', margin: 0, fontStyle: 'italic', transition: 'opacity 0.3s ease'}}>
+                    {hints[currentHint]}
+                </p>
+            );
+        }
+
         function SettingsModal({ onClose, user, decks, addToPublicDecks, removeFromPublicDecks, loadPublicDecks, onShowBugReport, accentColor, setAccentColor, seasonalTheme, setSeasonalTheme, ACCENT_COLORS, SEASONAL_THEMES, achievements, siteTheme, setSiteTheme, SITE_THEMES, effectSettings, updateEffectSetting, onShowAuth, publicDecks, orphanedDecks, scanningOrphans, scanForOrphanedDecks, deleteOrphanedDeck, deleteAllOrphanedDecks }) {
             const [bulkPrivacy, setBulkPrivacy] = useState('public');
             const [updating, setUpdating] = useState(false);
@@ -10466,9 +10448,7 @@ return (
                     // Sync with public collection
                     if (newPrivacySetting) {
                         // Add all decks to public collection
-                        console.log("Adding", userDecks.length, "decks to public collection...");
                         const publicSyncPromises = userDecks.map(deck => {
-                            console.log("Processing deck:", deck.name, "with ID:", deck.id);
                             return addToPublicDecks({
                                 ...deck, 
                                 isPublic: true,
@@ -10476,15 +10456,12 @@ return (
                             });
                         });
                         await Promise.all(publicSyncPromises);
-                        console.log("✅ All decks added to public collection!");
                     } else {
                         // Remove all decks from public collection
-                        console.log("Removing", userDecks.length, "decks from public collection...");
                         const removeSyncPromises = userDecks.map(deck => 
                             removeFromPublicDecks(deck.id)
                         );
                         await Promise.all(removeSyncPromises);
-                        console.log("✅ All decks removed from public collection!");
                     }
                     
                     alert(`✅ All ${userDecks.length} deck(s) are now ${bulkPrivacy}!`);
@@ -10525,7 +10502,7 @@ return (
                         </button>
 
                         <h2 style={{
-                            fontFamily: 'Pirata One, cursive',
+                            
                             color: 'var(--gold)',
                             marginBottom: '1rem',
                             fontSize: '2rem'
@@ -10634,7 +10611,7 @@ return (
                                 color: 'var(--bone)',
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
-                                fontFamily: 'MedievalSharp, cursive'
+                                
                             }}>
                                 Account Info
                             </h3>
@@ -10694,7 +10671,7 @@ return (
                                     color: 'var(--bone)',
                                     marginBottom: '1rem',
                                     fontSize: '1.2rem',
-                                    fontFamily: 'MedievalSharp, cursive'
+                                    
                                 }}>
                                     Deck Privacy Management
                                 </h3>
@@ -10787,7 +10764,7 @@ return (
                                 color: 'var(--bone)',
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
-                                fontFamily: 'MedievalSharp, cursive'
+                                
                             }}>
                                 Help & Feedback
                             </h3>
@@ -10832,7 +10809,7 @@ return (
                                 color: 'var(--bone)',
                                 marginBottom: '0.5rem',
                                 fontSize: '1.2rem',
-                                fontFamily: 'MedievalSharp, cursive'
+                                
                             }}>
                                 🖼️ Site Theme
                             </h3>
@@ -10879,7 +10856,7 @@ return (
                                 color: 'var(--bone)',
                                 marginBottom: '0.5rem',
                                 fontSize: '1.2rem',
-                                fontFamily: 'MedievalSharp, cursive'
+                                
                             }}>
                                 🎨 Accent Color
                             </h3>
@@ -10934,7 +10911,7 @@ return (
                                 color: 'var(--bone)',
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
-                                fontFamily: 'MedievalSharp, cursive'
+                                
                             }}>
                                 🌟 Seasonal Theme
                             </h3>
@@ -10983,7 +10960,7 @@ return (
                                 color: 'var(--bone)',
                                 marginBottom: '0.5rem',
                                 fontSize: '1.2rem',
-                                fontFamily: 'MedievalSharp, cursive'
+                                
                             }}>
                                 ✨ Visual Effects
                             </h3>
@@ -11385,9 +11362,7 @@ return (
                                 border: '2px dashed var(--gold)',
                                 textAlign: 'center'
                             }}>
-                                <p style={{color: 'var(--gold)', fontSize: '0.9rem', margin: 0, fontStyle: 'italic'}}>
-                                    🤫 Psst... try clicking a skull 5 times quickly!
-                                </p>
+                                <EasterEggHints />
                             </div>
                         </div>
                         )}
@@ -11403,7 +11378,7 @@ return (
                                 color: 'var(--bone)',
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
-                                fontFamily: 'MedievalSharp, cursive'
+                                
                             }}>
                                 🏆 Your Achievements
                             </h3>
@@ -11501,7 +11476,7 @@ return (
                                 color: 'var(--gold)',
                                 marginBottom: '1rem',
                                 fontSize: '1.3rem',
-                                fontFamily: 'Pirata One, cursive',
+                                
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.5rem'
@@ -11815,7 +11790,7 @@ return (
                     </button>
 
                     <h2 style={{
-                        fontFamily: 'Pirata One, cursive',
+                        
                         color: 'var(--gold)',
                         marginBottom: '1.5rem',
                         textAlign: 'center'
@@ -12427,7 +12402,7 @@ return (
                     </button>
 
                     <h2 style={{
-                        fontFamily: 'Pirata One, cursive',
+                        
                         color: 'var(--gold)',
                         marginBottom: '0.5rem',
                         fontSize: '2rem',
@@ -12472,7 +12447,7 @@ return (
                                     borderRadius: '8px',
                                     color: 'var(--text-primary)',
                                     fontSize: '1rem',
-                                    fontFamily: 'Cinzel, serif',
+                                    
                                     resize: 'vertical'
                                 }}
                             />
@@ -13280,10 +13255,8 @@ return (
                 const randomIndex = Math.floor(Math.random() * FUNNY_MANA_QUOTES.length);
                 setRandomQuote(FUNNY_MANA_QUOTES[randomIndex]);
 
-                console.log('✅ About to set results:', result);
                 setManaCalculation(result);
                 setShowResults(true);
-                console.log('✅ Results set! showResults should be true now');
             };
 
             const updatePipCount = (color, type, value) => {
@@ -13533,7 +13506,7 @@ return (
                                             <img 
                                                 src={commanderCard.image_uris?.normal || commanderCard.image_uris?.large}
                                                 alt={commanderCard.name}
-                                                className="commander-card-image"
+                                                loading="lazy" className="commander-card-image"
                                             />
                                         </div>
                                     )}
@@ -13597,7 +13570,7 @@ return (
                                                 <img 
                                                     src={secondCommanderCard.image_uris?.normal || secondCommanderCard.image_uris?.large}
                                                     alt={secondCommanderCard.name}
-                                                    className="commander-card-image"
+                                                    loading="lazy" className="commander-card-image"
                                                 />
                                             </div>
                                         )}
@@ -13761,7 +13734,7 @@ return (
                                                         ×
                                                     </button>
                                                     {card.imageUrl && (
-                                                        <img src={card.imageUrl} alt={card.name} className="card-preview-image" />
+                                                        <img loading="lazy" src={card.imageUrl} alt={card.name} className="card-preview-image" />
                                                     )}
                                                     <div style={{fontWeight: 600, fontSize: '0.9rem', marginTop: '0.5rem'}}>{card.name}</div>
                                                     <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>{card.typeLine}</div>
@@ -14802,7 +14775,7 @@ return (
                                             lineHeight: '1.6'
                                         }}>
                                             <h3 style={{
-                                                fontFamily: 'Pirata One, cursive',
+                                                
                                                 color: 'var(--gold)',
                                                 marginTop: 0,
                                                 marginBottom: '1rem',
@@ -15858,7 +15831,7 @@ return (
                                     }}
                                     onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}
                                 >
-                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: window.innerWidth <= 768 && !statsExpanded ? '1.1rem' : '1.4rem'}}>
+                                    <h3 style={{ color: 'var(--gold)', margin: 0, fontSize: window.innerWidth <= 768 && !statsExpanded ? '1.1rem' : '1.4rem'}}>
                                         📊 Live Deck Stats {window.innerWidth <= 768 && !statsExpanded && <span style={{fontSize: '0.9rem', opacity: 0.8}}>(Tap to expand)</span>}
                                     </h3>
                                     {window.innerWidth <= 768 && (
@@ -16045,7 +16018,7 @@ return (
                                         border: '2px solid var(--accent-bright)'
                                     }}>
                                         <h3 style={{
-                                            fontFamily: 'Pirata One, cursive',
+                                            
                                             color: 'var(--accent-bright)',
                                             margin: 0,
                                             marginBottom: '1rem',
@@ -16941,10 +16914,8 @@ return (
                 const randomIndex = Math.floor(Math.random() * FUNNY_MANA_QUOTES.length);
                 setRandomQuote(FUNNY_MANA_QUOTES[randomIndex]);
 
-                console.log('✅ About to set results:', result);
                 setManaCalculation(result);
                 setShowResults(true);
-                console.log('✅ Results set! showResults should be true now');
             };
 
             const updatePipCount = (color, type, value) => {
@@ -17197,7 +17168,7 @@ return (
                                             <img 
                                                 src={commanderCard.image_uris?.normal || commanderCard.image_uris?.large}
                                                 alt={commanderCard.name}
-                                                className="commander-card-image"
+                                                loading="lazy" className="commander-card-image"
                                             />
                                         </div>
                                     )}
@@ -17261,7 +17232,7 @@ return (
                                                 <img 
                                                     src={secondCommanderCard.image_uris?.normal || secondCommanderCard.image_uris?.large}
                                                     alt={secondCommanderCard.name}
-                                                    className="commander-card-image"
+                                                    loading="lazy" className="commander-card-image"
                                                 />
                                             </div>
                                         )}
@@ -17425,7 +17396,7 @@ return (
                                                         ×
                                                     </button>
                                                     {card.imageUrl && (
-                                                        <img src={card.imageUrl} alt={card.name} className="card-preview-image" />
+                                                        <img loading="lazy" src={card.imageUrl} alt={card.name} className="card-preview-image" />
                                                     )}
                                                     <div style={{fontWeight: 600, fontSize: '0.9rem', marginTop: '0.5rem'}}>{card.name}</div>
                                                     <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>{card.typeLine}</div>
@@ -18466,7 +18437,7 @@ return (
                                             lineHeight: '1.6'
                                         }}>
                                             <h3 style={{
-                                                fontFamily: 'Pirata One, cursive',
+                                                
                                                 color: 'var(--gold)',
                                                 marginTop: 0,
                                                 marginBottom: '1rem',
@@ -19536,7 +19507,7 @@ return (
                                     }}
                                     onClick={() => window.innerWidth <= 768 && setStatsExpanded(!statsExpanded)}
                                 >
-                                    <h3 style={{fontFamily: 'Pirata One, cursive', color: 'var(--gold)', margin: 0, fontSize: window.innerWidth <= 768 && !statsExpanded ? '1.1rem' : '1.4rem'}}>
+                                    <h3 style={{ color: 'var(--gold)', margin: 0, fontSize: window.innerWidth <= 768 && !statsExpanded ? '1.1rem' : '1.4rem'}}>
                                         📊 Live Deck Stats {window.innerWidth <= 768 && !statsExpanded && <span style={{fontSize: '0.9rem', opacity: 0.8}}>(Tap to expand)</span>}
                                     </h3>
                                     {window.innerWidth <= 768 && (
@@ -19754,7 +19725,7 @@ return (
                                         border: '2px solid var(--accent-bright)'
                                     }}>
                                         <h3 style={{
-                                            fontFamily: 'Pirata One, cursive',
+                                            
                                             color: 'var(--accent-bright)',
                                             margin: 0,
                                             marginBottom: '1rem',
