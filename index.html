@@ -5895,10 +5895,11 @@
             const publicDecksCacheRef = React.useRef({ lastLoaded: 0 });
             
             const loadPublicDecks = async (forceReload = false) => {
-                // Only reload if 15+ minutes have passed (or forced) - increased from 5 min to reduce Firebase reads
+                // OFFLINE-FIRST: Only reload if 1+ hour has passed (or forced) - increased to reduce Firebase reads
                 const now = Date.now();
+                const CACHE_TTL = 60 * 60 * 1000; // 1 HOUR cache
                 const cacheAge = now - publicDecksCacheRef.current.lastLoaded;
-                if (!forceReload && cacheAge < 900000 && publicDecksCacheRef.current.lastLoaded > 0) {
+                if (!forceReload && cacheAge < CACHE_TTL && publicDecksCacheRef.current.lastLoaded > 0) {
                     return;
                 }
                 // Also check localStorage cache before hitting Firebase
@@ -5908,7 +5909,7 @@
                         if (cached) {
                             const parsed = JSON.parse(cached);
                             const localCacheAge = now - parsed.savedAt;
-                            if (localCacheAge < 900000 && parsed.decks?.length > 0) {
+                            if (localCacheAge < CACHE_TTL && parsed.decks?.length > 0) {
                                 setPublicDecks(parsed.decks);
                                 publicDecksCacheRef.current.lastLoaded = parsed.savedAt;
                                 console.log("Using localStorage public decks cache (age: " + Math.round(localCacheAge/60000) + "m)");
@@ -6115,10 +6116,11 @@ const saveDeckToFirebase = async (deck) => {
     }
 };
 
-            // Cache for user decks - load from Firebase only once per session
+            // OFFLINE-FIRST: Cache for user decks - load from Firebase only when manually synced
             const userDecksCacheRef = React.useRef({ lastLoaded: 0, userId: null });
+            const DECK_CACHE_TTL = 60 * 60 * 1000; // 1 HOUR cache
 
-            // Load user's decks from Firebase with caching
+            // Load user's decks from Firebase with aggressive caching
             const loadDecksFromFirebase = async (userId, forceReload = false) => {
                 if (!userId) return;
 
@@ -6126,9 +6128,9 @@ const saveDeckToFirebase = async (deck) => {
                 const cacheAge = now - userDecksCacheRef.current.lastLoaded;
                 const sameUser = userDecksCacheRef.current.userId === userId;
 
-                // Use cache if: same user, loaded within 5 minutes, not forced
-                if (!forceReload && sameUser && cacheAge < 300000 && userDecksCacheRef.current.lastLoaded > 0) {
-                    console.log("Using cached decks (age: " + Math.round(cacheAge/1000) + "s)");
+                // OFFLINE-FIRST: Use cache if within 1 hour, not forced
+                if (!forceReload && sameUser && cacheAge < DECK_CACHE_TTL && userDecksCacheRef.current.lastLoaded > 0) {
+                    console.log("Using cached decks (age: " + Math.round(cacheAge/60000) + "m)");
                     // Try localStorage first
                     try {
                         const cached = localStorage.getItem('commanderCodexDecks');
