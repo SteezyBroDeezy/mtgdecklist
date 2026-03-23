@@ -9247,7 +9247,38 @@ return (
                                     </div>
 
                                     {/* Right side: Commander Card Preview + Close Button */}
-                                    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem', flexShrink: 0}}>
+                                    <div style={{display: 'flex', alignItems: 'flex-start', gap: '0.5rem', flexShrink: 0}}>
+                                        {/* Commander Card Thumbnail(s) — same as deck preview cards */}
+                                        {selectedDeck.commander && (
+                                            <div style={{display: 'flex', gap: '0.3rem', marginTop: '0.15rem'}}>
+                                                <img
+                                                    src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(selectedDeck.commander)}`}
+                                                    alt={selectedDeck.commander}
+                                                    style={{
+                                                        height: window.innerWidth <= 768 ? '90px' : '120px',
+                                                        borderRadius: '6px',
+                                                        border: '1.5px solid var(--gold)',
+                                                        boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
+                                                    }}
+                                                    loading="lazy"
+                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                />
+                                                {selectedDeck.hasSecondCommander && selectedDeck.secondCommander && (
+                                                    <img
+                                                        src={`https://api.scryfall.com/cards/named?format=image&version=small&fuzzy=${encodeURIComponent(selectedDeck.secondCommander)}`}
+                                                        alt={selectedDeck.secondCommander}
+                                                        style={{
+                                                            height: window.innerWidth <= 768 ? '90px' : '120px',
+                                                            borderRadius: '6px',
+                                                            border: '1.5px solid var(--gold)',
+                                                            boxShadow: '0 3px 12px rgba(0,0,0,0.5)'
+                                                        }}
+                                                        loading="lazy"
+                                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                                    />
+                                                )}
+                                            </div>
+                                        )}
                                         {/* Close Button */}
                                         <button
                                             onClick={() => setSelectedDeck(null)}
@@ -9272,42 +9303,6 @@ return (
                                         >
                                             ×
                                         </button>
-
-                                        {/* Commander Card Preview(s) */}
-                                        {selectedDeck.commanderArt && (
-                                            <div style={{
-                                                display: 'flex',
-                                                gap: '0.25rem',
-                                                marginTop: '0.25rem'
-                                            }}>
-                                                <img
-                                                    loading="lazy" src={selectedDeck.commanderArt}
-                                                    alt="Commander"
-                                                    style={{
-                                                        width: window.innerWidth <= 768 ? '55px' : '70px',
-                                                        height: 'auto',
-                                                        borderRadius: '6px',
-                                                        border: '2px solid var(--gold)',
-                                                        boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-                                                        objectFit: 'cover'
-                                                    }}
-                                                />
-                                                {selectedDeck.commanderArt2 && (
-                                                    <img
-                                                        loading="lazy" src={selectedDeck.commanderArt2}
-                                                        alt="Partner Commander"
-                                                        style={{
-                                                            width: window.innerWidth <= 768 ? '55px' : '70px',
-                                                            height: 'auto',
-                                                            borderRadius: '6px',
-                                                            border: '2px solid var(--gold)',
-                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-                                                            objectFit: 'cover'
-                                                        }}
-                                                    />
-                                                )}
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
 
