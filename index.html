@@ -5895,28 +5895,11 @@
             const publicDecksCacheRef = React.useRef({ lastLoaded: 0 });
             
             const loadPublicDecks = async (forceReload = false) => {
-                // OFFLINE-FIRST: Only reload if 1+ hour has passed (or forced) - increased to reduce Firebase reads
+                // Only reload if 5+ minutes have passed (or forced)
                 const now = Date.now();
-                const CACHE_TTL = 60 * 60 * 1000; // 1 HOUR cache
                 const cacheAge = now - publicDecksCacheRef.current.lastLoaded;
-                if (!forceReload && cacheAge < CACHE_TTL && publicDecksCacheRef.current.lastLoaded > 0) {
+                if (!forceReload && cacheAge < 300000 && publicDecksCacheRef.current.lastLoaded > 0) {
                     return;
-                }
-                // Also check localStorage cache before hitting Firebase
-                if (!forceReload) {
-                    try {
-                        const cached = localStorage.getItem('publicDecksCache');
-                        if (cached) {
-                            const parsed = JSON.parse(cached);
-                            const localCacheAge = now - parsed.savedAt;
-                            if (localCacheAge < CACHE_TTL && parsed.decks?.length > 0) {
-                                setPublicDecks(parsed.decks);
-                                publicDecksCacheRef.current.lastLoaded = parsed.savedAt;
-                                console.log("Using localStorage public decks cache (age: " + Math.round(localCacheAge/60000) + "m)");
-                                return;
-                            }
-                        }
-                    } catch (e) {}
                 }
                 
                 try {
@@ -6037,7 +6020,10 @@
             // Save a deck to Firebase
 const saveDeckToFirebase = async (deck) => {
     if (!user) {
-        alert("Please log in to save decks to the cloud!");
+        const wantsToLogin = window.confirm("⚠️ You're not logged in!\n\nYour deck can't be saved without an account.\n\nClick OK to Login / Create Account\nClick Cancel to go back");
+        if (wantsToLogin) {
+            setShowAuthModal(true);
+        }
         return;
     }
     
@@ -6116,34 +6102,9 @@ const saveDeckToFirebase = async (deck) => {
     }
 };
 
-            // OFFLINE-FIRST: Cache for user decks - load from Firebase only when manually synced
-            const userDecksCacheRef = React.useRef({ lastLoaded: 0, userId: null });
-            const DECK_CACHE_TTL = 60 * 60 * 1000; // 1 HOUR cache
-
-            // Load user's decks from Firebase with aggressive caching
-            const loadDecksFromFirebase = async (userId, forceReload = false) => {
+            // Load user's decks from Firebase
+            const loadDecksFromFirebase = async (userId) => {
                 if (!userId) return;
-
-                const now = Date.now();
-                const cacheAge = now - userDecksCacheRef.current.lastLoaded;
-                const sameUser = userDecksCacheRef.current.userId === userId;
-
-                // OFFLINE-FIRST: Use cache if within 1 hour, not forced
-                if (!forceReload && sameUser && cacheAge < DECK_CACHE_TTL && userDecksCacheRef.current.lastLoaded > 0) {
-                    console.log("Using cached decks (age: " + Math.round(cacheAge/60000) + "m)");
-                    // Try localStorage first
-                    try {
-                        const cached = localStorage.getItem('commanderCodexDecks');
-                        if (cached) {
-                            const parsedDecks = JSON.parse(cached);
-                            if (parsedDecks.length > 0) {
-                                setDecks(parsedDecks);
-                                return;
-                            }
-                        }
-                    } catch (e) {}
-                    return;
-                }
 
                 try {
                     const snapshot = await db.collection("decks")
@@ -6165,22 +6126,10 @@ const saveDeckToFirebase = async (deck) => {
                     });
 
                     setDecks(firebaseDecks);
-                    userDecksCacheRef.current = { lastLoaded: now, userId: userId };
                     console.log("Loaded", firebaseDecks.length, "decks from Firebase (with migrations applied)");
                 } catch (error) {
                     if (error.code === 'resource-exhausted') {
-                        console.warn("⚠️ Firebase quota exceeded - loading from localStorage fallback...");
-                        // Fallback to localStorage
-                        try {
-                            const cached = localStorage.getItem('commanderCodexDecks');
-                            if (cached) {
-                                const parsedDecks = JSON.parse(cached);
-                                setDecks(parsedDecks);
-                                console.log("Loaded", parsedDecks.length, "decks from localStorage fallback");
-                            }
-                        } catch (cacheErr) {
-                            console.error("❌ Could not load from localStorage:", cacheErr);
-                        }
+                        console.warn("⚠️ Firebase quota exceeded - could not load decks. Try again later.");
                     } else {
                         console.error("Error loading decks:", error);
                     }
@@ -8063,8 +8012,18 @@ return (
                                         await loadDecksFromFirebase(user.uid);
                                     }
                                 } else {
-                                    // Not logged in - just save locally
-                                    setDecks([...decks, newDeck]);
+                                    // Not logged in - prompt to login instead of silently saving to nowhere
+                                    hideLoading();
+                                    const wantsToLogin = window.confirm(
+                                        '⚠️ You\'re not logged in!\n\n' +
+                                        'Your deck can\'t be saved without an account.\n\n' +
+                                        'Click OK to Login / Create Account\n' +
+                                        'Click Cancel to go back'
+                                    );
+                                    if (wantsToLogin) {
+                                        setShowAuthModal(true);
+                                    }
+                                    return;
                                 }
 
                                 hideLoading();
@@ -8086,7 +8045,10 @@ return (
                             }}
                             onSave={async (updatedDeck) => {
                                 if (!user) {
-                                    alert('You must be logged in to save changes');
+                                    const wantsToLogin = window.confirm('⚠️ You\'re not logged in!\n\nYour changes can\'t be saved without an account.\n\nClick OK to Login / Create Account\nClick Cancel to go back');
+                                    if (wantsToLogin) {
+                                        setShowAuthModal(true);
+                                    }
                                     return;
                                 }
 
@@ -15803,6 +15765,21 @@ return (
                                         className="btn btn-primary"
                                         style={{padding: '1rem 3rem', fontSize: '1.1rem'}}
                                         onClick={() => {
+                                            if (!user) {
+                                                // Not logged in - show auth modal so they can save properly
+                                                if (setShowAuthModal) {
+                                                    const wantsToLogin = window.confirm(
+                                                        '⚠️ You\'re not logged in!\n\n' +
+                                                        'Your deck won\'t be saved permanently without an account.\n\n' +
+                                                        'Click OK to Login / Create Account\n' +
+                                                        'Click Cancel to go back to editing'
+                                                    );
+                                                    if (wantsToLogin) {
+                                                        setShowAuthModal(true);
+                                                    }
+                                                }
+                                                return;
+                                            }
                                             setHasUnsavedChanges(false);
                                             onSave({
                                                 ...deckData,
