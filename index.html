@@ -3000,38 +3000,51 @@
             searchResults.innerHTML='<div class="search-result-item" style="justify-content:center;"><span style="opacity:0.6;">Searching...</span></div>';
             searchResults.classList.add('active');
             try{
-                // Run card name autocomplete AND flavor name search simultaneously
-                const [acResult, fnResult] = await Promise.allSettled([
-                    API.autocomplete(q),
-                    fetch('https://api.scryfall.com/cards/search?q=fn%3A'+encodeURIComponent(q)+'&unique=cards&order=name').then(r=>r.ok?r.json():{data:[]})
-                ]);
-                const nameList = acResult.status==='fulfilled' ? (acResult.value?.data||[]) : [];
-                const fnCards  = fnResult.status==='fulfilled'  ? (fnResult.value?.data||[]) : [];
-                if(!nameList.length && !fnCards.length){
-                    searchResults.innerHTML='<div class="search-result-item" style="padding:1rem;"><p style="color:var(--text-muted);">No cards found</p></div>';
-                    return;
+                // Always start with autocomplete (fastest)
+                const ac = await API.autocomplete(q);
+                const nameList = ac?.data || [];
+
+                // Filter autocomplete results to those that actually contain the query
+                const qLower = q.toLowerCase();
+                const goodNames = nameList.filter(n => n.toLowerCase().includes(qLower));
+                const otherNames = nameList.filter(n => !n.toLowerCase().includes(qLower));
+                const sortedNames = [...goodNames, ...otherNames].slice(0, 8);
+
+                let html = '';
+                if (sortedNames.length) {
+                    html += sortedNames.map(name =>
+                        `<div class="search-result-item" style="cursor:pointer;" onclick="searchAndOpenCard('${name.replace(/'/g,"\\'")}')">
+                            <div class="search-result-info"><h4>${name}</h4></div>
+                        </div>`
+                    ).join('');
                 }
-                let html='';
-                // Regular card name results
-                html += nameList.slice(0,6).map(name=>
-                    `<div class="search-result-item" style="cursor:pointer;" onclick="searchAndOpenCard('${name.replace(/'/g,"\\'")}')">
-                        <div class="search-result-info"><h4>${name}</h4></div>
-                    </div>`
-                ).join('');
-                // Flavor name (reprint alt name) results
-                if(fnCards.length){
-                    if(nameList.length) html+=`<div style="padding:0.35rem 1rem;font-size:0.73rem;color:var(--accent-blue);background:rgba(0,217,255,0.06);border-top:1px solid var(--bg-tertiary);letter-spacing:0.04em;text-transform:uppercase;">🎭 Reprint alt names</div>`;
-                    html += fnCards.slice(0,4).map(c=>{
-                        const alt=c.flavor_name||q;
-                        return `<div class="search-result-item" style="cursor:pointer;" onclick="openCardDetailByFlavorId('${c.id}','${c.name.replace(/'/g,"\\'")}')">
-                            <div class="search-result-info">
-                                <h4>${alt}</h4>
-                                <p style="color:var(--accent-blue);font-size:0.78rem;margin-top:2px;">→ <strong>${c.name}</strong> · ${c.set_name}</p>
-                            </div>
-                        </div>`;
-                    }).join('');
+
+                // Only do flavor name search if autocomplete gave few results AND query is 4+ chars
+                if (goodNames.length < 3 && q.length >= 4) {
+                    try {
+                        const fnResp = await fetch('https://api.scryfall.com/cards/search?q=fn%3A'+encodeURIComponent(q)+'&unique=cards&order=name');
+                        if (fnResp.ok) {
+                            const fnData = await fnResp.json();
+                            const fnCards = (fnData.data || []).filter(c => c.flavor_name && c.flavor_name.toLowerCase().includes(qLower));
+                            if (fnCards.length) {
+                                html += `<div style="padding:0.35rem 1rem;font-size:0.73rem;color:var(--accent-blue);background:rgba(0,217,255,0.06);border-top:1px solid var(--bg-tertiary);letter-spacing:0.04em;text-transform:uppercase;">🎭 Reprint alt names</div>`;
+                                html += fnCards.slice(0, 4).map(c =>
+                                    `<div class="search-result-item" style="cursor:pointer;" onclick="openCardDetailByFlavorId('${c.id}','${c.name.replace(/'/g,"\\'")}')">
+                                        <div class="search-result-info">
+                                            <h4>${c.flavor_name}</h4>
+                                            <p style="color:var(--accent-blue);font-size:0.78rem;margin-top:2px;">→ <strong>${c.name}</strong> · ${c.set_name}</p>
+                                        </div>
+                                    </div>`
+                                ).join('');
+                            }
+                        }
+                    } catch(e) { /* flavor search failed, no big deal */ }
                 }
-                searchResults.innerHTML=html;
+
+                if (!html) {
+                    html = '<div class="search-result-item" style="padding:1rem;"><p style="color:var(--text-muted);">No cards found</p></div>';
+                }
+                searchResults.innerHTML = html;
             }catch(e){searchResults.classList.remove('active');}
         },100);
         searchInput.addEventListener('input',e=>{
