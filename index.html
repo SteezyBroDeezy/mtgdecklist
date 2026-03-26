@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTG Price Oracle | Track. Alert. Profit.</title>
+    <title>MTG Price Oracle v3.26 | Track. Alert. Profit.</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -532,10 +532,7 @@
         .loading-overlay { position: fixed; inset: 0; background: var(--bg-primary); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; gap: 1rem; }
         .loading-text { font-family: var(--font-display); color: var(--text-secondary); }
 
-        .api-status { position: fixed; bottom: 1rem; right: 1rem; padding: 0.5rem 1rem; background: var(--bg-card); border-radius: var(--radius-md); font-size: 0.8rem; display: flex; align-items: center; gap: 0.5rem; backdrop-filter: blur(10px); }
-        .api-status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); }
-        .api-status-dot.warning { background: var(--accent-orange); }
-        .api-status-dot.error { background: var(--accent-red); }
+        /* API status removed */
 
         .toast-container { position: fixed; top: 80px; right: 1rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 6000; }
         .toast { padding: 1rem; background: var(--bg-card); border-radius: var(--radius-md); border-left: 4px solid var(--accent-primary); display: flex; align-items: center; gap: 0.75rem; min-width: 280px; animation: toastSlide 0.3s ease; backdrop-filter: blur(10px); }
@@ -2392,8 +2389,6 @@
         </div>
     </main>
 
-    <div class="api-status"><div class="api-status-dot" id="apiStatusDot"></div><span id="apiStatusText">Scryfall: Ready</span></div>
-
     <!-- Auth Modal -->
     <div class="modal-overlay" id="authModal">
         <div class="modal">
@@ -2742,7 +2737,7 @@
                 // Persist cache after queue drains
                 APICache.persist();
             },
-            status(s){const d=document.getElementById('apiStatusDot'),t=document.getElementById('apiStatusText');if(!d||!t)return;d.className='api-status-dot '+(s==='warning'?'warning':s==='error'?'error':'');t.textContent='Scryfall: '+(s==='active'?'Fetching...':s==='warning'?'Rate limited':s==='error'?'Error':'Ready');},
+            status(s){},
             // User search = priority, skips ahead of background loads
             search:(q,o={})=>API.req('/cards/search?q='+encodeURIComponent(q)+'&'+new URLSearchParams(o)),
             searchPriority:(q,o={})=>API.req('/cards/search?q='+encodeURIComponent(q)+'&'+new URLSearchParams(o),{priority:true}),
