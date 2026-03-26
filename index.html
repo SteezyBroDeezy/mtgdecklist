@@ -1385,8 +1385,8 @@
                     <h2 class="section-title">🔄 Notable Reprints — Latest Sets</h2>
                     <button class="btn btn-sm" onclick="openReprintsFullView()">View All Reprints →</button>
                 </div>
-                <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:1rem;">True reprints from different sets, grouped by recent releases</p>
-                <div id="reprintsDashGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;">
+                <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:1rem;">True reprints from previous sets, grouped by recent releases</p>
+                <div class="category-movers-grid" id="reprintsDashGrid">
                     <div class="loading-spinner" style="grid-column:1/-1;transform:scale(0.5);"></div>
                 </div>
             </section>
@@ -3033,7 +3033,7 @@
                 }
                 searchResults.innerHTML=html;
             }catch(e){searchResults.classList.remove('active');}
-        },200);
+        },100);
         searchInput.addEventListener('input',e=>{
             handleSearch(e.target.value);
             // Show/hide clear button
@@ -6236,232 +6236,207 @@
 
 
         // ====== REPRINTS SECTION ======
-        // Cache for reprints data per set code
         const reprintsCache = {};
-        // All sets from Scryfall (full list for family grouping)
+        const reprintsFamilyCache = {};
         let allScryfallSets = null;
-        // Set families caches: big (50+ cards) and all (any size)
         let setFamiliesBig = null;
         let setFamiliesAll = null;
-        // Whether to include small sets in the reprints browser
         let reprintsIncludeSmall = false;
 
-        // Fetch ALL sets and build family groups
         async function buildSetFamilies(includeSmall = false) {
-            // Return cached if available
             if (includeSmall && setFamiliesAll) return setFamiliesAll;
             if (!includeSmall && setFamiliesBig) return setFamiliesBig;
-
             try {
                 if (!allScryfallSets) {
                     const d = await API.sets();
                     allScryfallSets = d.data || [];
-                    // Also populate State.sets if empty
-                    if (!State.sets.length) {
-                        State.sets = allScryfallSets.filter(s => ['expansion','core','masters','draft_innovation','commander'].includes(s.set_type) && s.card_count >= 100);
-                    }
+                    if (!State.sets.length) State.sets = allScryfallSets.filter(s => ['expansion','core','masters','draft_innovation','commander'].includes(s.set_type) && s.card_count >= 100);
                 }
-
-                // Build a lookup by code
                 const byCode = {};
                 allScryfallSets.forEach(s => byCode[s.code] = s);
-
-                // Group sets into families using parent_set_code
                 const families = {};
-
                 allScryfallSets.forEach(s => {
-                    // Skip digital-only and empty sets
                     if (s.digital || s.card_count < 1) return;
-
-                    const parentCode = s.parent_set_code || s.code;
-                    const parentSet = byCode[parentCode];
-
-                    if (!families[parentCode]) {
-                        families[parentCode] = {
-                            key: parentCode,
-                            name: parentSet ? parentSet.name : s.name,
-                            icon: parentSet ? parentSet.icon_svg_uri : s.icon_svg_uri,
-                            codes: [],
-                            releasedAt: parentSet ? parentSet.released_at : s.released_at,
-                            totalCards: 0,
-                            setType: parentSet ? parentSet.set_type : s.set_type
-                        };
-                    }
-
-                    // Add this set code to the family
-                    if (!families[parentCode].codes.includes(s.code)) {
-                        families[parentCode].codes.push(s.code);
-                        families[parentCode].totalCards += s.card_count || 0;
-                    }
-
-                    // Use most recent release date in the family
-                    if (s.released_at && (!families[parentCode].releasedAt || s.released_at > families[parentCode].releasedAt)) {
-                        families[parentCode].releasedAt = s.released_at;
-                    }
+                    const pc = s.parent_set_code || s.code;
+                    const ps = byCode[pc];
+                    if (!families[pc]) families[pc] = { key: pc, name: ps ? ps.name : s.name, icon: ps ? ps.icon_svg_uri : s.icon_svg_uri, codes: [], releasedAt: ps ? ps.released_at : s.released_at, totalCards: 0 };
+                    if (!families[pc].codes.includes(s.code)) { families[pc].codes.push(s.code); families[pc].totalCards += s.card_count || 0; }
+                    if (s.released_at && (!families[pc].releasedAt || s.released_at > families[pc].releasedAt)) families[pc].releasedAt = s.released_at;
                 });
-
-                const allFamilies = Object.values(families)
-                    .sort((a, b) => (b.releasedAt || '').localeCompare(a.releasedAt || ''));
-
-                // Cache both versions
-                setFamiliesAll = allFamilies.filter(f => f.totalCards >= 1);
-                setFamiliesBig = allFamilies.filter(f => f.totalCards >= 50);
-
+                const all = Object.values(families).sort((a, b) => (b.releasedAt || '').localeCompare(a.releasedAt || ''));
+                setFamiliesAll = all.filter(f => f.totalCards >= 1);
+                setFamiliesBig = all.filter(f => f.totalCards >= 50);
                 return includeSmall ? setFamiliesAll : setFamiliesBig;
-            } catch(e) {
-                console.error('Failed to build set families:', e);
-                return [];
-            }
+            } catch(e) { return []; }
         }
 
-        // Get the latest N set families (released, not future)
         async function getLatestFamilies(count = 5, includeSmall = false) {
             const families = await buildSetFamilies(includeSmall);
             const now = new Date().toISOString().split('T')[0];
             return families.filter(f => f.releasedAt && f.releasedAt <= now).slice(0, count);
         }
 
-        // Toggle small sets in reprints browser
-        async function toggleReprintsSmallSets(checked) {
-            reprintsIncludeSmall = checked;
-            await loadReprintsFullView();
-        }
+        async function toggleReprintsSmallSets(checked) { reprintsIncludeSmall = checked; await loadReprintsFullView(); }
 
-        // Fetch reprints for a single set code
         async function fetchSetReprints(setCode) {
             if (reprintsCache[setCode]) return reprintsCache[setCode];
             try {
-                // Fetch ALL reprints for this set, no price filter, sorted by price desc
                 const d = await API.req('/cards/search?q=s%3A' + encodeURIComponent(setCode) + '+is%3Areprint&order=usd&dir=desc&unique=cards', { priority: true });
-                let allCards = d.data || [];
-                // Fetch additional pages if available (Scryfall pages at 175)
-                let nextPage = d.has_more ? d.next_page : null;
-                while (nextPage) {
-                    try {
-                        const pageUrl = nextPage.replace('https://api.scryfall.com', '');
-                        const nd = await API.req(pageUrl, { priority: false });
-                        allCards = allCards.concat(nd.data || []);
-                        nextPage = nd.has_more ? nd.next_page : null;
-                    } catch(e) { break; }
-                }
-                const results = allCards.map(c => ({
-                    id: c.id,
-                    name: c.name,
-                    set: c.set,
-                    setName: c.set_name,
+                const results = (d.data || []).map(c => ({
+                    id: c.id, name: c.name, set: c.set, setName: c.set_name,
                     image: c.image_uris?.small || c.card_faces?.[0]?.image_uris?.small || '',
                     imageLarge: c.image_uris?.normal || c.card_faces?.[0]?.image_uris?.normal || '',
                     price: parseFloat(c.prices?.usd || c.prices?.usd_foil || 0),
                     priceStr: c.prices?.usd ? '$' + c.prices.usd : (c.prices?.usd_foil ? '$' + c.prices.usd_foil + ' (foil)' : 'N/A'),
-                    rarity: c.rarity,
-                    typeLine: c.type_line
+                    rarity: c.rarity
                 }));
                 reprintsCache[setCode] = results;
                 return results;
-            } catch(e) {
-                reprintsCache[setCode] = [];
-                return [];
-            }
+            } catch(e) { reprintsCache[setCode] = []; return []; }
         }
 
-        // Fetch reprints for an entire family (all sub-set codes combined)
-        // Cache: card name -> true/false (is a true cross-family reprint)
+        // TRUE reprint check: card must exist in a traditional MTG set (expansion/core/masters/draft_innovation)
+        // This filters out franchise-only cards like Soul Stone, Badgermole Cub
         const trueReprintCache = {};
-
-        // Verify which cards are TRUE reprints — existed in a DIFFERENT set family before.
-        // Filters out cards that only exist within the same franchise (e.g. Soul Stone only in Marvel products).
-        // Strategy: check if the card was ever printed in a traditional MTG set (expansion, core, masters, commander)
-        // OR in any set family different from the current one.
-        async function verifyTrueReprints(cards, familyCodes) {
+        async function verifyTrueReprints(cards, familyKey) {
             if (!cards.length) return [];
-
-            // Work on a copy so we don't mutate the original family
-            const excludeCodes = [...familyCodes];
-
-            const verified = [];
-            const toCheck = [];
-
-            // First, use cache
+            const verified = [], toCheck = [];
             for (const card of cards) {
-                const key = card.name + '|' + familyCodes[0];
-                if (trueReprintCache[key] === true) {
-                    verified.push(card);
-                } else if (trueReprintCache[key] === false) {
-                    // Known false — skip
-                } else {
-                    toCheck.push(card);
-                }
+                const key = card.name + '|' + familyKey;
+                if (trueReprintCache[key] === true) verified.push(card);
+                else if (trueReprintCache[key] === false) { /* skip */ }
+                else toCheck.push(card);
             }
-
             if (!toCheck.length) return verified;
-
-            // Build family exclusion: exclude all set codes in this family AND any related franchise sets
-            // Also detect franchise prefix to exclude related product lines (e.g. all Marvel, all Avatar, all TMNT)
-            const familyName = (allScryfallSets?.find(s => s.code === excludeCodes[0])?.name || '').toLowerCase();
-            const franchisePrefixes = [];
-            // Detect common franchise keywords
-            const franchiseKeywords = ['marvel','spider-man','avatar','airbender','tmnt','ninja turtles','final fantasy','assassin\'s creed','lord of the rings','doctor who','warhammer','transformers','street fighter','jurassic','fallout'];
-            for (const kw of franchiseKeywords) {
-                if (familyName.includes(kw)) {
-                    // Find ALL sets with this franchise keyword and exclude them
-                    const franchiseSets = allScryfallSets?.filter(s => s.name.toLowerCase().includes(kw)) || [];
-                    franchiseSets.forEach(s => {
-                        if (!excludeCodes.includes(s.code)) excludeCodes.push(s.code);
-                    });
-                    break;
-                }
-            }
-
-            const excludeStr = excludeCodes.map(c => '-s:' + c).join(' ');
-
-            // Batch check: group 5 card names per query
+            const traditionalFilter = '(st:expansion or st:core or st:masters or st:draft_innovation)';
             for (let i = 0; i < toCheck.length; i += 5) {
                 const batch = toCheck.slice(i, i + 5);
-                const nameQueries = batch.map(c => '!"' + c.name.replace(/['"]/g, '') + '"');
-                const fullQuery = '(' + nameQueries.join(' or ') + ') ' + excludeStr + ' game:paper';
+                const nameQ = batch.map(c => '!"' + c.name.replace(/['"]/g, '') + '"');
+                const q = '(' + nameQ.join(' or ') + ') ' + traditionalFilter;
                 try {
-                    const d = await API.req('/cards/search?q=' + encodeURIComponent(fullQuery) + '&unique=cards&page=1', { cacheTTL: 3600000 });
-                    const foundNames = new Set((d.data || []).map(c => c.name));
+                    const d = await API.req('/cards/search?q=' + encodeURIComponent(q) + '&unique=cards&page=1', { cacheTTL: 3600000 });
+                    const found = new Set((d.data || []).map(c => c.name));
                     batch.forEach(card => {
-                        const key = card.name + '|' + familyCodes[0];
-                        if (foundNames.has(card.name)) {
-                            trueReprintCache[key] = true;
-                            verified.push(card);
-                        } else {
-                            trueReprintCache[key] = false;
-                        }
+                        const key = card.name + '|' + familyKey;
+                        if (found.has(card.name)) { trueReprintCache[key] = true; verified.push(card); }
+                        else { trueReprintCache[key] = false; }
                     });
-                } catch(e) {
-                    batch.forEach(card => {
-                        trueReprintCache[card.name + '|' + familyCodes[0]] = false;
-                    });
-                }
+                } catch(e) { batch.forEach(card => { trueReprintCache[card.name + '|' + familyKey] = false; }); }
             }
-
             return verified;
         }
 
-        async function fetchFamilyReprints(family) {
-            const allReprints = [];
+        async function fetchFamilyReprints(family, limit = 0) {
+            if (reprintsFamilyCache[family.key]) {
+                const cached = reprintsFamilyCache[family.key];
+                return limit > 0 ? cached.slice(0, limit) : cached;
+            }
+            const allR = [];
             const fetches = await Promise.all(family.codes.map(code => fetchSetReprints(code)));
-            fetches.forEach(arr => allReprints.push(...arr));
-            // Deduplicate by card name (keep highest price version)
+            fetches.forEach(arr => allR.push(...arr));
             const seen = {};
-            allReprints.forEach(c => {
-                if (!seen[c.name] || c.price > seen[c.name].price) seen[c.name] = c;
-            });
+            allR.forEach(c => { if (!seen[c.name] || c.price > seen[c.name].price) seen[c.name] = c; });
             const deduped = Object.values(seen).sort((a, b) => b.price - a.price);
-
-            // Verify these are TRUE cross-family reprints (not just promo variants from same product)
-            const trueReprints = await verifyTrueReprints(deduped, family.codes);
-            return trueReprints.sort((a, b) => b.price - a.price);
+            // Only verify top 20 for speed
+            const top = deduped.slice(0, 20);
+            const result = (await verifyTrueReprints(top, family.key)).sort((a, b) => b.price - a.price);
+            reprintsFamilyCache[family.key] = result;
+            return limit > 0 ? result.slice(0, limit) : result;
         }
 
-        // Render a single reprint card element
+        // Render reprints in Recent Sets category card style
+        function renderReprintsCategoryCard(family, reprints) {
+            const items = reprints.slice(0, 5).map(c => {
+                const ps = c.price > 0 ? '$' + c.price.toFixed(2) : 'N/A';
+                return `<div class="category-mover-item" style="cursor:pointer;" onclick="openCardDetail('${c.id}')">
+                    <span class="category-mover-name">${c.name}</span>
+                    <span class="category-mover-price">${ps}</span>
+                </div>`;
+            }).join('');
+            const more = reprints.length > 5 ? `<div style="text-align:center;margin-top:0.5rem;"><button class="btn btn-sm" onclick="openReprintsFullView();setTimeout(()=>selectReprintsSet('${family.key}'),300);" style="font-size:0.7rem;">▼ Show More (${reprints.length} total)</button></div>` : '';
+            return `<div class="category-mover-card" style="display:block;">
+                <div class="category-mover-header" onclick="openReprintsFullView();setTimeout(()=>selectReprintsSet('${family.key}'),300);" title="View all reprints">
+                    ${family.icon ? `<img src="${family.icon}" style="width:18px;height:18px;filter:brightness(0) invert(1);">` : '<span>🔄</span>'}
+                    ${family.name}
+                    <span style="margin-left:auto;font-size:0.7rem;opacity:0.6;">View All →</span>
+                </div>
+                <div class="category-mover-content">${items}</div>${more}
+            </div>`;
+        }
+
+        async function loadReprintsDashboard() {
+            const section = document.getElementById('reprintsDashSection');
+            const grid = document.getElementById('reprintsDashGrid');
+            if (!section || !grid) return;
+            try {
+                const families = await getLatestFamilies(7);
+                if (!families.length) { section.style.display = 'none'; return; }
+                section.style.display = 'block';
+                grid.innerHTML = '';
+                let shown = 0;
+                const mobileCards = [];
+                for (const fam of families) {
+                    if (shown >= 5) break;
+                    const reprints = await fetchFamilyReprints(fam, 5);
+                    if (!reprints.length) continue;
+                    grid.innerHTML += renderReprintsCategoryCard(fam, reprints);
+                    mobileCards.push({ family: fam, reprints });
+                    shown++;
+                }
+                if (!shown) { section.style.display = 'none'; return; }
+                const mobileGrid = document.getElementById('mobileReprintsGrid');
+                if (mobileGrid) {
+                    mobileGrid.innerHTML = mobileCards.slice(0, 4).map(b => {
+                        const f = b.family, top = b.reprints[0];
+                        return `<div class="reprint-set-box" onclick="openReprintsFullView();setTimeout(()=>selectReprintsSet('${f.key}'),300);" style="padding:0.75rem;">
+                            <div class="reprint-set-box-header" style="margin-bottom:0.5rem;"><div class="reprint-set-box-name" style="font-size:0.8rem;">${f.name}</div></div>
+                            <div style="font-size:0.7rem;color:var(--text-secondary);">🔄 ${b.reprints.length} reprints</div>
+                            <div style="font-size:0.75rem;font-weight:600;">${top.name}</div>
+                            <div style="font-family:var(--font-mono);color:var(--accent-gold);font-size:0.8rem;">${top.priceStr}</div>
+                        </div>`;
+                    }).join('');
+                }
+            } catch(e) { section.style.display = 'none'; }
+        }
+
+        // ====== REPRINTS FULL VIEW ======
+        let reprintsAllFamilies = [];
+        let reprintsActiveFamilyKey = '';
+        function openReprintsFullView() { document.getElementById('reprintsBrowserModal').classList.add('active'); document.body.style.overflow = 'hidden'; loadReprintsFullView(); }
+        function closeReprintsBrowser() { document.getElementById('reprintsBrowserModal').classList.remove('active'); document.body.style.overflow = ''; }
+
+        async function loadReprintsFullView() {
+            const tabs = document.getElementById('reprintsSetTabs');
+            const content = document.getElementById('reprintsBrowserContent');
+            content.innerHTML = '<div class="loading-spinner" style="margin:2rem auto;"></div>';
+            tabs.innerHTML = '';
+            const count = reprintsIncludeSmall ? 30 : 15;
+            const families = await getLatestFamilies(count, reprintsIncludeSmall);
+            reprintsAllFamilies = families;
+            if (!families.length) { content.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">No sets found</p>'; return; }
+            tabs.innerHTML = `<button class="reprints-set-tab active" data-set="all" onclick="selectReprintsSet('all')">All Sets</button>` +
+                `<button class="reprints-set-tab" data-set="top" onclick="selectReprintsSet('top')">🏆 Top Value</button>` +
+                `<button class="reprints-set-tab" data-set="under20" onclick="selectReprintsSet('under20')">💰 Under $20</button>` +
+                `<button class="reprints-set-tab" data-set="under5" onclick="selectReprintsSet('under5')">🪙 Under $5</button>` +
+                families.map(f => {
+                    const sm = f.totalCards < 50 ? '<span style="font-size:0.6rem;background:var(--bg-tertiary);padding:0.1rem 0.3rem;border-radius:4px;margin-left:3px;">SM</span>' : '';
+                    return `<button class="reprints-set-tab" data-set="${f.key}" onclick="selectReprintsSet('${f.key}')">${f.icon ? `<img src="${f.icon}" style="width:16px;height:16px;filter:brightness(0) invert(1);vertical-align:middle;margin-right:4px;">` : ''}${f.name}${sm}</button>`;
+                }).join('');
+            reprintsActiveFamilyKey = 'all';
+            await renderReprintsForFamily('all');
+        }
+
+        async function selectReprintsSet(fk) {
+            document.querySelectorAll('.reprints-set-tab').forEach(t => t.classList.toggle('active', t.dataset.set === fk));
+            reprintsActiveFamilyKey = fk;
+            await renderReprintsForFamily(fk);
+            document.querySelector('#reprintsBrowserModal .sets-browser-content')?.scrollTo(0, 0);
+        }
+
         function renderReprintCard(card, size = 'small') {
-            const imgSrc = size === 'large' ? card.imageLarge : card.image;
+            const img = size === 'large' ? card.imageLarge : card.image;
             return `<div class="reprint-card" onclick="openCardDetail('${card.id}')">
-                <img src="${imgSrc}" alt="${card.name}" loading="lazy">
+                <img src="${img}" alt="${card.name}" loading="lazy">
                 <div class="reprint-card-name" title="${card.name}">${card.name}</div>
                 <div class="reprint-card-set">${card.setName}</div>
                 <div class="reprint-card-price">${card.priceStr}</div>
@@ -6469,193 +6444,61 @@
             </div>`;
         }
 
-        // Load reprints dashboard preview — shows 5 top reprints across latest set families
-        async function loadReprintsDashboard() {
-            const section = document.getElementById('reprintsDashSection');
-            const grid = document.getElementById('reprintsDashGrid');
-            if (!section || !grid) return;
-
-            try {
-                const families = await getLatestFamilies(7);
-                if (!families.length) { section.style.display = 'none'; return; }
-
-                // Fetch reprints from each family in parallel
-                const allResults = await Promise.all(families.map(f => fetchFamilyReprints(f)));
-
-                // Build set family boxes for families that have reprints
-                const boxes = [];
-                for (let i = 0; i < families.length && boxes.length < 5; i++) {
-                    const reprints = allResults[i];
-                    if (!reprints.length) continue;
-                    const fam = families[i];
-                    const topCard = reprints[0];
-                    boxes.push({ family: fam, reprints, topCard });
-                }
-
-                if (!boxes.length) { section.style.display = 'none'; return; }
-
-                section.style.display = 'block';
-                grid.innerHTML = boxes.map(b => {
-                    const f = b.family;
-                    const top = b.topCard;
-                    return `<div class="reprint-set-box" onclick="openReprintsFullView();setTimeout(()=>selectReprintsSet('${f.key}'),300);">
-                        <div class="reprint-set-box-header">
-                            ${f.icon ? `<img src="${f.icon}" class="reprint-set-box-icon" alt="">` : ''}
-                            <div class="reprint-set-box-name">${f.name}</div>
-                        </div>
-                        <div class="reprint-set-box-stats">
-                            <span>🔄 ${b.reprints.length} reprint${b.reprints.length !== 1 ? 's' : ''}</span>
-                            <span>${f.codes.length > 1 ? f.codes.length + ' sets' : ''}</span>
-                        </div>
-                        <div class="reprint-set-box-top">
-                            <div class="reprint-set-box-top-name">${top.name}</div>
-                            <div class="reprint-set-box-top-price">${top.priceStr}</div>
-                        </div>
-                        <div class="reprint-set-box-btn">View All Reprints →</div>
-                    </div>`;
-                }).join('');
-
-                // Also populate mobile grid with compact boxes
-                const mobileGrid = document.getElementById('mobileReprintsGrid');
-                if (mobileGrid) {
-                    mobileGrid.innerHTML = boxes.slice(0, 4).map(b => {
-                        const f = b.family;
-                        const top = b.topCard;
-                        return `<div class="reprint-set-box" onclick="openReprintsFullView();setTimeout(()=>selectReprintsSet('${f.key}'),300);" style="padding:0.75rem;">
-                            <div class="reprint-set-box-header" style="margin-bottom:0.5rem;">
-                                ${f.icon ? `<img src="${f.icon}" class="reprint-set-box-icon" style="width:24px;height:24px;" alt="">` : ''}
-                                <div class="reprint-set-box-name" style="font-size:0.8rem;">${f.name}</div>
-                            </div>
-                            <div style="font-size:0.7rem;color:var(--text-secondary);margin-bottom:0.4rem;">🔄 ${b.reprints.length} reprints</div>
-                            <div style="font-size:0.75rem;font-weight:600;">${top.name}</div>
-                            <div style="font-family:var(--font-mono);color:var(--accent-gold);font-size:0.8rem;font-weight:700;">${top.priceStr}</div>
-                        </div>`;
-                    }).join('');
-                }
-            } catch(e) {
-                console.error('Failed to load reprints dashboard:', e);
-                section.style.display = 'none';
-            }
-        }
-
-        // ====== REPRINTS FULL VIEW ======
-        let reprintsAllFamilies = [];
-        let reprintsActiveFamilyKey = '';
-
-        function openReprintsFullView() {
-            document.getElementById('reprintsBrowserModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            loadReprintsFullView();
-        }
-
-        function closeReprintsBrowser() {
-            document.getElementById('reprintsBrowserModal').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        async function loadReprintsFullView() {
-            const tabsContainer = document.getElementById('reprintsSetTabs');
+        async function renderReprintsForFamily(fk) {
             const content = document.getElementById('reprintsBrowserContent');
-
             content.innerHTML = '<div class="loading-spinner" style="margin:2rem auto;"></div>';
-            tabsContainer.innerHTML = '';
-
-            // Get latest families — more when including small sets, but cap to avoid overload
-            const count = reprintsIncludeSmall ? 30 : 15;
-            const families = await getLatestFamilies(count, reprintsIncludeSmall);
-            reprintsAllFamilies = families;
-
-            if (!families.length) {
-                content.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">No sets found</p>';
+            // Special category views
+            if (fk === 'top' || fk === 'under20' || fk === 'under5') {
+                const allR = [];
+                content.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:1rem;">Loading reprints...</p>';
+                for (const fam of reprintsAllFamilies.slice(0, 8)) {
+                    const r = await fetchFamilyReprints(fam);
+                    allR.push(...r);
+                }
+                const seen = {};
+                allR.forEach(c => { if (!seen[c.name] || c.price > seen[c.name].price) seen[c.name] = c; });
+                let filtered = Object.values(seen).sort((a, b) => b.price - a.price);
+                let title = '🏆 Top Value Reprints';
+                if (fk === 'under20') { filtered = filtered.filter(c => c.price > 0 && c.price < 20); title = '💰 Reprints Under $20'; }
+                else if (fk === 'under5') { filtered = filtered.filter(c => c.price > 0 && c.price < 5); title = '🪙 Budget Reprints Under $5'; }
+                content.innerHTML = `<h3 style="font-family:var(--font-display);margin-bottom:1rem;">${title}</h3>
+                    <div class="reprints-full-grid">${filtered.slice(0, 50).map(c => renderReprintCard(c, 'large')).join('') || '<p style="color:var(--text-secondary);padding:1rem;">No reprints found</p>'}</div>`;
                 return;
             }
-
-            // Build family tabs with size badges for small sets
-            tabsContainer.innerHTML = `<button class="reprints-set-tab active" data-set="all" onclick="selectReprintsSet('all')">All Sets</button>` +
-                families.map(f => {
-                    const isSmall = f.totalCards < 50;
-                    const badge = isSmall ? `<span style="font-size:0.6rem;background:var(--bg-tertiary);padding:0.1rem 0.3rem;border-radius:4px;margin-left:3px;vertical-align:middle;">SM</span>` : '';
-                    return `<button class="reprints-set-tab" data-set="${f.key}" onclick="selectReprintsSet('${f.key}')">${f.icon ? `<img src="${f.icon}" style="width:16px;height:16px;filter:brightness(0) invert(1);vertical-align:middle;margin-right:4px;">` : ''}${f.name}${badge}</button>`;
-                }).join('');
-
-            reprintsActiveFamilyKey = 'all';
-            await renderReprintsForFamily('all');
-        }
-
-        async function selectReprintsSet(familyKey) {
-            document.querySelectorAll('.reprints-set-tab').forEach(t => {
-                t.classList.toggle('active', t.dataset.set === familyKey);
-            });
-            reprintsActiveFamilyKey = familyKey;
-            await renderReprintsForFamily(familyKey);
-            // Scroll to top
-            document.querySelector('#reprintsBrowserModal .sets-browser-content')?.scrollTo(0, 0);
-        }
-
-        async function renderReprintsForFamily(familyKey) {
-            const content = document.getElementById('reprintsBrowserContent');
-            content.innerHTML = '<div class="loading-spinner" style="margin:2rem auto;"></div>';
-
-            if (familyKey === 'all') {
-                // Show reprints grouped by family
-                let html = '';
+            if (fk === 'all') {
+                content.innerHTML = '';
                 for (const fam of reprintsAllFamilies) {
-                    const reprints = await fetchFamilyReprints(fam);
+                    const reprints = await fetchFamilyReprints(fam, 6);
                     if (!reprints.length) continue;
-                    const subSetNote = fam.codes.length > 1 ? ` (${fam.codes.length} sets combined)` : '';
-                    html += `<div style="margin-bottom:2rem;">
+                    content.innerHTML += `<div style="margin-bottom:2rem;">
                         <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--bg-tertiary);">
                             ${fam.icon ? `<img src="${fam.icon}" style="width:28px;height:28px;filter:brightness(0) invert(1);">` : ''}
-                            <div>
-                                <h3 style="font-family:var(--font-display);font-size:1.1rem;">${fam.name}</h3>
-                                <span style="font-size:0.8rem;color:var(--text-secondary);">${reprints.length} reprint${reprints.length !== 1 ? 's' : ''} ${subSetNote}</span>
-                            </div>
+                            <div><h3 style="font-family:var(--font-display);font-size:1.1rem;">${fam.name}</h3>
+                            <span style="font-size:0.8rem;color:var(--text-secondary);">${reprints.length}+ reprints</span></div>
                             <button class="btn btn-sm" onclick="selectReprintsSet('${fam.key}')" style="margin-left:auto;">View All →</button>
                         </div>
-                        <div class="reprints-full-grid">${reprints.slice(0, 6).map(c => renderReprintCard(c, 'large')).join('')}</div>
+                        <div class="reprints-full-grid">${reprints.map(c => renderReprintCard(c, 'large')).join('')}</div>
                     </div>`;
                 }
-                content.innerHTML = html || '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">No reprints found in recent sets</p>';
+                if (!content.innerHTML) content.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">No reprints found</p>';
             } else {
-                // Show all reprints for a specific family
-                const fam = reprintsAllFamilies.find(f => f.key === familyKey);
-                if (!fam) { content.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">Family not found</p>'; return; }
-
+                const fam = reprintsAllFamilies.find(f => f.key === fk);
+                if (!fam) { content.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Not found</p>'; return; }
                 const reprints = await fetchFamilyReprints(fam);
-                if (!reprints.length) {
-                    content.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">No notable reprints found in this set family</p>';
-                    return;
-                }
-
-                // Show sub-set breakdown if multiple sets in family
-                let subSetInfo = '';
+                if (!reprints.length) { content.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">No reprints found</p>'; return; }
+                let subInfo = '';
                 if (fam.codes.length > 1) {
-                    subSetInfo = `<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">` +
-                        fam.codes.map(code => {
-                            const s = allScryfallSets?.find(x => x.code === code);
-                            if (!s) return '';
-                            const count = (reprintsCache[code] || []).length;
-                            return `<span style="padding:0.3rem 0.6rem;background:var(--bg-tertiary);border-radius:var(--radius-sm);font-size:0.75rem;color:var(--text-secondary);">
-                                ${s.icon_svg_uri ? `<img src="${s.icon_svg_uri}" style="width:14px;height:14px;filter:brightness(0) invert(1);vertical-align:middle;margin-right:3px;">` : ''}
-                                ${s.name} <strong style="color:var(--text-primary);">${count}</strong>
-                            </span>`;
-                        }).join('') + `</div>`;
+                    subInfo = `<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">` +
+                        fam.codes.map(code => { const s = allScryfallSets?.find(x => x.code === code); if (!s) return ''; const ct = (reprintsCache[code]||[]).length;
+                            return `<span style="padding:0.3rem 0.6rem;background:var(--bg-tertiary);border-radius:var(--radius-sm);font-size:0.75rem;color:var(--text-secondary);">${s.name} <strong style="color:var(--text-primary);">${ct}</strong></span>`; }).join('') + `</div>`;
                 }
-
-                content.innerHTML = `
-                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
-                        ${fam.icon ? `<img src="${fam.icon}" style="width:36px;height:36px;filter:brightness(0) invert(1);">` : ''}
-                        <div>
-                            <h3 style="font-family:var(--font-display);font-size:1.25rem;">${fam.name}</h3>
-                            <span style="font-size:0.85rem;color:var(--text-secondary);">${reprints.length} reprint${reprints.length !== 1 ? 's' : ''} ${fam.codes.length > 1 ? ' across ' + fam.codes.length + ' sets' : ''}</span>
-                        </div>
-                    </div>
-                    ${subSetInfo}
-                    <div class="reprints-full-grid">${reprints.map(c => renderReprintCard(c, 'large')).join('')}</div>
-                `;
+                content.innerHTML = `<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+                    ${fam.icon ? `<img src="${fam.icon}" style="width:36px;height:36px;filter:brightness(0) invert(1);">` : ''}
+                    <div><h3 style="font-family:var(--font-display);font-size:1.25rem;">${fam.name}</h3>
+                    <span style="font-size:0.85rem;color:var(--text-secondary);">${reprints.length} reprints${fam.codes.length > 1 ? ' across ' + fam.codes.length + ' sets' : ''}</span></div>
+                </div>${subInfo}<div class="reprints-full-grid">${reprints.map(c => renderReprintCard(c, 'large')).join('')}</div>`;
             }
         }
-
 
         // ====== ANIMATED BACKGROUNDS ======
         const bgCanvas = document.getElementById('bgCanvas');
