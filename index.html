@@ -1519,15 +1519,6 @@
                 </div>
             </section>
 
-            <!-- Spoiler Season — Most Valuable -->
-            <section class="category-movers-section desktop-only" id="spoilerTopCardsSection" style="display:none;">
-                <div class="section-header">
-                    <h2 class="section-title">🔮 Spoiler Season — Most Valuable</h2>
-                    <p style="color:var(--text-secondary);font-size:0.85rem;margin:0;">Top cards by price from upcoming & recent sets</p>
-                </div>
-                <div class="category-movers-grid" id="spoilerTopCardsGrid"></div>
-            </section>
-
             <!-- Reprints from Latest Sets - Dashboard Preview (compact category format) -->
             <section class="category-movers-section desktop-only" id="reprintsDashSection" style="display:none;">
                 <div class="section-header">
@@ -5277,21 +5268,15 @@
         }
 
         async function checkSpoilers(manual = false) {
-            // Show themed loaders in all three spoiler sections RIGHT AWAY — don't wait
+            // Show themed loaders in the spoiler sections RIGHT AWAY — don't wait
             // for the first API call to resolve. Users see the sections "working" instead
             // of blank space. Cleaned up in renderSpoilerDashboard / loadSpoilerReprints.
             const spoilerSection = document.getElementById('spoilerDashSection');
-            const seasonSection = document.getElementById('spoilerTopCardsSection');
             const reprintsSection = document.getElementById('spoilerReprintsSection');
             if (spoilerSection) {
                 spoilerSection.style.display = 'block';
                 stopManaLoader('spoilerDashGrid');
                 activeManaLoaders['spoilerDashGrid'] = showManaLoader('spoilerDashGrid', 'Scanning upcoming sets');
-            }
-            if (seasonSection) {
-                seasonSection.style.display = 'block';
-                stopManaLoader('spoilerTopCardsGrid');
-                activeManaLoaders['spoilerTopCardsGrid'] = showManaLoader('spoilerTopCardsGrid', 'Finding the most valuable spoilers');
             }
             if (reprintsSection) {
                 reprintsSection.style.display = 'block';
@@ -5303,7 +5288,6 @@
             if (!allScryfallSets || !allScryfallSets.length) {
                 try { const d = await API.sets(); allScryfallSets = d.data || []; } catch(e) {
                     stopManaLoader('spoilerDashGrid');
-                    stopManaLoader('spoilerTopCardsGrid');
                     stopManaLoader('spoilerReprintsGrid');
                     return;
                 }
@@ -5380,12 +5364,11 @@
                     }
                     if (topData) {
                         // Filter basic lands + resort by getPrice (handles foil-only printings correctly).
-                        // Slice to 16 so Spoiler Tracker's 2-column layout has enough cards for both columns.
                         const basicNames = new Set(['Plains','Island','Swamp','Mountain','Forest','Wastes']);
                         topCards = (topData.data || [])
                             .filter(c => !basicNames.has(c.name) && (!c.type_line || !c.type_line.includes('Basic Land')))
                             .sort((a,b) => getPrice(b).num - getPrice(a).num)
-                            .slice(0, 16)
+                            .slice(0, 8)
                             .map(c => ({
                                 id: c.id,
                                 name: c.name,
@@ -5399,7 +5382,7 @@
                         const basicNames = new Set(['Plains','Island','Swamp','Mountain','Forest','Wastes']);
                         newCards = (spoiledData.data || [])
                             .filter(c => !basicNames.has(c.name) && (!c.type_line || !c.type_line.includes('Basic Land')))
-                            .slice(0, 16)
+                            .slice(0, 8)
                             .map(c => ({
                                 id: c.id,
                                 name: c.name,
@@ -5479,7 +5462,6 @@
         function renderSpoilerDashboard(results, manual) {
             // Clean up the themed loaders — these sections are about to have real content
             stopManaLoader('spoilerDashGrid');
-            stopManaLoader('spoilerTopCardsGrid');
 
             const desktopGrid = document.getElementById('spoilerDashGrid');
             const desktopSection = document.getElementById('spoilerDashSection');
@@ -5498,21 +5480,21 @@
                 return;
             }
 
-            // Desktop rendering
+            // Desktop rendering — display only the latest 2 sets with spoilers in a slim 2-column layout.
+            // Backend still tracks up to 6 (for alerts, "check now", etc.); we just limit the DASHBOARD view.
+            // Each set card shows 8 top cards in a single vertical list — clean, scannable.
+            const displayResults = results.slice(0, 2);
             if (desktopGrid && desktopSection) {
                 desktopSection.style.display = 'block';
-                desktopGrid.innerHTML = results.map(r => {
+                desktopGrid.innerHTML = displayResults.map(r => {
                     const daysLabel = r.isFuture ? Math.ceil((new Date(r.released) - new Date()) / 86400000) + 'd away' : 'Released';
                     const progressPct = r.expectedCards > 0 ? Math.min(100, Math.round(r.currentCount / r.expectedCards * 100)) : 0;
-                    // 2-column card-row layout: up to 16 cards total, 8 per column.
-                    // Cards are pre-sorted desc by price in checkSpoilers → topCards.
-                    const cards = (r.topCards && r.topCards.length ? r.topCards : r.newCards || []).slice(0, 16);
-                    const leftCol = cards.slice(0, 8);
-                    const rightCol = cards.slice(8, 16);
-                    const renderRow = (c) => `<div class="category-mover-item" onclick="event.stopPropagation();openCardDetail('${c.id}')" style="cursor:pointer;">
+                    // Cards are pre-sorted desc by price in checkSpoilers → topCards, basic lands already filtered.
+                    const cards = (r.topCards && r.topCards.length ? r.topCards : r.newCards || []).slice(0, 8);
+                    const cardRows = cards.map(c => `<div class="category-mover-item" onclick="event.stopPropagation();openCardDetail('${c.id}')" style="cursor:pointer;">
                         <span class="category-mover-name">${c.name}${c.isReprint ? ' <span style="font-size:0.6rem;color:var(--accent-secondary);">🔄</span>' : ''}</span>
                         <span class="category-mover-price">${c.price ? '$'+parseFloat(c.price).toFixed(2) : 'N/A'}</span>
-                    </div>`;
+                    </div>`).join('');
                     const justDropped = r.countDelta > 0;
                     const spoilerBanner = justDropped ? `<div style="background:linear-gradient(90deg,rgba(255,215,0,0.15),rgba(157,78,221,0.1));padding:0.4rem 0.75rem;border-radius:var(--radius-sm);margin:0 0.75rem 0.5rem;display:flex;align-items:center;gap:0.5rem;"><span style="font-size:1rem;">🔥</span><span style="color:var(--accent-gold);font-weight:700;font-size:0.85rem;">New Spoilers Dropped!</span><span style="color:var(--text-secondary);font-size:0.75rem;">+${r.countDelta} card${r.countDelta>1?'s':''} just revealed</span></div>` : '';
 
@@ -5536,10 +5518,7 @@
                             </div>
                         </div>
                         ${r.expectedCards > 0 ? `<div class="spoiler-progress"><div class="spoiler-progress-bar" style="width:${progressPct}%"></div></div>` : ''}
-                        ${cards.length ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1rem;padding:0.5rem 1rem 0.25rem;">
-                            <div>${leftCol.map(renderRow).join('')}</div>
-                            <div>${rightCol.map(renderRow).join('')}</div>
-                        </div>` : ''}
+                        ${cards.length ? `<div style="padding:0.5rem 1rem 0.25rem;">${cardRows}</div>` : ''}
                         <div style="margin:0.5rem 0 0.75rem;text-align:center;">
                             <button class="btn btn-secondary" onclick="event.stopPropagation();switchPage('browse');openSetView('${r.code}');" style="font-size:0.75rem;padding:0.35rem 1rem;">View All ${r.currentCount} Spoilers →</button>
                         </div>
@@ -5568,67 +5547,9 @@
 
             if (manual) showToast('Spoiler check complete!', 'success');
 
-            // Also load top priced cards from spoiler sets
-            loadSpoilerTopCards(results);
-        }
-
-        // ====== SPOILER TOP CARDS BY VALUE ======
-        async function loadSpoilerTopCards(spoilerResults) {
-            if (!spoilerResults || !spoilerResults.length) return;
-            const section = document.getElementById('spoilerTopCardsSection');
-            const grid = document.getElementById('spoilerTopCardsGrid');
-            if (!section || !grid) return;
-
-            section.style.display = 'block';
-
-            const setsToShow = spoilerResults.filter(r => r.currentCount > 0).slice(0, 5);
-            if (!setsToShow.length) { section.style.display = 'none'; stopManaLoader('spoilerTopCardsGrid'); return; }
-
-            // Parallelize — queue enforces 150ms spacing so no burst risk
-            const fetched = await Promise.all(setsToShow.map(async (r) => {
-                try {
-                    const d = await API.search('set:' + r.code + ' usd>0', { order: 'usd', dir: 'desc' });
-                    return { r, d };
-                } catch(e) {
-                    if (e.message !== 'Cancelled') console.warn('Spoiler top cards failed for', r.code, e);
-                    return { r, d: null };
-                }
-            }));
-
-            let html = '';
-            const BASIC_LAND_NAMES = new Set(['Plains','Island','Swamp','Mountain','Forest','Wastes']);
-            for (const { r, d } of fetched) {
-                if (!d || !d.data?.length) continue;
-                // Filter out basic lands; re-sort by getPrice() which handles foil-only printings correctly
-                const filteredSorted = d.data
-                    .filter(c => !BASIC_LAND_NAMES.has(c.name) && (!c.type_line || !c.type_line.includes('Basic Land')))
-                    .sort((a,b) => getPrice(b).num - getPrice(a).num);
-                const topCards = filteredSorted.slice(0, 8);
-                if (!topCards.length) continue;
-                topCards.forEach(c => APICache.set('/cards/' + c.id, c));
-                const cardRows = topCards.map(c => {
-                    const pr = getPrice(c);
-                    return `<div class="category-mover-item" onclick="openCardDetail('${c.id}')" style="cursor:pointer;">
-                        <span class="category-mover-name">${c.name}</span>
-                        <span class="category-mover-price">${pr.val}</span>
-                    </div>`;
-                }).join('');
-                const daysLabel = r.isFuture ? Math.ceil((new Date(r.released) - new Date()) / 86400000) + 'd away' : 'Released';
-                html += `<div class="category-mover-card" style="display:block;">
-                    <div class="category-mover-header" onclick="switchPage('browse');openSetView('${r.code}');" title="View full set">
-                        <span>🔮</span> ${r.name} <span style="margin-left:0.5rem;font-size:0.65rem;padding:0.15rem 0.4rem;border-radius:4px;background:${r.isFuture?'rgba(255,215,0,0.2);color:var(--accent-gold)':'rgba(0,255,136,0.15);color:var(--accent-green)'};">${daysLabel}</span>
-                        <span style="margin-left:auto;font-size:0.7rem;opacity:0.6;">View All →</span>
-                    </div>
-                    <div class="category-mover-content">${cardRows}</div>
-                </div>`;
-            }
-
-            // Done — stop the themed loader and render
-            stopManaLoader('spoilerTopCardsGrid');
-            grid.innerHTML = html || '<p style="color:var(--text-muted);padding:1rem;">No priced spoiler cards yet.</p>';
-
-            // Also load reprints from spoiler sets
-            loadSpoilerReprints(spoilerResults);
+            // Chain to Spoiler Reprints (Spoiler Season section was removed — Tracker now shows
+            // top cards directly in its 2-column layout, so we don't need the intermediate section)
+            loadSpoilerReprints(results);
         }
 
         // ====== SPOILER REPRINTS — BUY THE DIP ======
@@ -6398,8 +6319,8 @@
                 return;
             }
             const isExpanded = State.moversExpanded[type];
-            const displayMovers = isExpanded ? movers : movers.slice(0, 5);
-            const hasMore = movers.length > 5;
+            const displayMovers = isExpanded ? movers : movers.slice(0, 8);
+            const hasMore = movers.length > 8;
 
             container.innerHTML = displayMovers.map(m => `
                 <div class="mover-item" onclick="openCardDetail('${m.cardId}')">
@@ -7423,7 +7344,7 @@
                     categoryCardData[cat] = { cards: d.data.slice(0, 50), expanded: false, config };
                     renderCategoryCards(cat, container, false);
                     if (card) card.style.display = '';
-                    loadPriceHistoryForCards(d.data.slice(0, 5), cat, container);
+                    loadPriceHistoryForCards(d.data.slice(0, 8), cat, container);
                 }
                 // No data or error — keep card hidden
             } catch(e) {
@@ -7455,7 +7376,7 @@
         function renderCategoryCards(cat, container, expanded) {
             const data = categoryCardData[cat];
             if (!data) return;
-            const cards = expanded ? data.cards : data.cards.slice(0, 5);
+            const cards = expanded ? data.cards : data.cards.slice(0, 8);
             const totalCards = data.cards.length;
 
             let html = cards.map(c => {
@@ -8244,7 +8165,7 @@
             const container = document.getElementById(catKey + 'Content');
             if (!container) return;
 
-            const cards = data.expanded ? data.cards : data.cards.slice(0, 5);
+            const cards = data.expanded ? data.cards : data.cards.slice(0, 8);
             const totalCards = data.cards.length;
 
             let html = cards.map(c => {
@@ -8602,13 +8523,13 @@
             const stagger = (fn, delay) => setTimeout(() => { try { fn(); } catch(e){} }, delay);
 
             // === LOAD ORDER: priority sections fire first, everything else is queued behind them ===
-            // Priority tier (user-requested): Spoiler Tracker, Spoiler Season, Spoiler Reprints, Recent Sets (5)
-            // Note: checkSpoilers() populates Spoiler Tracker + Spoiler Season + Spoiler Reprints in one pass —
-            // they all feed off the same spoiler data, so this is effectively one combined call for 3 sections.
+            // Priority tier (user-requested): Spoiler Reprints, Spoiler Tracker, Recent Sets (5)
+            // Note: checkSpoilers() populates Spoiler Tracker + Spoiler Reprints in one pass —
+            // they feed off the same spoiler data, so this is effectively one combined call for 2 sections.
 
             // Tier 1 — fires IMMEDIATELY (no delay). Lightweight + visible above the fold.
             loadUniqueCardCount();                // 1 cached call, the unique-cards counter
-            checkSpoilers();                      // → Spoiler Tracker + Spoiler Season + Spoiler Reprints (combined)
+            checkSpoilers();                      // → Spoiler Tracker + Spoiler Reprints (combined)
             loadUpcomingReleases();               // → Upcoming sets banner (also warms the /sets cache)
 
             if (isMobile) {
