@@ -634,6 +634,49 @@
         .api-status-dot.warning { background: var(--accent-orange); }
         .api-status-dot.error { background: var(--accent-red); }
 
+        /* Version badges — two copies, one in the header next to the logo and one
+           floating in the corner next to API status. Makes it obvious at a glance
+           whether the deployed site is running the latest file. */
+        .app-version-tag {
+            display: inline-block;
+            margin-left: 0.6rem;
+            padding: 0.12rem 0.4rem;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+            font-size: 0.6rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 4px;
+            vertical-align: middle;
+            cursor: help;
+            user-select: all;
+        }
+        .app-version-badge {
+            position: fixed;
+            bottom: 1rem;
+            right: calc(1rem + 180px); /* sits to the left of .api-status */
+            padding: 0.5rem 0.75rem;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(10px);
+            opacity: 0.7;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+            user-select: all;
+            z-index: 100;
+        }
+        .app-version-badge:hover { opacity: 1; }
+        @media (max-width: 768px) {
+            /* On mobile the header is cramped — hide the header tag, keep the corner one */
+            .app-version-tag { display: none; }
+            .app-version-badge { right: 0.5rem; bottom: 0.5rem; font-size: 0.65rem; padding: 0.35rem 0.55rem; }
+        }
+
         .toast-container { position: fixed; top: 80px; right: 1rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 6000; }
         .toast { padding: 1rem; background: var(--bg-card); border-radius: var(--radius-md); border-left: 4px solid var(--accent-primary); display: flex; align-items: center; gap: 0.75rem; min-width: 280px; animation: toastSlide 0.3s ease; backdrop-filter: blur(10px); }
         @keyframes toastSlide { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
@@ -1096,7 +1139,7 @@
 
     <nav class="navbar">
         <button id="navBackBtn" class="nav-back-btn" onclick="goBackNav()" style="display:none;" title="Go back">← Back</button>
-        <div class="nav-brand" onclick="switchPage('dashboard')"><div class="nav-logo"><span class="nav-logo-icon">◆</span>MTG Oracle</div></div>
+        <div class="nav-brand" onclick="switchPage('dashboard')"><div class="nav-logo"><span class="nav-logo-icon">◆</span>MTG Oracle<span class="app-version-tag" title="Build version — if this doesn't match your local file, the site is serving a stale version">v2026.04.24.1949</span></div></div>
         <div class="nav-center">
             <button class="nav-tab active" data-page="dashboard">📊 Dashboard</button>
             <button class="nav-tab" data-page="browse">📚 Browse</button>
@@ -2745,6 +2788,7 @@
     </main>
 
     <div class="api-status"><div class="api-status-dot" id="apiStatusDot"></div><span id="apiStatusText">Scryfall: Ready</span></div>
+    <div class="app-version-badge" title="Build version — if this doesn't match your local file, the site is serving a stale version. Click to copy.">v2026.04.24.1949</div>
 
     <!-- Auth Modal -->
     <div class="modal-overlay" id="authModal">
@@ -8478,6 +8522,24 @@
 
         document.addEventListener('DOMContentLoaded',async()=>{
             document.querySelectorAll('.nav-tab,.mobile-nav-btn').forEach(t=>t.addEventListener('click',()=>switchPage(t.dataset.page)));
+
+            // Log build version to console so it's visible even if the badge is hidden.
+            // If the version in the console doesn't match the file you last uploaded to GitHub,
+            // the site is serving a stale build (deployment hasn't finished or wrong file).
+            const APP_VERSION = 'v2026.04.24.1949';
+            console.log('%c MTG Oracle ' + APP_VERSION + ' ', 'background:#9d4edd;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;');
+
+            // Make the corner badge copy its version to clipboard on click
+            const vBadge = document.querySelector('.app-version-badge');
+            if (vBadge) {
+                vBadge.addEventListener('click', () => {
+                    navigator.clipboard?.writeText(APP_VERSION).then(() => {
+                        const orig = vBadge.textContent;
+                        vBadge.textContent = '✓ copied';
+                        setTimeout(() => { vBadge.textContent = orig; }, 1200);
+                    });
+                });
+            }
 
             // === IMMEDIATE: Kill overlay, show search bar ===
             const overlay = document.getElementById('loadingOverlay');
