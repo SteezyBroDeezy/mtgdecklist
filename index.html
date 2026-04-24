@@ -4130,7 +4130,7 @@
                 recentSetsLoaded=true;
                 // CASCADE: load cards sequentially top-to-bottom so first set appears ASAP
                 for(const s of recent){
-                    await loadRSCards(s.code,5);
+                    await loadRSCards(s.code,8);
                 }
             }catch(e){container.innerHTML='<p>Failed to load sets</p>';}
         }
@@ -4141,7 +4141,7 @@
                 // Use priority so browse cards jump ahead of any background dashboard loads
                 const d=await API.searchPriority('set:'+code+' (usd>0 or usd_foil>0)',{order:'usd',dir:'desc'});
                 if(d.data?.length){rsData[code]=d;grid.innerHTML=d.data.slice(0,limit).map(c=>cardEl(c)).join('');
-                const btn=document.getElementById('rsMore_'+code);if(btn&&d.data.length>5)btn.style.display='inline-flex';
+                const btn=document.getElementById('rsMore_'+code);if(btn&&d.data.length>8)btn.style.display='inline-flex';
             }else{grid.innerHTML='<p style="color:var(--text-muted);font-size:0.8rem;">No priced cards</p>';}}catch(e){if(e.message!=='Cancelled')grid.innerHTML='';}
         }
         function expandRS(code){const d=rsData[code];const grid=document.getElementById('rsCards_'+code);const btn=document.getElementById('rsMore_'+code);if(d&&d.data&&grid){grid.innerHTML=d.data.slice(0,50).map(c=>cardEl(c)).join('');if(btn)btn.style.display='none';}}
